@@ -1,9 +1,10 @@
 import java.util.Objects;
 
 // TODO: mutable?
-public class FieldElement {
-    long num;
-    long prime;
+public final class FieldElement {
+    private final long num;
+    private final long prime;
+
     public FieldElement(long num, long prime) {
         if (num>= prime || num <0) {
             System.out.println(" Element "+num+ " not in 0.."+(prime-1));
@@ -18,7 +19,7 @@ public class FieldElement {
         this.prime = other.prime;
     }
 
-    public FieldElement add(FieldElement other) {
+    public FieldElement plus(FieldElement other) {
         if (this.prime!=other.prime) {
             System.out.println("Different fields "+this.prime+" and "+other.prime);
             System.exit(-1);
