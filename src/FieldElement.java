@@ -1,13 +1,15 @@
+import java.math.BigInteger;
 import java.util.Objects;
 
 // TODO: mutable?
 public final class FieldElement {
-    private final long num;
-    private final long prime;
+    private final BigInteger num;
+    private final BigInteger prime;
 
-    public FieldElement(long num, long prime) {
-        if (num>= prime || num <0) {
-            System.out.println(" Element "+num+ " not in 0.."+(prime-1));
+    public FieldElement(BigInteger num, BigInteger prime) {
+
+        if (num.compareTo(prime)>=0 || num.compareTo(BigInteger.ZERO) <0) {
+            System.out.println(" Element "+num+ " not in 0.."+(prime.subtract(BigInteger.ONE)));
             System.exit(-1);
         }
         this.num =num;
@@ -20,41 +22,37 @@ public final class FieldElement {
     }
 
     public FieldElement plus(FieldElement other) {
-        if (this.prime!=other.prime) {
+        if (this.prime.compareTo(other.prime)!=0) {
             System.out.println("Different fields "+this.prime+" and "+other.prime);
             System.exit(-1);
         }
 
-        long sum = (this.num+ other.num)%this.prime;
+        var sum = (this.num.add(other.num)).mod(this.prime);
         return new FieldElement(sum,this.prime);
     }
 
     public FieldElement mul(FieldElement other) {
 
-        if (this.prime!=other.prime) {
+        if (this.prime.compareTo(other.prime)!=0) {
             System.out.println("Different fields");
             System.exit(-1);
         }
 
-        long product = (this.num* other.num) % this.prime;
+        var product = (this.num.multiply(other.num)).mod(this.prime);
 
         return new FieldElement(product,this.prime);
     }
 
-    public FieldElement pow(int exponent) {
-        long n = this.num;
-        while (--exponent>0) n = n*this.num;
-        n = n%this.prime;
-        return new FieldElement(n,this.prime);
-    }
     public FieldElement pow2(int exponent) {
-        long n = exponent % (this.prime-1);
-        double base = this.num;
+        var exp = BigInteger.valueOf(exponent);
+        exp = exp.mod(this.prime.subtract(BigInteger.ONE));
 
-        long num =  (long) Math.pow(base,(double)n);
-        num = num%this.prime;
+        var num_res  = this.num.modPow(exp,this.prime);
 
-        return new FieldElement(num,this.prime);
+        //long num =  (long) Math.pow(base,(double)n);
+        //num = num%this.prime;
+
+        return new FieldElement(num_res,this.prime);
     }
 
     @Override
@@ -67,7 +65,7 @@ public final class FieldElement {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FieldElement that = (FieldElement) o;
-        return num == that.num && prime == that.prime;
+        return num.equals(that.num) && prime.equals(that.prime);
     }
 
     @Override
