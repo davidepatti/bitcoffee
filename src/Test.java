@@ -15,7 +15,7 @@ public class Test {
         a = new FieldElement(3,13);
         b = new FieldElement(12,13);
         var target = new FieldElement(10,13);
-        var res = a.mul(b);
+        var res = a.multiply(b);
         System.out.println(a+" * "+b+" = "+target+" mult:"+ res.equals(target));
         //////////////////////////////////////////////////
 
@@ -38,27 +38,27 @@ public class Test {
         a = new FieldElement(2,19);
         b = new FieldElement(7,19);
         // 2/7 -> 2* 7 (19-2)
-        res = a.div(b);
+        res = a.divide(b);
         target = new FieldElement(3,19);
         System.out.println(a+" div "+b+" = "+res+ " "+res.equals(target));
 
         a = new FieldElement(7,19);
         b = new FieldElement(5,19);
         target = new FieldElement(9,19);
-        res = a.div(b);
+        res = a.divide(b);
         System.out.println(a+" div "+b+" = "+res+ " "+res.equals(target));
 
 
         ///////////// Elliptic curve
 
         // infinity point is also identity point, result should not change
-        var p1 = new Point(-1,-1,5,7);
-        var inf = new Point(Point.BIGINF,Point.BIGINF, BigInteger.valueOf(5),BigInteger.valueOf(7));
+        var p1 = new RealPoint(-1,-1,5,7);
+        var inf = new RealPoint(RealPoint.BIGINF, RealPoint.BIGINF, BigInteger.valueOf(5),BigInteger.valueOf(7));
         var point_target = p1;
         var point_result = p1.add(inf);
         System.out.println(p1+" + Inf = "+point_result+" "+point_result.equals(point_target));
 
-        var p2 = new Point(-1,1,5,7);
+        var p2 = new RealPoint(-1,1,5,7);
         point_result = p2.add(inf);
         point_target = p2;
         System.out.println(p2+" + Inf = "+point_result+" "+point_result.equals(point_target));
@@ -68,15 +68,20 @@ public class Test {
         System.out.println(p1+"+"+p2+" = "+point_result+" "+point_result.equals(point_target));
 
 
-        p1 = new Point(3,7,5,7);
-        p2 = new Point(-1,-1,5,7);
-        point_target = new Point(2,-5,5,7);
+        p1 = new RealPoint(3,7,5,7);
+        p2 = new RealPoint(-1,-1,5,7);
+        point_target = new RealPoint(2,-5,5,7);
         point_result = p1.add(p2);
         System.out.println(p1+" + "+p2+" = "+point_result+ " "+point_result.equals(point_target));
 
         point_result = p2.add(p2);
-        point_target = new Point(18,77,5,7);
+        point_target = new RealPoint(18,77,5,7);
         System.out.println(p2+" + "+p2+" = "+point_result+ " "+point_result.equals(point_target));
+
+
+
+
+
 
 
     }

@@ -1,20 +1,21 @@
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class Point {
-    private final BigInteger x,y,a,b;
-    static final BigInteger BIGINF = null;
+// TODO: abstract to common element
+public class FEPoint {
+    private final FieldElement x,y,a,b;
+    static final FieldElement BIGINF = null;
 
     private boolean inTheCurve() {
         // point at infinity should not be checked
-        if (this.x==BIGINF && this.y==BIGINF) return true;
+        if (this.x.equals(BIGINF) && this.y.equals(BIGINF)) return true;
 
         var left = y.pow(2);
         var right = (x.pow(3)).add(x.multiply(a)).add(b);
 
-        return  (left.compareTo(right)==0);
+        return  (left.equals(right));
     }
-    public Point(BigInteger x,BigInteger y,BigInteger a, BigInteger b) {
+    public FEPoint(FieldElement x, FieldElement y, FieldElement a, FieldElement b) {
         this.x = x;
         this.y = y;
         this.a = a;
@@ -26,18 +27,8 @@ public class Point {
         }
 
     }
-    public Point(long x, long y, long a, long b) {
-        this.x = BigInteger.valueOf(x);
-        this.y = BigInteger.valueOf(y);
-        this.a = BigInteger.valueOf(a);
-        this.b = BigInteger.valueOf(b);
-        if (!inTheCurve()){
-            System.out.println("Not in the curve!"+this);
-            System.exit(-1);
-        }
-    }
 
-    public Point add(Point other) {
+    public FEPoint add(FEPoint other) {
         if (!this.a.equals(other.a) || !this.b.equals(other.b)) {
             System.out.println("Not in the same curve "+this+" and "+other);
             System.exit(-1);
@@ -50,7 +41,7 @@ public class Point {
         // points are in vertical line, resulting in infinity
         // TODO: check whether makes sense a unique inf point for all curves
         if (this.x.equals(other.x) && this.y.equals(other.y.negate())) {
-            return new Point(BIGINF,BIGINF,this.a,this.b);
+            return new FEPoint(BIGINF,BIGINF,this.a,this.b);
         }
 
         // point are not in vertical, and are different
@@ -61,22 +52,23 @@ public class Point {
             var x3 = s.pow(2).subtract(this.x).subtract(other.x);
             // y3 = s(x1-x3)-y1
             var y3 = s.multiply(this.x.subtract(x3)).subtract(this.y);
-            return new Point(x3,y3,this.a,this.b);
+            return new FEPoint(x3,y3,this.a,this.b);
         }
 
         // p1=p2
         if (this.equals(other)) {
+            BigInteger prime = a.getPrime();
             // special case of vertical tangent line
-            if (this.y.equals(BigInteger.ZERO)) {
-                return new Point(BIGINF,BIGINF,this.a,this.b);
+            if (this.y.equals(new FieldElement(BigInteger.ZERO,prime))) {
+                return new FEPoint(BIGINF,BIGINF,this.a,this.b);
             }
             // 3*x1^2+a
-            var num = this.x.pow(2).multiply(BigInteger.valueOf(3)).add(this.a);
+            var num = this.x.pow(2).multiply(new FieldElement(3,prime)).add(this.a);
             // slope
-            var s = num.divide(this.y.multiply(BigInteger.TWO));
-            var x3 = s.pow(2).subtract(this.x.multiply(BigInteger.TWO));
+            var s = num.divide(this.y.multiply(new FieldElement(2,prime)));
+            var x3 = s.pow(2).subtract(this.x.multiply(new FieldElement(2,prime)));
             var y3 = s.multiply(this.x.subtract(x3)).subtract(this.y);
-            return new Point(x3,y3,this.a,this.b);
+            return new FEPoint(x3,y3,this.a,this.b);
 
         }
 
@@ -95,7 +87,7 @@ public class Point {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Point point = (Point) o;
+        FEPoint point = (FEPoint) o;
         return Objects.equals(x, point.x) && Objects.equals(y, point.y) && Objects.equals(a, point.a) && Objects.equals(b, point.b);
     }
 

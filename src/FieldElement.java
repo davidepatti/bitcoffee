@@ -5,6 +5,10 @@ public final class FieldElement {
     private final BigInteger num;
     private final BigInteger prime;
 
+    public BigInteger getPrime(){
+        return this.prime;
+    }
+
     public FieldElement(BigInteger num, BigInteger prime) {
 
         if (num.compareTo(prime)>=0 || num.compareTo(BigInteger.ZERO) <0) {
@@ -20,12 +24,18 @@ public final class FieldElement {
         this.prime = BigInteger.valueOf(prime);
     }
 
+    public FieldElement(long num, BigInteger prime) {
+        var n = BigInteger.valueOf(num);
+        this.num = n;
+        this.prime = prime;
+    }
+
     public FieldElement(FieldElement other) {
         this.num = other.num;
         this.prime = other.prime;
     }
 
-    public FieldElement plus(FieldElement other) {
+    public FieldElement add(FieldElement other) {
         if (this.prime.compareTo(other.prime)!=0) {
             System.out.println("Different fields "+this.prime+" and "+other.prime);
             System.exit(-1);
@@ -35,7 +45,7 @@ public final class FieldElement {
         return new FieldElement(sum,this.prime);
     }
 
-    public FieldElement mul(FieldElement other) {
+    public FieldElement multiply(FieldElement other) {
 
         if (this.prime.compareTo(other.prime)!=0) {
             System.out.println("Different fields");
@@ -59,9 +69,19 @@ public final class FieldElement {
         return new FieldElement(num_res,this.prime);
     }
 
-    public FieldElement div(FieldElement other) {
-        FieldElement res = this.mul(other.pow(this.prime.intValue()-2));
+    public FieldElement divide(FieldElement other) {
+        FieldElement res = this.multiply(other.pow(this.prime.intValue()-2));
         return res;
+    }
+
+    public FieldElement negate() {
+        BigInteger minusone = BigInteger.ONE.negate();
+
+        return this.multiply(new FieldElement(minusone,this.prime));
+    }
+
+    public FieldElement subtract(FieldElement other) {
+        return this.add(other.negate());
     }
 
     @Override
