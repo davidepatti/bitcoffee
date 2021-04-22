@@ -1,7 +1,6 @@
 import java.math.BigInteger;
 import java.util.Objects;
 
-// TODO: mutable?
 public final class FieldElement {
     private final BigInteger num;
     private final BigInteger prime;
@@ -14,6 +13,11 @@ public final class FieldElement {
         }
         this.num =num;
         this.prime = prime;
+    }
+
+    public FieldElement(long num, long prime) {
+        this.num = BigInteger.valueOf(num);
+        this.prime = BigInteger.valueOf(prime);
     }
 
     public FieldElement(FieldElement other) {
@@ -43,7 +47,7 @@ public final class FieldElement {
         return new FieldElement(product,this.prime);
     }
 
-    public FieldElement pow2(int exponent) {
+    public FieldElement pow(int exponent) {
         var exp = BigInteger.valueOf(exponent);
         exp = exp.mod(this.prime.subtract(BigInteger.ONE));
 
@@ -55,9 +59,14 @@ public final class FieldElement {
         return new FieldElement(num_res,this.prime);
     }
 
+    public FieldElement div(FieldElement other) {
+        FieldElement res = this.mul(other.pow(this.prime.intValue()-2));
+        return res;
+    }
+
     @Override
     public String toString() {
-        return "FieldElement{" + num + "," + prime + '}';
+        return "FieldElement(" + num + "," + prime + ')';
     }
 
     @Override
