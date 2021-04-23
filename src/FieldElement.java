@@ -74,19 +74,27 @@ public final class FieldElement {
         return res;
     }
 
+    /*
     public FieldElement negate() {
         BigInteger minusone = BigInteger.ONE.negate();
 
         return this.multiply(new FieldElement(minusone,this.prime));
     }
+    */
 
     public FieldElement subtract(FieldElement other) {
-        return this.add(other.negate());
+        if (this.prime.compareTo(other.prime)!=0) {
+            System.out.println("Different fields "+this.prime+" and "+other.prime);
+            System.exit(-1);
+        }
+        var diff = (this.num.subtract(other.num)).mod(this.prime);
+        return new FieldElement(diff,this.prime);
+
     }
 
     @Override
     public String toString() {
-        return "FieldElement(" + num + "," + prime + ')';
+        return "FE_" + prime + "(" + num + ')';
     }
 
     @Override

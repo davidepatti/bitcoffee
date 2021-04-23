@@ -34,17 +34,24 @@ public class FEPoint {
             System.exit(-1);
         }
 
-        // one of the points it's at infinity (identity)
+        // Case 0.0: this is the point at infinity, return other
         if (this.x==null) return other;
+        // Case 0.1: other is the point at infinity, return this
         if (other.x==null) return this;
 
         // points are in vertical line, resulting in infinity
+        //Case 1: this.x == other.x, this.y != other.y Result is point at infinity
         // TODO: check whether makes sense a unique inf point for all curves
-        if (this.x.equals(other.x) && this.y.equals(other.y.negate())) {
+        if (this.x.equals(other.x) && !this.y.equals(other.y)) {
             return new FEPoint(BIGINF,BIGINF,this.a,this.b);
         }
 
+        // Case 2: self.x ≠ other.x
         // point are not in vertical, and are different
+        // Formula (x3,y3)==(x1,y1)+(x2,y2)
+        // s=(y2-y1)/(x2-x1)
+        // x3=s^2-x1-x2
+        // y3=s*(x1-x3)-y1
         if (!this.x.equals(other.x)) {
             // slope = (y2-y1)/(x2-x1)
             var s = (other.y.subtract(this.y)).divide(other.x.subtract(this.x));
@@ -58,11 +65,15 @@ public class FEPoint {
         // p1=p2
         if (this.equals(other)) {
             BigInteger prime = a.getPrime();
-            // special case of vertical tangent line
+            // Case 4: if we are tangent to the vertical line, we return the point at infinity
             if (this.y.equals(new FieldElement(BigInteger.ZERO,prime))) {
                 return new FEPoint(BIGINF,BIGINF,this.a,this.b);
             }
-            // 3*x1^2+a
+
+            // Case 3 this=other  Formula (x3,y3)=(x1,y1)+(x1,y1)
+            // s=(3*x1^2+a)/(2*y1)
+            // x3=s^2-2*x1
+            // y3=s*(x1-x3)-y1
             var num = this.x.pow(2).multiply(new FieldElement(3,prime)).add(this.a);
             // slope
             var s = num.divide(this.y.multiply(new FieldElement(2,prime)));

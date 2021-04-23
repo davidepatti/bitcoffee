@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.Objects;
 
-public class RealPoint {
+public class IntPoint {
     private final BigInteger x,y,a,b;
     static final BigInteger BIGINF = null;
 
@@ -14,7 +14,7 @@ public class RealPoint {
 
         return  (left.compareTo(right)==0);
     }
-    public RealPoint(BigInteger x, BigInteger y, BigInteger a, BigInteger b) {
+    public IntPoint(BigInteger x, BigInteger y, BigInteger a, BigInteger b) {
         this.x = x;
         this.y = y;
         this.a = a;
@@ -26,7 +26,7 @@ public class RealPoint {
         }
 
     }
-    public RealPoint(long x, long y, long a, long b) {
+    public IntPoint(long x, long y, long a, long b) {
         this.x = BigInteger.valueOf(x);
         this.y = BigInteger.valueOf(y);
         this.a = BigInteger.valueOf(a);
@@ -37,7 +37,7 @@ public class RealPoint {
         }
     }
 
-    public RealPoint add(RealPoint other) {
+    public IntPoint add(IntPoint other) {
         if (!this.a.equals(other.a) || !this.b.equals(other.b)) {
             System.out.println("Not in the same curve "+this+" and "+other);
             System.exit(-1);
@@ -50,7 +50,7 @@ public class RealPoint {
         // points are in vertical line, resulting in infinity
         // TODO: check whether makes sense a unique inf point for all curves
         if (this.x.equals(other.x) && this.y.equals(other.y.negate())) {
-            return new RealPoint(BIGINF,BIGINF,this.a,this.b);
+            return new IntPoint(BIGINF,BIGINF,this.a,this.b);
         }
 
         // point are not in vertical, and are different
@@ -61,14 +61,14 @@ public class RealPoint {
             var x3 = s.pow(2).subtract(this.x).subtract(other.x);
             // y3 = s(x1-x3)-y1
             var y3 = s.multiply(this.x.subtract(x3)).subtract(this.y);
-            return new RealPoint(x3,y3,this.a,this.b);
+            return new IntPoint(x3,y3,this.a,this.b);
         }
 
         // p1=p2
         if (this.equals(other)) {
             // special case of vertical tangent line
             if (this.y.equals(BigInteger.ZERO)) {
-                return new RealPoint(BIGINF,BIGINF,this.a,this.b);
+                return new IntPoint(BIGINF,BIGINF,this.a,this.b);
             }
             // 3*x1^2+a
             var num = this.x.pow(2).multiply(BigInteger.valueOf(3)).add(this.a);
@@ -76,7 +76,7 @@ public class RealPoint {
             var s = num.divide(this.y.multiply(BigInteger.TWO));
             var x3 = s.pow(2).subtract(this.x.multiply(BigInteger.TWO));
             var y3 = s.multiply(this.x.subtract(x3)).subtract(this.y);
-            return new RealPoint(x3,y3,this.a,this.b);
+            return new IntPoint(x3,y3,this.a,this.b);
 
         }
 
@@ -95,7 +95,7 @@ public class RealPoint {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RealPoint point = (RealPoint) o;
+        IntPoint point = (IntPoint) o;
         return Objects.equals(x, point.x) && Objects.equals(y, point.y) && Objects.equals(a, point.a) && Objects.equals(b, point.b);
     }
 
