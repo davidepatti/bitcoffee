@@ -43,7 +43,7 @@ public class TestFF {
 
 
         System.out.println("TEST: Scalar multitplication in prime "+prime);
-        for (int s=1;s<21;s++) {
+        for (int s=1;s<22;s++) {
             var temp = point.multiply(BigInteger.valueOf(s));
             System.out.println("(47,71)*"+s+" = "+ temp.getCoordString());
         }

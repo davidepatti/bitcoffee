@@ -8,7 +8,7 @@ public class FEPoint {
 
     private boolean inTheCurve() {
         // point at infinity should not be checked
-        if (this.x.equals(BIGINF) && this.y.equals(BIGINF)) return true;
+        if (this.x==null && this.y==null) return true;
 
         var left = y.pow(2);
         var right = (x.pow(3)).add(x.multiply(a)).add(b);
@@ -110,6 +110,8 @@ public class FEPoint {
     }
 
     public String getCoordString(){
+        if (this.x==null || this.y==null) return "(INF,INF)";
+
         return "("+this.x.getNum()+","+this.y.getNum()+")";
     }
 
