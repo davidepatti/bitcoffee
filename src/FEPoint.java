@@ -15,6 +15,7 @@ public class FEPoint {
 
         return  (left.equals(right));
     }
+
     public FEPoint(FieldElement x, FieldElement y, FieldElement a, FieldElement b) {
         this.x = x;
         this.y = y;
@@ -26,6 +27,12 @@ public class FEPoint {
             System.exit(-1);
         }
 
+    }
+    public FEPoint(FEPoint other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.a = other.a;
+        this.b = other.b;
     }
 
     public FEPoint add(FEPoint other) {
@@ -89,9 +96,21 @@ public class FEPoint {
 
     }
 
+    public FEPoint multiply(BigInteger factor) {
+        BigInteger n;
+        FEPoint sum = new FEPoint(this);
+        for (n = BigInteger.ONE; n.compareTo(factor)<0;n=n.add(BigInteger.ONE)) {
+            sum = sum.add(this);
+        }
+        return sum;
+    }
     @Override
     public String toString() {
         return "Point("+x+","+y+","+a+","+b+")";
+    }
+
+    public String getCoordString(){
+        return "("+this.x.getNum()+","+this.y.getNum()+")";
     }
 
     @Override

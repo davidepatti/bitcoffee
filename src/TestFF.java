@@ -1,8 +1,10 @@
+import java.math.BigInteger;
+
 public class TestFF {
     // Finite Field tests
 
     public static void main(String args[]) {
-        long prime = 223;
+        final long prime = 223;
         var a = new FieldElement(0,prime);
         var b = new FieldElement(7,prime);
         var x = new FieldElement(192,prime);
@@ -29,7 +31,22 @@ public class TestFF {
         var p2 = new FEPoint(x2,y2,a,b);
         FEPoint result = p1.add(p2);
         FEPoint target = new FEPoint(new FieldElement(170,prime), new FieldElement(142,prime), a,b);
-        System.out.println(p1+"+"+p2+" = "+result+" "+result.equals(target));
+        System.out.println(p1.getCoordString()+"+"+p2.getCoordString()+" = "+result.getCoordString()+" "+result.equals(target));
+
+        // scalar mult test ////////////////////////////////////////
+        a = new FieldElement(0,prime);
+        b = new FieldElement(7,prime);
+        x = new FieldElement(47,prime);
+        y = new FieldElement(71,prime);
+        FEPoint point = new FEPoint(x,y,a,b);
+
+
+
+        System.out.println("TEST: Scalar multitplication in prime "+prime);
+        for (int s=1;s<21;s++) {
+            var temp = point.multiply(BigInteger.valueOf(s));
+            System.out.println("(47,71)*"+s+" = "+ temp.getCoordString());
+        }
 
 
         /*

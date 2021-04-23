@@ -8,6 +8,9 @@ public final class FieldElement {
     public BigInteger getPrime(){
         return this.prime;
     }
+    public BigInteger getNum() {
+        return this.num;
+    }
 
     public FieldElement(BigInteger num, BigInteger prime) {
 
