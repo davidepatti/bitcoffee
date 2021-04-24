@@ -96,6 +96,7 @@ public class FEPoint {
 
     }
 
+    // TODO: check binary expansion optimisation page 57
     public FEPoint multiply(BigInteger factor) {
         BigInteger n;
         FEPoint sum = new FEPoint(this);
@@ -103,6 +104,21 @@ public class FEPoint {
             sum = sum.add(this);
         }
         return sum;
+    }
+    public FEPoint multiply_bin(BigInteger coefficient) {
+
+        var result = new FEPoint(null,null,this.a,this.b);
+        var current = this;
+        var coef = coefficient;
+
+        while (coef.compareTo(BigInteger.ZERO)!=0) {
+            if (coef.testBit(0)) {
+                result = result.add(current);
+            }
+            current = current.add(current);
+            coef = coef.shiftRight(1);
+        }
+        return result;
     }
     @Override
     public String toString() {
