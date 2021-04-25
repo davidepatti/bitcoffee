@@ -20,8 +20,8 @@ public class Test {
         //////////////////////////////////////////////////
 
         // test pow p-1
-        int prime = 13;
-        res = a.pow(prime-1);
+        var prime = BigInteger.valueOf(13);
+        res = a.pow(prime.subtract(BigInteger.ONE));
         target = new FieldElement(1,prime);
         System.out.println(a+" pow("+prime+"-1) = "+res+ " "+res.equals(target));
 
@@ -29,7 +29,7 @@ public class Test {
         // test negative exp
         a = new FieldElement(7,13);
         target = new FieldElement(8,13);
-        int exp = -3;
+        var exp = BigInteger.valueOf(-3);
         res = a.pow(exp);
         System.out.println(a+" pow("+exp+") = "+res+" "+res.equals(target));
 

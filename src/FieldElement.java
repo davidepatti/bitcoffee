@@ -60,8 +60,7 @@ public final class FieldElement {
         return new FieldElement(product,this.prime);
     }
 
-    public FieldElement pow(int exponent) {
-        var exp = BigInteger.valueOf(exponent);
+    public FieldElement pow(BigInteger exp) {
         exp = exp.mod(this.prime.subtract(BigInteger.ONE));
 
         var num_res  = this.num.modPow(exp,this.prime);
@@ -73,7 +72,8 @@ public final class FieldElement {
     }
 
     public FieldElement divide(FieldElement other) {
-        FieldElement res = this.multiply(other.pow(this.prime.intValue()-2));
+        var exp = this.prime.subtract(BigInteger.TWO);
+        FieldElement res = this.multiply(other.pow(exp));
         return res;
     }
 
@@ -97,7 +97,7 @@ public final class FieldElement {
 
     @Override
     public String toString() {
-        return "FE_" + prime + "(" + num + ')';
+        return "Field_" + prime + "_(" + num + ')';
     }
 
     @Override
