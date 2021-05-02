@@ -16,6 +16,14 @@ public class FieldElementPoint {
         return  (left.equals(right));
     }
 
+    // when just two coords, assume is a default sec256k1 point
+    public FieldElementPoint (BigInteger x, BigInteger y) {
+        this.x = new FieldElement(x,Secp256k1.p);
+        this.y = new FieldElement(y,Secp256k1.p);
+        this.a = new FieldElement(Secp256k1.a,Secp256k1.p);
+        this.b = new FieldElement(Secp256k1.b,Secp256k1.p);
+    }
+
     public FieldElementPoint(FieldElement x, FieldElement y, FieldElement a, FieldElement b) {
         this.x = x;
         this.y = y;
@@ -104,6 +112,7 @@ public class FieldElementPoint {
     }
 
     // TODO: check binary expansion optimisation page 57
+    // TODO: move to other implementation by default
     public FieldElementPoint multiply(BigInteger factor) {
         BigInteger n;
         FieldElementPoint sum = new FieldElementPoint(this);
@@ -112,6 +121,8 @@ public class FieldElementPoint {
         }
         return sum;
     }
+
+    // TODO: check for G point optimisation page 61
     public FieldElementPoint multiply_bin(BigInteger coefficient) {
 
         var result = new FieldElementPoint(null,null,this.a,this.b);
@@ -149,5 +160,13 @@ public class FieldElementPoint {
     @Override
     public int hashCode() {
         return Objects.hash(x, y, a, b);
+    }
+
+    public FieldElement getX() {
+        return x;
+    }
+
+    public FieldElement getY() {
+        return y;
     }
 }

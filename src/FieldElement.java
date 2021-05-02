@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 import java.util.Objects;
 
-public final class FieldElement {
+public class FieldElement {
     private final BigInteger num;
     private final BigInteger prime;
 
@@ -11,6 +11,13 @@ public final class FieldElement {
     public BigInteger getNum() {
         return this.num;
     }
+/*
+    public FieldElement() {
+        num = null;
+        prime  = null;
+    }
+
+ */
 
     public FieldElement(BigInteger num, BigInteger prime) {
 
