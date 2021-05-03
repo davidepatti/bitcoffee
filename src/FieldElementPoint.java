@@ -16,13 +16,6 @@ public class FieldElementPoint {
         return  (left.equals(right));
     }
 
-    // when just two coords, assume is a default sec256k1 point
-    public FieldElementPoint (BigInteger x, BigInteger y) {
-        this.x = new FieldElement(x,Secp256k1.p);
-        this.y = new FieldElement(y,Secp256k1.p);
-        this.a = new FieldElement(Secp256k1.a,Secp256k1.p);
-        this.b = new FieldElement(Secp256k1.b,Secp256k1.p);
-    }
 
     public FieldElementPoint(FieldElement x, FieldElement y, FieldElement a, FieldElement b) {
         this.x = x;
