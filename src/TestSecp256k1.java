@@ -1,4 +1,8 @@
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class TestSecp256k1 {
     public static void main(String args[]) {
@@ -41,6 +45,13 @@ public class TestSecp256k1 {
         // u*G+v*point == r
         System.out.print("Testing manual signature: ");
         System.out.println(Secp256k1.G.multiply_bin(u).add(point.multiply_bin(v)).getX().getNum().equals(r));
+
+        // signing a message
+
+        String message = "my secret";
+
+        System.out.println(Secp256k1.sha256(message));
+
 
     }
 

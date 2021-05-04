@@ -1,4 +1,7 @@
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Secp256k1 {
     public static final BigInteger a = BigInteger.ZERO;
@@ -8,7 +11,20 @@ public class Secp256k1 {
     public static final BigInteger Gy = new BigInteger("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8",16);
     public static final BigInteger N = new BigInteger("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",16);
     public static final S256Point G = new S256Point(Gx,Gy);
-    
-    
+
+    public static final String sha256(String message) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (
+                NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        byte[] hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+
+        BigInteger noHash = new BigInteger(1, hash);
+        return noHash.toString(16);
+    }
 
 }
