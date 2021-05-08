@@ -9,5 +9,8 @@ public class Signature {
         this.s = s;
     }
 
-
+    @Override
+    public String toString() {
+        return "Signature(" + r.toString(16) + "," + s.toString(16) + ')';
+    }
 }

@@ -1,8 +1,4 @@
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 public class TestSecp256k1 {
     public static void main(String args[]) {
@@ -46,12 +42,48 @@ public class TestSecp256k1 {
         System.out.print("Testing manual signature: ");
         System.out.println(Secp256k1.G.multiply_bin(u).add(point.multiply_bin(v)).getX().getNum().equals(r));
 
-        // signing a message
+        /****************************************************************/
+        //  testing message signature (page 69)
 
-        String message = "my secret";
+        String secret = "my secret";
+        String message = "my message";
 
-        System.out.println(Secp256k1.sha256(message));
+        var e = Secp256k1.hash256(secret);
 
+        z = Secp256k1.hash256(message);
+        var k = BigInteger.valueOf(1234567890);
+        r = Secp256k1.G.multiply_bin(k).getX().getNum();
+        var k_inv = k.modPow(Secp256k1.N.subtract(BigInteger.TWO),Secp256k1.N);
+        s = ((z.add(r.multiply(e))).multiply(k_inv)).mod(Secp256k1.N);
+        var point2 = new S256Point(Secp256k1.G.multiply_bin(e));
+
+        var x_target = new BigInteger("28d003eab2e428d11983f3e97c3fa0addf3b42740df0d211795ffb3be2f6c52",16);
+        var y_target = new BigInteger("ae987b9ec6ea159c78cb2a937ed89096fb218d9e7594f02b547526d8cd309e2",16);
+        var t_point = new S256Point(x_target,y_target);
+        System.out.println("Testing message signature: "+point2.equals(t_point));
+        System.out.println("z="+z.toString(16));
+        System.out.println("r="+r.toString(16));
+        System.out.println("s="+s.toString(16));
+        System.out.println("e="+e.toString(16));
+        System.out.println("e*G="+point2);
+
+        // Exercise 6
+
+        var p_x = new BigInteger("887387e452b8eacc4acfde10d9aaf7f6d9a0f975aabb10d006e4da568744d06c",16);
+        var p_y = new BigInteger("61de6d95231cd89026e286df3b6ae4a894a3378e393e93a0f45b666329a0ae34",16);
+        var P = new S256Point(p_x,p_y);
+        z = new BigInteger("ec208baa0fc1c19f708a9ca96fdeff3ac3f230bb4a7ba4aede4942ad003c0f60",16);
+        r = new BigInteger("ac8d1c87e51d0d441be8b3dd5b05c8795b48875dffe00b7ffcfac23010d3a395",16);
+        s = new BigInteger("68342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4",16);
+
+
+        var sig = new Signature(r,s);
+        System.out.println("Verify signature: "+P.verify(z,sig));
+
+
+
+        z = Secp256k1.hash256("Programming Bitcoin!");
+        e = BigInteger.valueOf(12345);
 
     }
 

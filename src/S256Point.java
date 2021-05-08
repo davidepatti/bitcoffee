@@ -22,7 +22,7 @@ public class S256Point extends FieldElementPoint{
 
     @Override
     public String toString() {
-        return "S256Point("+x+","+y+")";
+        return "S256Point("+x.toString(16)+","+y.toString(16)+")";
     }
 
     public boolean verify(BigInteger z, Signature sig) {

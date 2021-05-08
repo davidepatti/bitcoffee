@@ -12,19 +12,21 @@ public class Secp256k1 {
     public static final BigInteger N = new BigInteger("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141",16);
     public static final S256Point G = new S256Point(Gx,Gy);
 
-    public static final String sha256(String message) {
-        MessageDigest digest = null;
+
+    public static final BigInteger hash256(String message) {
+        MessageDigest digester = null;
         try {
-            digest = MessageDigest.getInstance("SHA-256");
+            digester = MessageDigest.getInstance("SHA-256");
         } catch (
                 NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
 
-        byte[] hash = digest.digest(message.getBytes(StandardCharsets.UTF_8));
+        byte[] hash = digester.digest(digester.digest(message.getBytes(StandardCharsets.UTF_8)));
 
         BigInteger noHash = new BigInteger(1, hash);
-        return noHash.toString(16);
+        return noHash;
     }
+
 
 }
