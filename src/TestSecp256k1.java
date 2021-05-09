@@ -5,7 +5,7 @@ public class TestSecp256k1 {
 
         // testing sec256k1
 
-        System.out.println("Tesing sec256k1, you should see three points at infinity");
+        System.out.println("Tesing sec256k1, you should see three points at infinity (null,null)");
         // test 1: manually creating G with lower level classes
         var x = new FieldElement(Secp256k1.Gx,Secp256k1.p);
         var y = new FieldElement(Secp256k1.Gy,Secp256k1.p);
@@ -77,13 +77,18 @@ public class TestSecp256k1 {
         s = new BigInteger("68342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4",16);
 
 
+        // test exercise 7
         var sig = new Signature(r,s);
         System.out.println("Verify signature: "+P.verify(z,sig));
 
-
-
+        System.out.println("signing message: Programming Bitcoin! with e = 12345");
         z = Secp256k1.hash256("Programming Bitcoin!");
+        System.out.println("message hash: "+z.toString(16));
         e = BigInteger.valueOf(12345);
+        k = BigInteger.valueOf(1234567890);
+        var privateKey = new PrivateKey(e);
+        var signature = privateKey.sign(z,k);
+        System.out.println("signature="+signature);
 
     }
 
