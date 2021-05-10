@@ -90,6 +90,8 @@ public class TestSecp256k1 {
         var signature = privateKey.sign(z,k);
         System.out.println("signature="+signature);
 
+        var xx = privateKey.deterministic_k(BigInteger.TWO);
+
     }
 
 }
