@@ -13,7 +13,7 @@ public class Secp256k1 {
     public static final S256Point G = new S256Point(Gx,Gy);
 
 
-    public static final BigInteger hash256(String message) {
+    public static final byte[] hash256(String message) {
         MessageDigest digester = null;
         try {
             digester = MessageDigest.getInstance("SHA-256");
@@ -24,8 +24,13 @@ public class Secp256k1 {
 
         byte[] hash = digester.digest(digester.digest(message.getBytes(StandardCharsets.UTF_8)));
 
+
+        return hash;
+        // MODSHA
+        /*
         BigInteger noHash = new BigInteger(1, hash);
         return noHash;
+         */
     }
 
 

@@ -1,20 +1,30 @@
-import javax.swing.*;
+
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Random;
 
 public class PrivateKey {
-    public final BigInteger secret;
+    public final byte[] secret_bytes;
+    public final BigInteger secret_n;
     public final S256Point point;
 
-    public PrivateKey(BigInteger secret) {
-        this.secret = secret;
-        var point = Secp256k1.G.multiply_bin(secret);
+    public PrivateKey(byte[] secret) {
+        this.secret_bytes = secret;
+        this.secret_n = new BigInteger(1,secret);
+
+        var point = Secp256k1.G.multiply_bin(secret_n);
         this.point = new S256Point(point);
     }
 
-    public Signature sign_random_k(BigInteger z) {
+    public PrivateKey(String secret) {
+        this.secret_bytes = Secp256k1.hash256(secret);
+        this.secret_n = new BigInteger(1,this.secret_bytes);
+        var point = Secp256k1.G.multiply_bin(this.secret_n);
+        this.point = new S256Point(point);
+    }
+
+    public Signature sign_random_k(byte[] z_bytes) {
         int len = Secp256k1.N.bitLength();
         // TODO: use deterministic k (RFC 6979)
         // https://tools.ietf.org/html/rfc6979#appendix-A.3
@@ -24,14 +34,16 @@ public class PrivateKey {
         if (k.compareTo(Secp256k1.N)>=0)
             k = k.mod(Secp256k1.N);
 
-        return sign(z,k);
+        return sign(z_bytes,k);
     }
 
-    public Signature sign_determinisk(BigInteger z) {
-        var k = deterministic_k(z);
-        return sign(z,k);
+    public Signature sign_determinisk(byte[] z_bytes) {
+        var k = deterministic_k(z_bytes);
+        return sign(z_bytes,k);
     }
-    public Signature sign(BigInteger z,BigInteger k) {
+    public Signature sign(byte[] z_bytes,BigInteger k) {
+
+        var z = new BigInteger(1,z_bytes);
 
         if (k.compareTo(Secp256k1.N)>=0)
             k = k.mod(Secp256k1.N);
@@ -41,7 +53,7 @@ public class PrivateKey {
         var k_inv = k.modPow(Secp256k1.N.subtract(BigInteger.TWO),Secp256k1.N);
         // s = (z+r*secret)*k_inv%N
 
-        var s = z.add(r.multiply(this.secret)).multiply(k_inv).mod(Secp256k1.N);
+        var s = z.add(r.multiply(this.secret_n)).multiply(k_inv).mod(Secp256k1.N);
         // s > N/2 (for malleability better use lower values)
         if (s.compareTo(Secp256k1.N.divide(BigInteger.TWO))>0) {
             s = Secp256k1.N.subtract(s);
@@ -49,7 +61,7 @@ public class PrivateKey {
         return new Signature(r,s);
     }
 
-    public BigInteger deterministic_k(BigInteger z){
+    public BigInteger deterministic_k(byte[] z_bytes){
         byte[] k = new byte[32];
         byte[] v = new byte[32];
         byte zero = 0x00;
@@ -57,21 +69,29 @@ public class PrivateKey {
         Arrays.fill(k,zero);
         Arrays.fill(v,one);
 
-        if (z.compareTo(Secp256k1.N)>0) {
-            z = z.subtract(Secp256k1.N);
+        var z_num = new BigInteger(1,z_bytes);
+
+        if (z_num.compareTo(Secp256k1.N)>0) {
+            z_num = z_num.subtract(Secp256k1.N);
         }
 
+        /*
         var z_bytes = new byte[32];
         var ztob = z.toByteArray();
-        for (int i=0;i<ztob.length;i++) {
-            z_bytes[31-i] = ztob[ztob.length-1-i];
+        for (int i=ztob.length-1;i>0;i--) {
+            z_bytes[i-1] = ztob[i];
         }
+        */
 
+        /*
         var secret_bytes = new byte[32];
-        var stob = this.secret.toByteArray();
-        for (int i=0;i<stob.length;i++) {
-            secret_bytes[31-i] = stob[stob.length-1-i];
+        // TODO: this results into 32 bytes (missing sign?)
+        var stob = this.secret_bytes.toByteArray();
+        // TODO REMOVE!!!
+        for (int i=stob.length-1;i>0;i--) {
+            secret_bytes[i-1] = stob[i];
         }
+        */
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.writeBytes(v);
