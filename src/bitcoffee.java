@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class bitcoffee {
     public static void main(String args[]) {
         if (args.length!=3) {
@@ -8,17 +10,17 @@ public class bitcoffee {
         if (args[0].equals("sign")) {
             var secret = args[1];
             var message = args[2];
-            var h_secret = Secp256k1.hash256(secret);
-            var h_message = Secp256k1.hash256(message);
+            var secret_bytes = Secp256k1.hash256(secret);
+            var secret_num = new BigInteger(1,secret_bytes);
+            var msg_bytes = Secp256k1.hash256(message);
+            var msg_num = new BigInteger(1,msg_bytes);
             System.out.println("Signing (secret:"+secret+" message:"+message+")");
 
-            /*
-            System.out.println("secret hash: "+h_secret.toString(16));
-            System.out.println("msg    hash: "+h_message.toString(16));
-            var pk = new PrivateKey(h_secret);
-            var signature = pk.sign_determinisk(h_message);
+            System.out.println("secret hash: "+secret_num.toString(16));
+            System.out.println("msg    hash: "+msg_num.toString(16));
+            var pk = new PrivateKey(secret_bytes);
+            var signature = pk.sign_determinisk(msg_bytes);
             System.out.println("signature: "+signature.toString());
-             */
         }
 
     }
