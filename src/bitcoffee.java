@@ -21,6 +21,8 @@ public class bitcoffee {
             var pk = new PrivateKey(secret_bytes);
             var signature = pk.sign_determinisk(msg_bytes);
             System.out.println("signature: "+signature.toString());
+
+
         }
 
     }

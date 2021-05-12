@@ -100,8 +100,6 @@ public class PrivateKey {
             v = HMAC.calcHmacSha256(k,v);
             var candidate = new BigInteger(1,v);
 
-            String hex_c = candidate.toString(16);
-
             if (candidate.compareTo(BigInteger.ONE)>=0 &&
                 candidate.compareTo(Secp256k1.N)<0)
             return candidate;

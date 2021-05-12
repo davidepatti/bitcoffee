@@ -32,4 +32,27 @@ public class S256Point extends FieldElementPoint{
         var total = Secp256k1.G.multiply_bin(u).add(this.multiply_bin(v));
         return  total.getX().getNum().equals(sig.r);
     }
+
+    public String getSerialX() {
+        String x = this.getX().getNum().toString(16);
+        // put missing leading zeros to reach 32bytes hex
+        while (x.length()<64) {
+            x = "0"+x;
+        }
+        return x;
+    }
+    public String getSerialY() {
+        String y = this.getY().getNum().toString(16);
+        // put missing leading zeros to reach 32bytes hex
+        while (y.length()<64) {
+            y = "0"+y;
+        }
+        return y;
+    }
+
+    public String sec() {
+
+        String unc = "04"+this.getSerialX()+this.getSerialY();
+        return unc;
+    }
 }
