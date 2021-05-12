@@ -8,7 +8,6 @@ public class TestSecp256k1 {
         test_message_signature();
         test_verify_signature();
         test_signing();
-
     }
 
     public static void test_signing() {

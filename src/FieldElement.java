@@ -11,13 +11,6 @@ public class FieldElement {
     public BigInteger getNum() {
         return this.num;
     }
-/*
-    public FieldElement() {
-        num = null;
-        prime  = null;
-    }
-
- */
 
     public FieldElement(BigInteger num, BigInteger prime) {
 
@@ -72,9 +65,6 @@ public class FieldElement {
 
         var num_res  = this.num.modPow(exp,this.prime);
 
-        //long num =  (long) Math.pow(base,(double)n);
-        //num = num%this.prime;
-
         return new FieldElement(num_res,this.prime);
     }
 
@@ -83,14 +73,6 @@ public class FieldElement {
         FieldElement res = this.multiply(other.pow(exp));
         return res;
     }
-
-    /*
-    public FieldElement negate() {
-        BigInteger minusone = BigInteger.ONE.negate();
-
-        return this.multiply(new FieldElement(minusone,this.prime));
-    }
-    */
 
     public FieldElement subtract(FieldElement other) {
         if (this.prime.compareTo(other.prime)!=0) {

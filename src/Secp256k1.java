@@ -24,13 +24,7 @@ public class Secp256k1 {
 
         byte[] hash = digester.digest(digester.digest(message.getBytes(StandardCharsets.UTF_8)));
 
-
         return hash;
-        // MODSHA
-        /*
-        BigInteger noHash = new BigInteger(1, hash);
-        return noHash;
-         */
     }
 
 

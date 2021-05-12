@@ -26,9 +26,6 @@ public class PrivateKey {
 
     public Signature sign_random_k(byte[] z_bytes) {
         int len = Secp256k1.N.bitLength();
-        // TODO: use deterministic k (RFC 6979)
-        // https://tools.ietf.org/html/rfc6979#appendix-A.3
-
         var k = new BigInteger(len,new Random());
 
         if (k.compareTo(Secp256k1.N)>=0)
@@ -38,6 +35,7 @@ public class PrivateKey {
     }
 
     public Signature sign_determinisk(byte[] z_bytes) {
+        // use deterministic k (RFC 6979)
         var k = deterministic_k(z_bytes);
         return sign(z_bytes,k);
     }
@@ -74,24 +72,6 @@ public class PrivateKey {
         if (z_num.compareTo(Secp256k1.N)>0) {
             z_num = z_num.subtract(Secp256k1.N);
         }
-
-        /*
-        var z_bytes = new byte[32];
-        var ztob = z.toByteArray();
-        for (int i=ztob.length-1;i>0;i--) {
-            z_bytes[i-1] = ztob[i];
-        }
-        */
-
-        /*
-        var secret_bytes = new byte[32];
-        // TODO: this results into 32 bytes (missing sign?)
-        var stob = this.secret_bytes.toByteArray();
-        // TODO REMOVE!!!
-        for (int i=stob.length-1;i>0;i--) {
-            secret_bytes[i-1] = stob[i];
-        }
-        */
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.writeBytes(v);
