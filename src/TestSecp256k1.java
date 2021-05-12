@@ -65,8 +65,8 @@ public class TestSecp256k1 {
         var u = z.multiply(s_inv.mod(Secp256k1.N));
         var v = r.multiply(s_inv.mod(Secp256k1.N));
         // u*G+v*point == r
-        System.out.print("Testing manual signature: ");
-        System.out.println("-->"+ Secp256k1.G.multiply_bin(u).add(point.multiply_bin(v)).getX().getNum().equals(r));
+        System.out.print("--> Testing manual signature: ");
+        System.out.println(Secp256k1.G.multiply_bin(u).add(point.multiply_bin(v)).getX().getNum().equals(r));
 
     }
 

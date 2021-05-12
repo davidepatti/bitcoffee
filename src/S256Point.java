@@ -4,11 +4,18 @@ public class S256Point extends FieldElementPoint{
     private final BigInteger x;
     private final BigInteger y;
 
+    /* TODO: check if can be disabled
     public S256Point(BigInteger x, BigInteger y) {
         super(new FieldElement(x,Secp256k1.p),
               new FieldElement(y,Secp256k1.p),
               new FieldElement(Secp256k1.a,Secp256k1.p),
               new FieldElement(Secp256k1.b,Secp256k1.p));
+        this.x = x;
+        this.y = y;
+    }
+     */
+    public S256Point(BigInteger x, BigInteger y) {
+        super(new S256Field(x),new S256Field(y), new S256Field(Secp256k1.a), new S256Field(Secp256k1.b));
         this.x = x;
         this.y = y;
     }
@@ -50,9 +57,13 @@ public class S256Point extends FieldElementPoint{
         return y;
     }
 
-    public String sec() {
-
-        String unc = "04"+this.getSerialX()+this.getSerialY();
-        return unc;
+    public String SEC65() {
+        return "04"+this.getSerialX()+this.getSerialY();
+    }
+    public String SEC33() {
+        if (this.getY().getNum().mod(BigInteger.TWO).equals(BigInteger.ZERO))
+            return "02"+this.getSerialX();
+        else
+            return "03"+this.getSerialX();
     }
 }

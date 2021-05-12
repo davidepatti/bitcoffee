@@ -92,7 +92,8 @@ public class FieldElement {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        //if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
         FieldElement that = (FieldElement) o;
         return num.equals(that.num) && prime.equals(that.prime);
     }

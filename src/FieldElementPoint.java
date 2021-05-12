@@ -145,7 +145,9 @@ public class FieldElementPoint {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+        // avoid problems with S256Field subclass
+        //if (o == null || getClass() != o.getClass()) return false;
         FieldElementPoint point = (FieldElementPoint) o;
         return Objects.equals(x, point.x) && Objects.equals(y, point.y) && Objects.equals(a, point.a) && Objects.equals(b, point.b);
     }

@@ -27,5 +27,4 @@ public class Secp256k1 {
         return hash;
     }
 
-
 }
