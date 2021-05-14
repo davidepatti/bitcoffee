@@ -66,4 +66,40 @@ public class S256Point extends FieldElementPoint{
         else
             return "03"+this.getSerialX();
     }
+
+    public S256Point parse(String sec) {
+        // TODO: is it necessary to convert to bytes?
+        var sec_n = new BigInteger(sec,16);
+        var sec_bytes = sec_n.toByteArray();
+        if (sec_bytes[0] == 4) {
+            var x = sec.substring(2,66);
+            var y = sec.substring(66,130);
+            var x_n = new BigInteger(x,16);
+            var y_n = new BigInteger(y,16);
+            return new S256Point(x_n,y_n);
+        }
+        boolean is_even = sec_bytes[0]==2;
+        var x_s = sec.substring(2,66);
+        var x = new S256Field(new BigInteger(x_s,16));
+        // x^3+b
+        var alpha = (x.pow(BigInteger.valueOf(3)).add(new S256Field(Secp256k1.b)));
+        var beta = new S256Field(alpha.getNum()).sqrt();
+
+        S256Field even_beta;
+        S256Field odd_beta;
+
+        if (beta.getNum().mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            even_beta = beta;
+            odd_beta = new S256Field(Secp256k1.p.subtract(beta.getNum()));
+        }
+        else {
+            even_beta = new S256Field(Secp256k1.p.subtract(beta.getNum()));
+            odd_beta = beta;
+        }
+
+        if (is_even)
+            return new S256Point(x.getNum(),even_beta.getNum());
+        else
+            return new S256Point(x.getNum(),odd_beta.getNum());
+    }
 }

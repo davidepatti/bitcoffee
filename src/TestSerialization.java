@@ -21,15 +21,23 @@ public class TestSerialization {
         e = new BigInteger("deadbeef12345",16);
         pk = new PrivateKey(e.toByteArray());
         target = "04d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f842efa762fd59961d0e99803c61edba8b3e3f7dc3a341836f97733aebf987121";
-        result = pk.point.SEC65();
-        System.out.println("--> Testing uncompresed SEC on e 0xdeadbeef12345:"+ target.equals(result));
-        System.out.println("res: "+result);
+        var sec65 = pk.point.SEC65();
+        System.out.println("--> Testing uncompressed SEC on e 0xdeadbeef12345:"+ target.equals(sec65));
+        System.out.println("res: "+sec65);
 
-        result = pk.point.SEC33();
+        var sec33 = pk.point.SEC33();
         target = "03d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f";
-        System.out.println("--> Testing compressed SEC on e 0xdeadbeef12345:"+ target.equals(result));
-        System.out.println("res: "+result);
+        System.out.println("--> Testing compressed SEC on e 0xdeadbeef12345:"+ target.equals(sec33));
+        System.out.println("res: "+sec33);
 
+        var parsed_point65 = pk.point.parse(sec65);
+        System.out.print("-->Testing parsed point from SEC65:");
+        System.out.println(parsed_point65);
+        System.out.println(pk.point.equals(parsed_point65));
 
+        var parsed_point = pk.point.parse(sec33);
+        System.out.print("-->Testing parsed point from compressed SEC33:");
+        System.out.println(parsed_point);
+        System.out.println(pk.point.equals(parsed_point));
     }
 }

@@ -5,7 +5,7 @@ public class S256Field extends FieldElement{
         super(n,Secp256k1.p);
     }
 
-    public FieldElement sqrt(S256Field element) {
-        return this.pow(Secp256k1.p.add(BigInteger.ONE).divide(BigInteger.valueOf(4)));
+    public S256Field sqrt() {
+        return new S256Field(this.pow(Secp256k1.p.add(BigInteger.ONE).divide(BigInteger.valueOf(4))).getNum());
     }
 }
