@@ -39,5 +39,19 @@ public class TestSerialization {
         System.out.print("-->Testing parsed point from compressed SEC33:");
         System.out.println(parsed_point);
         System.out.println(pk.point.equals(parsed_point));
+
+
+        var r = new BigInteger("37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6",16);
+        var s = new BigInteger("8ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec",16);
+        System.out.println("Tesing signature DER for ");
+        System.out.println("r="+r.toString(16));
+        System.out.println("s="+s.toString(16));
+        Signature sig = new Signature(r,s);
+        var der_str =sig.DER();
+        System.out.println(der_str);
+        String target_der = "3045022037206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c60221008ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec";
+        System.out.println(der_str.equals(target_der));
+
+
     }
 }
