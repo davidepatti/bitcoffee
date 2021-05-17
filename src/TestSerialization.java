@@ -10,6 +10,7 @@ public class TestSerialization {
         var result = pk.point.SEC65();
         System.out.println("-->Testing sec on e=5000: "+result.equals(target));
         System.out.println("res: "+result);
+        System.out.println("----------------------------------------------------------");
 
         e = BigInteger.valueOf(2018).pow(5);
         pk = new PrivateKey(e.toByteArray());
@@ -17,6 +18,7 @@ public class TestSerialization {
         result = pk.point.SEC65();
         System.out.println("-->Testing sec on e=2018^5: "+result.equals(target));
         System.out.println("res: "+result);
+        System.out.println("----------------------------------------------------------");
 
         e = new BigInteger("deadbeef12345",16);
         pk = new PrivateKey(e.toByteArray());
@@ -24,26 +26,28 @@ public class TestSerialization {
         var sec65 = pk.point.SEC65();
         System.out.println("--> Testing uncompressed SEC on e 0xdeadbeef12345:"+ target.equals(sec65));
         System.out.println("res: "+sec65);
+        System.out.println("----------------------------------------------------------");
 
         var sec33 = pk.point.SEC33();
         target = "03d90cd625ee87dd38656dd95cf79f65f60f7273b67d3096e68bd81e4f5342691f";
         System.out.println("--> Testing compressed SEC on e 0xdeadbeef12345:"+ target.equals(sec33));
         System.out.println("res: "+sec33);
+        System.out.println("----------------------------------------------------------");
 
         var parsed_point65 = pk.point.parseSEC(sec65);
-        System.out.print("-->Testing parsed point from SEC65:");
+        System.out.println("-->Testing parsed point from SEC65:");
         System.out.println(parsed_point65);
         System.out.println(pk.point.equals(parsed_point65));
+        System.out.println("----------------------------------------------------------");
 
         var parsed_point = pk.point.parseSEC(sec33);
-        System.out.print("-->Testing parsed point from compressed SEC33:");
+        System.out.println("-->Testing parsed point from compressed SEC33:");
         System.out.println(parsed_point);
         System.out.println(pk.point.equals(parsed_point));
-
-
+        System.out.println("----------------------------------------------------------");
         var r = new BigInteger("37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6",16);
         var s = new BigInteger("8ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec",16);
-        System.out.println("Tesing signature DER for ");
+        System.out.println("-->Testing signature DER for ");
         System.out.println("r="+r.toString(16));
         System.out.println("s="+s.toString(16));
         Signature sig = new Signature(r,s);
@@ -51,6 +55,8 @@ public class TestSerialization {
         System.out.println(der_str);
         String target_der = "3045022037206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c60221008ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec";
         System.out.println(der_str.equals(target_der));
+        System.out.println("----------------------------------------------------------");
+        System.out.println("-->Testing BASE58 encoding");
 
 
         String a1 = "7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d";
@@ -62,13 +68,14 @@ public class TestSerialization {
         String a3 = "c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6";
         System.out.println(CryptoKit.encodeBase58(CryptoKit.hexStringToByteArray(a3)));
 
-        System.out.println("Testing address:");
         var e_str = "12345deadbeef";
-        System.out.println("priv key hex:"+e_str);
+        System.out.println("----------------------------------------------------------");
+        System.out.println("--> Testing Address for priv key hex:"+e_str);
         var pk_addr = new PrivateKey(CryptoKit.hexStringToByteArray(e_str));
-        System.out.println("point:");
-        System.out.println(pk_addr.point);
-        System.out.println("address:");
-        System.out.println(""+pk_addr.point.getAddress());
+        var target_addr1 = "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1";
+        var res_addr1 = pk_addr.point.getAddress();
+        System.out.println("address:" + res_addr1);
+        System.out.println("--> Result:"+res_addr1.equals(target_addr1));;
+        System.out.println("----------------------------------------------------------");
     }
 }
