@@ -11,9 +11,9 @@ public class TestSecp256k1 {
     }
 
     public static void test_signing() {
-        var e_bytes = Secp256k1.hash256("secret");
+        var e_bytes = CryptoKit.hash256("secret");
         var e_num = new BigInteger(1,e_bytes);
-        var z_bytes = Secp256k1.hash256("Programming Bitcoin!");
+        var z_bytes = CryptoKit.hash256("Programming Bitcoin!");
         var z_num = new BigInteger(1,z_bytes);
 
         System.out.println("Signing message: Programming Bitcoin! with string secret");
@@ -76,10 +76,10 @@ public class TestSecp256k1 {
         String secret = "my secret";
         String message = "my message";
 
-        var e_bytes = Secp256k1.hash256(secret);
+        var e_bytes = CryptoKit.hash256(secret);
         var e_num = new BigInteger(1,e_bytes);
 
-        var z_bytes = Secp256k1.hash256(message);
+        var z_bytes = CryptoKit.hash256(message);
         var z_num = new BigInteger(1,z_bytes);
         var k = BigInteger.valueOf(1234567890);
         var r = Secp256k1.G.multiply_bin(k).getX().getNum();

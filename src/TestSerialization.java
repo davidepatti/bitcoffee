@@ -30,12 +30,12 @@ public class TestSerialization {
         System.out.println("--> Testing compressed SEC on e 0xdeadbeef12345:"+ target.equals(sec33));
         System.out.println("res: "+sec33);
 
-        var parsed_point65 = pk.point.parse(sec65);
+        var parsed_point65 = pk.point.parseSEC(sec65);
         System.out.print("-->Testing parsed point from SEC65:");
         System.out.println(parsed_point65);
         System.out.println(pk.point.equals(parsed_point65));
 
-        var parsed_point = pk.point.parse(sec33);
+        var parsed_point = pk.point.parseSEC(sec33);
         System.out.print("-->Testing parsed point from compressed SEC33:");
         System.out.println(parsed_point);
         System.out.println(pk.point.equals(parsed_point));
@@ -53,15 +53,22 @@ public class TestSerialization {
         System.out.println(der_str.equals(target_der));
 
 
-        var a1 = new BigInteger("7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d",16);
-        System.out.println(Secp256k1.encodeBase58(a1.toByteArray()));
+        String a1 = "7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d";
+        System.out.println(CryptoKit.encodeBase58(CryptoKit.hexStringToByteArray(a1)));
 
-        var a2 = new BigInteger("eff69ef2b1bd93a66ed5219add4fb51e11a840f404876325a1e8ffe0529a2c",16);
-        System.out.println(Secp256k1.encodeBase58(a2.toByteArray()));
+        String a2 = "eff69ef2b1bd93a66ed5219add4fb51e11a840f404876325a1e8ffe0529a2c";
+        System.out.println(CryptoKit.encodeBase58(CryptoKit.hexStringToByteArray(a2)));
 
-        var a3 = new BigInteger("c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6",16);
-        System.out.println(Secp256k1.encodeBase58(a3.toByteArray()));
+        String a3 = "c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab6";
+        System.out.println(CryptoKit.encodeBase58(CryptoKit.hexStringToByteArray(a3)));
 
-
+        System.out.println("Testing address:");
+        var e_str = "12345deadbeef";
+        System.out.println("priv key hex:"+e_str);
+        var pk_addr = new PrivateKey(CryptoKit.hexStringToByteArray(e_str));
+        System.out.println("point:");
+        System.out.println(pk_addr.point);
+        System.out.println("address:");
+        System.out.println(""+pk_addr.point.getAddress());
     }
 }
