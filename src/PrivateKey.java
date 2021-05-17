@@ -10,14 +10,29 @@ public class PrivateKey {
     public final S256Point point;
 
     public PrivateKey(byte[] secret) {
-        this.secret_bytes = secret;
         this.secret_n = new BigInteger(1,secret);
-
+        this.secret_bytes = CryptoKit.to32bytes(secret);
         var point = Secp256k1.G.multiply_bin(secret_n);
+        this.point = new S256Point(point);
+    }
+    public PrivateKey(BigInteger n) {
+        var secret_bin = CryptoKit.hexStringToByteArray(n.toString(16));
+        this.secret_bytes = CryptoKit.to32bytes(secret_bin);
+        this.secret_n = n;
+        var point = Secp256k1.G.multiply_bin(this.secret_n);
+        this.point = new S256Point(point);
+    }
+
+    public PrivateKey(long n) {
+        var secret_bin= CryptoKit.hexStringToByteArray(Long.toHexString(n));
+        this.secret_bytes = CryptoKit.to32bytes(secret_bin);
+        this.secret_n = BigInteger.valueOf(n);
+        var point = Secp256k1.G.multiply_bin(this.secret_n);
         this.point = new S256Point(point);
     }
 
     public PrivateKey(String secret) {
+        // no need to expand to 32bytes
         this.secret_bytes = CryptoKit.hash256(secret);
         this.secret_n = new BigInteger(1,this.secret_bytes);
         var point = Secp256k1.G.multiply_bin(this.secret_n);
@@ -112,6 +127,10 @@ public class PrivateKey {
         }
 
         return new BigInteger(z_bytes);
+    }
+
+    public byte[] wif(boolean compressed, boolean testnet) {
+        return null;
     }
 
 }

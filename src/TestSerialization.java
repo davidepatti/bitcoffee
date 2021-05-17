@@ -77,5 +77,15 @@ public class TestSerialization {
         System.out.println("address:" + res_addr1);
         System.out.println("--> Result:"+res_addr1.equals(target_addr1));;
         System.out.println("----------------------------------------------------------");
+
+        var e2_n = BigInteger.valueOf(2020).pow(5);
+        System.out.println("--> Testing Address for priv key :"+e2_n);
+        var pk_addr2 = new PrivateKey(e2_n);
+        var target_addr2 = "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH";
+        var res_addr2 = pk_addr2.point.getTestnetAddress();
+        System.out.println("address:" + res_addr2);
+        System.out.println("--> Result:"+res_addr2.equals(target_addr2));;
+        System.out.println("----------------------------------------------------------");
+
     }
 }

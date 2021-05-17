@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class CryptoKit {
     // TODO: REPLACE THIS whenever hex-> bytes
@@ -111,6 +112,16 @@ public class CryptoKit {
         throw new RuntimeException("Failed to calculate hmac-sha256", e);
       }
       return hmacSha256;
+    }
+
+    static public byte[] to32bytes(byte[] secret) {
+        byte[] bytes = new byte[32];
+        Arrays.fill(bytes,(byte)0);
+        var bos = new ByteArrayOutputStream();
+        for (int i=0;i<32-secret.length;i++)
+            bos.write(0);
+        bos.writeBytes(secret);
+        return bos.toByteArray();
     }
 }
 

@@ -108,26 +108,29 @@ public class S256Point extends FieldElementPoint{
     public byte[] getHash160() {
         String sec33 = this.SEC33();
         var sec_bytes = CryptoKit.hexStringToByteArray(sec33);
-        /*
-        var sec_n = new BigInteger(sec33,16);
-        var sec_bytes = sec_n.toByteArray();
-         */
         var hash = CryptoKit.hash160(sec_bytes);
         return hash;
     }
 
     public String getAddress() {
         var h160 = this.getHash160();
-        // TODO: encode this somewhere else
-        boolean testnet = false;
         byte prefix = 0;
-        if (testnet)
-            prefix = 0x6f;
         var bos = new ByteArrayOutputStream();
         bos.write(prefix);
         bos.writeBytes(h160);
         var res_bytes = bos.toByteArray();
         return CryptoKit.encodeBase58Checksum(res_bytes);
+    }
+
+    public String getTestnetAddress() {
+        var h160 = this.getHash160();
+        byte prefix = 0x6f;
+        var bos = new ByteArrayOutputStream();
+        bos.write(prefix);
+        bos.writeBytes(h160);
+        var res_bytes = bos.toByteArray();
+        return CryptoKit.encodeBase58Checksum(res_bytes);
+
     }
     
     

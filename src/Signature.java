@@ -15,6 +15,7 @@ public class Signature {
     }
 
     public String DER() {
+        // TODO: fix with CrytoKit
         // this will used as a string, for formatting der
         var r_string = this.r.toString(16);
         // this will used as bytes, to make comparisons etc..
