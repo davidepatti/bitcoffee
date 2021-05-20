@@ -129,8 +129,22 @@ public class PrivateKey {
         return new BigInteger(z_bytes);
     }
 
-    public byte[] wif(boolean compressed, boolean testnet) {
-        return null;
+    public String wif(boolean compressed, boolean testnet) {
+        byte prefix;
+        if (testnet)
+            prefix = (byte)0xef;
+        else
+            prefix = (byte)0x80;
+
+        var bos = new ByteArrayOutputStream();
+        bos.write(prefix);
+        bos.writeBytes(secret_bytes);
+        if (compressed)
+            bos.write((byte)0x01);
+
+        var toencode = bos.toByteArray();
+
+        return CryptoKit.encodeBase58Checksum(toencode);
     }
 
 }
