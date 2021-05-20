@@ -19,7 +19,7 @@ public class bitcoffee {
             System.out.println("secret hash: "+secret_num.toString(16));
             System.out.println("msg    hash: "+msg_num.toString(16));
             var pk = new PrivateKey(secret_bytes);
-            var signature = pk.sign_determinisk(msg_bytes);
+            var signature = pk.signDeterminisk(msg_bytes);
             System.out.println("signature: "+signature.toString());
 
 

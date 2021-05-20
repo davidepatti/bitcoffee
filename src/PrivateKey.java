@@ -12,14 +12,14 @@ public class PrivateKey {
     public PrivateKey(byte[] secret) {
         this.secret_n = new BigInteger(1,secret);
         this.secret_bytes = CryptoKit.to32bytes(secret);
-        var point = Secp256k1.G.multiply_bin(secret_n);
+        var point = Secp256k1.G.multiplyBin(secret_n);
         this.point = new S256Point(point);
     }
     public PrivateKey(BigInteger n) {
         var secret_bin = CryptoKit.hexStringToByteArray(n.toString(16));
         this.secret_bytes = CryptoKit.to32bytes(secret_bin);
         this.secret_n = n;
-        var point = Secp256k1.G.multiply_bin(this.secret_n);
+        var point = Secp256k1.G.multiplyBin(this.secret_n);
         this.point = new S256Point(point);
     }
 
@@ -27,7 +27,7 @@ public class PrivateKey {
         var secret_bin= CryptoKit.hexStringToByteArray(Long.toHexString(n));
         this.secret_bytes = CryptoKit.to32bytes(secret_bin);
         this.secret_n = BigInteger.valueOf(n);
-        var point = Secp256k1.G.multiply_bin(this.secret_n);
+        var point = Secp256k1.G.multiplyBin(this.secret_n);
         this.point = new S256Point(point);
     }
 
@@ -35,11 +35,11 @@ public class PrivateKey {
         // no need to expand to 32bytes
         this.secret_bytes = CryptoKit.hash256(secret);
         this.secret_n = new BigInteger(1,this.secret_bytes);
-        var point = Secp256k1.G.multiply_bin(this.secret_n);
+        var point = Secp256k1.G.multiplyBin(this.secret_n);
         this.point = new S256Point(point);
     }
 
-    public Signature sign_random_k(byte[] z_bytes) {
+    public Signature signRandomK(byte[] z_bytes) {
         int len = Secp256k1.N.bitLength();
         var k = new BigInteger(len,new Random());
 
@@ -49,9 +49,9 @@ public class PrivateKey {
         return sign(z_bytes,k);
     }
 
-    public Signature sign_determinisk(byte[] z_bytes) {
+    public Signature signDeterminisk(byte[] z_bytes) {
         // use deterministic k (RFC 6979)
-        var k = deterministic_k(z_bytes);
+        var k = getDeterministicK(z_bytes);
         return sign(z_bytes,k);
     }
     public Signature sign(byte[] z_bytes,BigInteger k) {
@@ -61,7 +61,7 @@ public class PrivateKey {
         if (k.compareTo(Secp256k1.N)>=0)
             k = k.mod(Secp256k1.N);
         // r = x coordinate of (k*G)
-        var r = (Secp256k1.G.multiply_bin(k)).getX().getNum();
+        var r = (Secp256k1.G.multiplyBin(k)).getX().getNum();
         // k_inv = k^(N-2)
         var k_inv = k.modPow(Secp256k1.N.subtract(BigInteger.TWO),Secp256k1.N);
         // s = (z+r*secret)*k_inv%N
@@ -74,7 +74,7 @@ public class PrivateKey {
         return new Signature(r,s);
     }
 
-    public BigInteger deterministic_k(byte[] z_bytes){
+    public BigInteger getDeterministicK(byte[] z_bytes){
         byte[] k = new byte[32];
         byte[] v = new byte[32];
         byte zero = 0x00;
@@ -129,7 +129,7 @@ public class PrivateKey {
         return new BigInteger(z_bytes);
     }
 
-    public String wif(boolean compressed, boolean testnet) {
+    public String getWIF(boolean compressed, boolean testnet) {
         byte prefix;
         if (testnet)
             prefix = (byte)0xef;

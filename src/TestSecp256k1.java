@@ -23,7 +23,7 @@ public class TestSecp256k1 {
         var pk = new PrivateKey(e_bytes);
         var signature_prefixed = pk.sign(z_bytes,prefixed_k);
         System.out.println("signature prefixed k ="+signature_prefixed);
-        var sig_detk = pk.deterministic_k(z_bytes);
+        var sig_detk = pk.getDeterministicK(z_bytes);
         var k = sig_detk;
         System.out.println("deterministic k = "+sig_detk.toString(16));
         var target_k = new BigInteger("e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e",16);
@@ -39,16 +39,16 @@ public class TestSecp256k1 {
         var b = new FieldElement(Secp256k1.b,Secp256k1.p);
         FieldElementPoint G = new FieldElementPoint(x,y,a,b);
         // this should be point at infinity
-        System.out.println(G.multiply_bin(Secp256k1.N));
+        System.out.println(G.multiplyBin(Secp256k1.N));
 
         // test 2: using static class member
         var G3 = Secp256k1.G;
-        var res = G3.multiply_bin(Secp256k1.N);
+        var res = G3.multiplyBin(Secp256k1.N);
         System.out.println(res);
 
         // test 3: using specialized subclass
         var G4 = new S256Point(Secp256k1.Gx,Secp256k1.Gy);
-        System.out.println(G4.multiply_bin(Secp256k1.N));
+        System.out.println(G4.multiplyBin(Secp256k1.N));
     }
 
     public static void test_manual_signature() {
@@ -66,7 +66,7 @@ public class TestSecp256k1 {
         var v = r.multiply(s_inv.mod(Secp256k1.N));
         // u*G+v*point == r
         System.out.print("--> Testing manual signature: ");
-        System.out.println(Secp256k1.G.multiply_bin(u).add(point.multiply_bin(v)).getX().getNum().equals(r));
+        System.out.println(Secp256k1.G.multiplyBin(u).add(point.multiplyBin(v)).getX().getNum().equals(r));
 
     }
 
@@ -82,10 +82,10 @@ public class TestSecp256k1 {
         var z_bytes = CryptoKit.hash256(message);
         var z_num = new BigInteger(1,z_bytes);
         var k = BigInteger.valueOf(1234567890);
-        var r = Secp256k1.G.multiply_bin(k).getX().getNum();
+        var r = Secp256k1.G.multiplyBin(k).getX().getNum();
         var k_inv = k.modPow(Secp256k1.N.subtract(BigInteger.TWO),Secp256k1.N);
         var s = ((z_num.add(r.multiply(e_num))).multiply(k_inv)).mod(Secp256k1.N);
-        var point2 = new S256Point(Secp256k1.G.multiply_bin(e_num));
+        var point2 = new S256Point(Secp256k1.G.multiplyBin(e_num));
 
         var x_target = new BigInteger("28d003eab2e428d11983f3e97c3fa0addf3b42740df0d211795ffb3be2f6c52",16);
         var y_target = new BigInteger("ae987b9ec6ea159c78cb2a937ed89096fb218d9e7594f02b547526d8cd309e2",16);

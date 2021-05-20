@@ -90,7 +90,7 @@ public class TestSerialization {
         var ewif = "54321deadbeef";
         System.out.println("--> Testing WIF for priv key hex:"+ewif);
         var pkwif = new PrivateKey(CryptoKit.hexStringToByteArray(ewif));
-        var reswif = pkwif.wif(true,false);
+        var reswif = pkwif.getWIF(true,false);
         var target_wif = "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a";
         System.out.println("WIF: "+reswif);
         System.out.println("-->Result:"+reswif.equals(target_wif));

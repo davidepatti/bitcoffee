@@ -37,7 +37,7 @@ public class S256Point extends FieldElementPoint{
         var s_inv = sig.s.modPow(Secp256k1.N.subtract(BigInteger.TWO), Secp256k1.N);
         var u = z.multiply(s_inv.mod(Secp256k1.N));
         var v = sig.r.multiply(s_inv.mod(Secp256k1.N));
-        var total = Secp256k1.G.multiply_bin(u).add(this.multiply_bin(v));
+        var total = Secp256k1.G.multiplyBin(u).add(this.multiplyBin(v));
         return  total.getX().getNum().equals(sig.r);
     }
 

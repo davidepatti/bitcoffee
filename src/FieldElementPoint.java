@@ -116,7 +116,7 @@ public class FieldElementPoint {
     }
 
     // TODO: check for G point optimisation page 61
-    public FieldElementPoint multiply_bin(BigInteger coefficient) {
+    public FieldElementPoint multiplyBin(BigInteger coefficient) {
 
         var result = new FieldElementPoint(null,null,this.a,this.b);
         var current = this;

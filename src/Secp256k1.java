@@ -1,8 +1,4 @@
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Secp256k1 {
     public static final BigInteger a = BigInteger.ZERO;
