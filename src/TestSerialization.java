@@ -94,5 +94,21 @@ public class TestSerialization {
         var target_wif = "KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgiuQJv1h8Ytr2S53a";
         System.out.println("WIF: "+reswif);
         System.out.println("-->Result:"+reswif.equals(target_wif));
+        System.out.println("----------------------------------------------------------");
+        System.out.println("Testing little endian to int");
+
+        var le_hex = "99c3980000000000";
+        var le_bytes = CryptoKit.hexStringToByteArray(le_hex);
+        var le_target = BigInteger.valueOf(10011545);
+        var le_n = CryptoKit.litteEndianBytesToInt(le_bytes);
+        System.out.println("Little Endian bytes:"+le_hex+" int result:"+le_n+ " -->"+le_n.equals(le_target));
+        //var res_letoba = CryptoKi
+        var le_hex2 = "a135ef0100000000";
+        var le_bytes2 = CryptoKit.hexStringToByteArray(le_hex2);
+        var le_target2 = BigInteger.valueOf(32454049);
+        var le_n2 = CryptoKit.litteEndianBytesToInt(le_bytes2);
+        System.out.println("Little Endian bytes:"+le_hex2+" int result:"+le_n2+ " -->"+le_n2.equals(le_target2));
+        System.out.println("----------------------------------------------------------");
+
     }
 }

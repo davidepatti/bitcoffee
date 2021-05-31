@@ -1,5 +1,4 @@
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -8,7 +7,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class CryptoKit {
     // TODO: REPLACE THIS whenever hex-> bytes
@@ -101,7 +99,7 @@ public class CryptoKit {
         return res_enc;
     }
 
-    static public byte[] calcHmacSha256(byte[] secretKey, byte[] message) {
+    public static byte[] calcHmacSha256(byte[] secretKey, byte[] message) {
       byte[] hmacSha256 = null;
       try {
         Mac mac = Mac.getInstance("HmacSHA256");
@@ -114,12 +112,46 @@ public class CryptoKit {
       return hmacSha256;
     }
 
-    static public byte[] to32bytes(byte[] secret) {
+    public static byte[] to32bytes(byte[] secret) {
         var bos = new ByteArrayOutputStream();
         for (int i=0;i<32-secret.length;i++)
             bos.write(0);
         bos.writeBytes(secret);
         return bos.toByteArray();
+    }
+
+    public static BigInteger litteEndianBytesToInt(byte[] bytes) {
+
+        var reversed_bytes = to32bytes(reverseBytes(bytes));
+        BigInteger little = new BigInteger(reversed_bytes);
+        return little;
+    }
+
+    public static byte[] intToBytesLittleEndian(long n) {
+        return intToLittleEndianBytes(BigInteger.valueOf(n));
+    }
+
+    public static byte[] intToLittleEndianBytes(BigInteger bi) {
+        byte[] extractedBytes = bi.toByteArray();
+        byte[] reversed = reverseBytes(to32bytes(extractedBytes));
+        return reversed;
+    }
+
+    public static BigInteger littleEndianBytesToInt(byte[] little_bytes) {
+        byte[] reversed = to32bytes(reverseBytes(little_bytes));
+        var n = new BigInteger(reversed);
+        return n;
+    }
+
+    public static byte[] reverseBytes(byte[] bytes)  {
+        int size = bytes.length;
+        byte[] reversed_bytes = new byte[size];
+
+        for (int i = 0; i< size; i++)
+            reversed_bytes[size-1-i] = bytes[i];
+
+        return reversed_bytes;
+
     }
 }
 
