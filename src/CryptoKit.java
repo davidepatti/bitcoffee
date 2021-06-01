@@ -2,7 +2,9 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -128,10 +130,10 @@ public class CryptoKit {
     }
 
     public static byte[] intToBytesLittleEndian(long n) {
-        return intToLittleEndianBytes(BigInteger.valueOf(n));
+        return intToBytesLittleEndian(BigInteger.valueOf(n));
     }
 
-    public static byte[] intToLittleEndianBytes(BigInteger bi) {
+    public static byte[] intToBytesLittleEndian(BigInteger bi) {
         byte[] extractedBytes = bi.toByteArray();
         byte[] reversed = reverseBytes(to32bytes(extractedBytes));
         return reversed;
@@ -152,6 +154,74 @@ public class CryptoKit {
 
         return reversed_bytes;
 
+    }
+
+    public static long readVarint(byte[] bytes) {
+        var bis = new ByteArrayInputStream(bytes);
+        byte[] buffer;
+        long n=0;
+
+        long i = bis.read();
+
+        try {
+            if (i==0xfd) {
+                buffer = bis.readNBytes(2);
+                n = litteEndianBytesToInt(buffer).longValue();
+                return n;
+            }
+            else if(i==0xfe) {
+                buffer = bis.readNBytes(4);
+                n = litteEndianBytesToInt(buffer).longValue();
+                return n;
+            }
+            else if(i==0xff) {
+                buffer = bis.readNBytes(8);
+                n = litteEndianBytesToInt(buffer).longValue();
+                return n;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return i;
+    }
+
+    public static byte[] encodeVarint(long i) {
+        byte[] buffer;
+        byte[] result;
+        byte prefix;
+        var bos = new ByteArrayOutputStream();
+        if (i<0xfd) {
+            // single byte, not need to reorder little endian
+            return BigInteger.valueOf(i).toByteArray();
+        }
+        else if (i<0x10000) {
+            buffer = intToBytesLittleEndian(i);
+            prefix = (byte)0xfd;
+            bos.write(prefix);
+            bos.write(buffer,0,2);
+            result = bos.toByteArray();
+            return result;
+        }
+        else if (i<0x100000000L) {
+            buffer = intToBytesLittleEndian(i);
+            prefix = (byte)0xfe;
+            bos.write(prefix);
+            bos.write(buffer,0,4);
+            result = bos.toByteArray();
+            return result;
+        }
+        // check if less than 2^64
+        // cannot use long
+        //else if (i<new BigInteger("10000000000000000",16).longValue()) {
+        else if (BigInteger.valueOf(i).compareTo(BigInteger.TWO.pow(64))<0) {
+            buffer = intToBytesLittleEndian(i);
+            prefix = (byte)0xff;
+            bos.write(prefix);
+            bos.write(buffer,0,8);
+            result = bos.toByteArray();
+            return result;
+        }
+        return null;
     }
 }
 
