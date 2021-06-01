@@ -1,3 +1,5 @@
+import org.bouncycastle.util.encoders.Hex;
+
 import java.math.BigInteger;
 
 public class TestSerialization {
@@ -109,6 +111,18 @@ public class TestSerialization {
         var le_n2 = CryptoKit.litteEndianBytesToInt(le_bytes2);
         System.out.println("Little Endian bytes:"+le_hex2+" int result:"+le_n2+ " -->"+le_n2.equals(le_target2));
         System.out.println("----------------------------------------------------------");
+        System.out.println("Testing int to little endian");
+
+        var le_bytes3 = CryptoKit.intToBytesLittleEndian(BigInteger.ONE);
+        var les3 = Hex.toHexString(le_bytes3);
+        System.out.println(les3);
+        var nle = BigInteger.valueOf(10011545);
+        var leb3 = CryptoKit.intToBytesLittleEndian(nle);
+        les3 = Hex.toHexString(leb3);
+        System.out.println(les3);
+        System.out.println("Result:"+les3.equals("99c3980000000000000000000000000000000000000000000000000000000000"));
+
+
 
     }
 }
