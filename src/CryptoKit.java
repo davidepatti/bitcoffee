@@ -156,11 +156,9 @@ public class CryptoKit {
 
     }
 
-    public static long readVarint(byte[] bytes) {
-        var bis = new ByteArrayInputStream(bytes);
+    public static long readVarint(ByteArrayInputStream bis) {
         byte[] buffer;
         long n=0;
-
         long i = bis.read();
 
         try {
@@ -183,6 +181,12 @@ public class CryptoKit {
             e.printStackTrace();
         }
         return i;
+
+    }
+
+    public static long readVarint(byte[] bytes) {
+        var bis = new ByteArrayInputStream(bytes);
+        return readVarint(bis);
     }
 
     public static byte[] encodeVarint(long i) {
