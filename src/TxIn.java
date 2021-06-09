@@ -1,12 +1,13 @@
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public class TxIn {
-    String prev_tx;
-    int prev_index;
-    boolean script_sig;
-    int sequence;
+    byte[] prev_tx;
+    long prev_index;
+    byte[] script_sig;
+    long sequence;
 
-    public TxIn(String prev_tx, int prev_index, boolean script_sig, int sequence) {
+    public TxIn(byte[] prev_tx, long prev_index, byte[] script_sig, long sequence) {
         this.prev_tx = prev_tx;
         this.prev_index = prev_index;
         this.script_sig = script_sig;
@@ -26,8 +27,21 @@ public class TxIn {
 
     // parses the stream to create a TxIn instance
     public static TxIn parse(ByteArrayInputStream bis) {
+        // TODO: check whether long/int types matter
+        TxIn tx_input = null;
+        try {
+            var prev_tx = bis.readNBytes(32);
+            var prev_index = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
+            var script_sig_len = (int)CryptoKit.readVarint(bis);
+            var script_sig = bis.readNBytes(script_sig_len);
+            var sequence = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
+            tx_input = new TxIn(prev_tx,prev_index,script_sig,sequence);
 
-        return (TxIn) null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return tx_input;
     }
 
 

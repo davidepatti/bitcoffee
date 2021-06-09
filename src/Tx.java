@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Tx {
-    String version;
+    byte[] version;
     ArrayList<TxIn> tx_ins;
     ArrayList<String> tx_outs;
     long locktime;
     boolean testnet;
 
-    public Tx(String version, ArrayList<TxIn> tx_ins, ArrayList<String> tx_outs, long locktime, boolean testnet) {
+    public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<String> tx_outs, long locktime, boolean testnet) {
         this.version = version;
         this.tx_ins = tx_ins;
         this.tx_outs = tx_outs;
@@ -32,24 +32,26 @@ public class Tx {
 
     // parses a stream to construct a Tx instance
     static public Tx parse(byte[] serialization) {
-        byte[] version;
 
         var bis = new ByteArrayInputStream(serialization);
+
+        Tx tx = null;
+
         try {
-            version = bis.readNBytes(4);
+            var version = bis.readNBytes(4);
+            var num_inputs = CryptoKit.readVarint(bis);
+            ArrayList<TxIn> tx_ins = new ArrayList<>();
+
+            for (int i=0;i<num_inputs;i++) {
+                tx_ins.add(TxIn.parse(bis));
+            }
+
+            tx = new Tx(version,tx_ins,null,0, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        var num_inputs = CryptoKit.readVarint(bis);
 
-        ArrayList<TxIn> tx_ins = new ArrayList<>();
-
-        for (int i=0;i<num_inputs;i++) {
-
-            tx_ins.add(TxIn.parse(bis));
-        }
-
-        return (Tx)null;
+        return tx;
     }
 
     @Override
