@@ -1,4 +1,7 @@
+import org.bouncycastle.util.encoders.Hex;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class TxIn {
@@ -16,12 +19,10 @@ public class TxIn {
 
     @Override
     public String toString() {
-        return "TxIn{" +
-                "prev_tx='" + prev_tx + '\'' +
-                ", prev_index=" + prev_index +
-                ", script_sig=" + script_sig +
-                ", sequence=" + sequence +
-                '}';
+        String prev_tx_str = Hex.toHexString(prev_tx);
+        String script_sig_str = Hex.toHexString(script_sig);
+
+        return "\nTxIn{" + "prev_tx='" + prev_tx_str + '\'' + ", prev_index=" + prev_index + ", script_sig=" + script_sig_str + ", sequence=" + sequence + '}';
     }
 
 
@@ -42,6 +43,28 @@ public class TxIn {
         }
 
         return tx_input;
+    }
+
+    public byte[] serialize() {
+        var bos = new ByteArrayOutputStream();
+        Script script = new Script(this.script_sig);
+
+        try {
+            bos.write(prev_tx);
+            byte[] buf = CryptoKit.intToBytesLittleEndian(prev_index);
+            // we need only the first 4 bytes of buf
+            bos.write(buf,0,4);
+            bos.write(script.serialize());
+            buf = CryptoKit.intToBytesLittleEndian(sequence);
+            // we need only the first 4 bytes of buf
+            bos.write(buf,0,4);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bos.toByteArray();
     }
 
 

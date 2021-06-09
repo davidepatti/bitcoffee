@@ -7,11 +7,11 @@ import java.util.ArrayList;
 public class Tx {
     byte[] version;
     ArrayList<TxIn> tx_ins;
-    ArrayList<String> tx_outs;
+    ArrayList<TxOut> tx_outs;
     long locktime;
     boolean testnet;
 
-    public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<String> tx_outs, long locktime, boolean testnet) {
+    public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
         this.version = version;
         this.tx_ins = tx_ins;
         this.tx_outs = tx_outs;
@@ -40,28 +40,39 @@ public class Tx {
         try {
             var version = bis.readNBytes(4);
             var num_inputs = CryptoKit.readVarint(bis);
-            ArrayList<TxIn> tx_ins = new ArrayList<>();
+            ArrayList<TxIn> inputs = new ArrayList<>();
+            ArrayList<TxOut> outputs = new ArrayList<>();
 
             for (int i=0;i<num_inputs;i++) {
-                tx_ins.add(TxIn.parse(bis));
+                inputs.add(TxIn.parse(bis));
             }
 
-            tx = new Tx(version,tx_ins,null,0, true);
+            var num_outputs = CryptoKit.readVarint(bis);
+            for (int i=0;i<num_outputs;i++) {
+                outputs.add(TxOut.parse(bis));
+            }
+
+            var locktime = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
+
+
+            tx = new Tx(version,inputs,outputs,locktime, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         return tx;
     }
 
     @Override
     public String toString() {
-        return "Tx{" +
-                "version='" + version + '\'' +
-                ", tx_ins=" + tx_ins +
-                ", tx_outs=" + tx_outs +
-                ", locktime=" + locktime +
-                ", testnet=" + testnet +
+        String version_str = Hex.toHexString(version);
+        return "Tx{\n" +
+                "version='" + version_str + '\'' +
+                ",\n tx_ins=" + tx_ins +
+                ",\n tx_outs=" + tx_outs +
+                ",\n locktime=" + locktime +
+                ",\n testnet=" + testnet +
                 '}';
     }
 }
