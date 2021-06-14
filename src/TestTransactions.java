@@ -55,9 +55,13 @@ public class TestTransactions {
 "e7520d55feffffff0251430f00000000001976a914ab0c0b2e98b1ab6dbf67d4750b0a56244948"+
 "a87988ac005a6202000000001976a9143c82d7df364eb6c75be8c80df2b3eda8db57397088ac46430600";
 
-        Tx tx = Tx.parse(CryptoKit.hexStringToByteArray(trans));
+        Tx tx = Tx.parse(CryptoKit.hexStringToByteArray(trans),false);
         System.out.println("Transaction parsed:");
         System.out.println(tx);
 
+        TxFetcher.fetch("716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c",false,true);
+
+        System.out.println("FEE:");
+        System.out.println(tx.calculateFee());
     }
 }

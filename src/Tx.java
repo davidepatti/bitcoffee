@@ -7,11 +7,10 @@ import java.util.ArrayList;
 
 public class Tx {
     private final byte[] version;
-    private final ArrayList<TxIn> tx_ins;
-    private final ArrayList<TxOut> tx_outs;
+    public final ArrayList<TxIn> tx_ins;
+    public final ArrayList<TxOut> tx_outs;
     private final long locktime;
     private final boolean testnet;
-
     private final byte [] serialized;
 
     public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
@@ -34,7 +33,7 @@ public class Tx {
 
 
     // parses a stream to construct a Tx instance
-    static public Tx parse(byte[] serialization) {
+    static public Tx parse(byte[] serialization, boolean testnet) {
 
         var bis = new ByteArrayInputStream(serialization);
 
@@ -58,7 +57,7 @@ public class Tx {
             var locktime = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
 
 
-            tx = new Tx(version,inputs,outputs,locktime, true);
+            tx = new Tx(version,inputs,outputs,locktime, testnet);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,5 +105,21 @@ public class Tx {
                 ",\n locktime=" + locktime +
                 ",\n testnet=" + testnet +
                 '}';
+    }
+
+    public long calculateFee() {
+        // in satoshis
+        long total_in = 0;
+        long total_out = 0;
+        for (TxIn txin: tx_ins) {
+            total_in+= txin.getValue(false);
+        }
+
+        for (TxOut txout: tx_outs) {
+            total_out+= txout.getAmount();
+        }
+
+        long fee = total_in-total_out;
+        return fee;
     }
 }

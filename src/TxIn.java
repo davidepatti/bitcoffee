@@ -74,5 +74,20 @@ public class TxIn {
         return serialized;
     }
 
+    public Tx fetchTx(boolean testnet) {
+        return TxFetcher.fetch(Hex.toHexString(this.prev_tx),testnet,false);
+    }
+
+    public long getValue(boolean testnet) {
+        var tx = fetchTx(testnet);
+        long amount = tx.tx_outs.get((int)this.prev_index).getAmount();
+        return amount;
+    }
+
+    public byte[] getScriptPubKey(boolean testnet) {
+        var tx = fetchTx(testnet);
+        return tx.tx_outs.get((int)this.prev_index).getScriptPubkey();
+    }
+
 
 }

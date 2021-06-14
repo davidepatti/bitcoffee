@@ -62,4 +62,12 @@ public class TxOut {
     public byte[] getSerialized() {
         return serialized;
     }
+
+    public long getAmount() {
+        return amount;
+    }
+
+    public byte[] getScriptPubkey() {
+        return script_pubkey;
+    }
 }
