@@ -113,11 +113,11 @@ public class TestSerialization {
         System.out.println("----------------------------------------------------------");
         System.out.println("Testing int to little endian");
 
-        var le_bytes3 = CryptoKit.intToBytesLittleEndian(BigInteger.ONE);
+        var le_bytes3 = CryptoKit.intToLittleEndianBytes(BigInteger.ONE);
         var les3 = Hex.toHexString(le_bytes3);
         System.out.println(les3);
         var nle = BigInteger.valueOf(10011545);
-        var leb3 = CryptoKit.intToBytesLittleEndian(nle);
+        var leb3 = CryptoKit.intToLittleEndianBytes(nle);
         les3 = Hex.toHexString(leb3);
         System.out.println(les3);
         System.out.println("Result:"+les3.equals("99c3980000000000000000000000000000000000000000000000000000000000"));

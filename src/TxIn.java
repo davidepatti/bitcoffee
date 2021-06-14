@@ -5,16 +5,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class TxIn {
-    byte[] prev_tx;
-    long prev_index;
-    byte[] script_sig;
-    long sequence;
+    private final byte[] prev_tx;
+    private final long prev_index;
+    private final byte[] script_sig;
+    private final long sequence;
+    private final byte[] serialized;
 
     public TxIn(byte[] prev_tx, long prev_index, byte[] script_sig, long sequence) {
         this.prev_tx = prev_tx;
         this.prev_index = prev_index;
         this.script_sig = script_sig;
         this.sequence = sequence;
+
+        this.serialized = this.serialize();
     }
 
     @Override
@@ -45,17 +48,17 @@ public class TxIn {
         return tx_input;
     }
 
-    public byte[] serialize() {
+    private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
         Script script = new Script(this.script_sig);
 
         try {
             bos.write(prev_tx);
-            byte[] buf = CryptoKit.intToBytesLittleEndian(prev_index);
+            byte[] buf = CryptoKit.intToLittleEndianBytes(prev_index);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
             bos.write(script.serialize());
-            buf = CryptoKit.intToBytesLittleEndian(sequence);
+            buf = CryptoKit.intToLittleEndianBytes(sequence);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
 
@@ -65,6 +68,10 @@ public class TxIn {
         }
 
         return bos.toByteArray();
+    }
+
+    public byte[] getSerialized() {
+        return serialized;
     }
 
 

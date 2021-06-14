@@ -3,16 +3,17 @@ import org.bouncycastle.util.encoders.Hex;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class TxOut {
     // TODO check in general for final private in other places
     final private long amount;
     final private byte[] script_pubkey;
+    final private byte[] serialized;
 
     public TxOut(long amount, byte[] script_pubkey) {
         this.amount = amount;
         this.script_pubkey = script_pubkey;
+        this.serialized = serialize();
     }
 
     @Override
@@ -20,6 +21,8 @@ public class TxOut {
         String script_str = Hex.toHexString(script_pubkey);
         return "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + '}';
     }
+
+
 
     public static TxOut parse(ByteArrayInputStream bis) {
         TxOut txout = null;
@@ -37,10 +40,10 @@ public class TxOut {
         return txout;
     }
 
-    public byte[] serialize() {
+    private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
-        byte[] buf = CryptoKit.intToBytesLittleEndian(amount);
+        byte[] buf = CryptoKit.intToLittleEndianBytes(amount);
 
         Script script = new Script(script_pubkey);
         // buf is 32 bytes little endian, we need only the first 8
@@ -54,5 +57,9 @@ public class TxOut {
 
         return bos.toByteArray();
 
+    }
+
+    public byte[] getSerialized() {
+        return serialized;
     }
 }

@@ -129,11 +129,11 @@ public class CryptoKit {
         return little;
     }
 
-    public static byte[] intToBytesLittleEndian(long n) {
-        return intToBytesLittleEndian(BigInteger.valueOf(n));
+    public static byte[] intToLittleEndianBytes(long n) {
+        return intToLittleEndianBytes(BigInteger.valueOf(n));
     }
 
-    public static byte[] intToBytesLittleEndian(BigInteger bi) {
+    public static byte[] intToLittleEndianBytes(BigInteger bi) {
         byte[] extractedBytes = bi.toByteArray();
         byte[] reversed = reverseBytes(to32bytes(extractedBytes));
         return reversed;
@@ -199,7 +199,7 @@ public class CryptoKit {
             return BigInteger.valueOf(i).toByteArray();
         }
         else if (i<0x10000) {
-            buffer = intToBytesLittleEndian(i);
+            buffer = intToLittleEndianBytes(i);
             prefix = (byte)0xfd;
             bos.write(prefix);
             bos.write(buffer,0,2);
@@ -207,7 +207,7 @@ public class CryptoKit {
             return result;
         }
         else if (i<0x100000000L) {
-            buffer = intToBytesLittleEndian(i);
+            buffer = intToLittleEndianBytes(i);
             prefix = (byte)0xfe;
             bos.write(prefix);
             bos.write(buffer,0,4);
@@ -218,7 +218,7 @@ public class CryptoKit {
         // cannot use long
         //else if (i<new BigInteger("10000000000000000",16).longValue()) {
         else if (BigInteger.valueOf(i).compareTo(BigInteger.TWO.pow(64))<0) {
-            buffer = intToBytesLittleEndian(i);
+            buffer = intToLittleEndianBytes(i);
             prefix = (byte)0xff;
             bos.write(prefix);
             bos.write(buffer,0,8);

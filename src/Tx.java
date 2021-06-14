@@ -1,15 +1,18 @@
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class Tx {
-    byte[] version;
-    ArrayList<TxIn> tx_ins;
-    ArrayList<TxOut> tx_outs;
-    long locktime;
-    boolean testnet;
+    private final byte[] version;
+    private final ArrayList<TxIn> tx_ins;
+    private final ArrayList<TxOut> tx_outs;
+    private final long locktime;
+    private final boolean testnet;
+
+    private final byte [] serialized;
 
     public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
         this.version = version;
@@ -17,6 +20,7 @@ public class Tx {
         this.tx_outs = tx_outs;
         this.locktime = locktime;
         this.testnet = testnet;
+        this.serialized = serialize();
     }
 
     public String getId() {
@@ -25,8 +29,7 @@ public class Tx {
     }
 
     public byte[] hash() {
-        byte[] serialized = CryptoKit.hexStringToByteArray("ffaa");
-        return CryptoKit.hash256(serialized);
+        return CryptoKit.hash256(this.serialized);
     }
 
 
@@ -62,6 +65,35 @@ public class Tx {
 
 
         return tx;
+    }
+
+    private byte[] serialize() {
+        var bos = new ByteArrayOutputStream();
+
+        try {
+            bos.write(version);
+
+            int txins_len = 0;
+            for (TxIn txin: tx_ins)
+                txins_len+= txin.getSerialized().length;
+            bos.write(CryptoKit.encodeVarint(txins_len));
+            for (TxIn txin: tx_ins)
+                bos.write(txin.getSerialized());
+
+            int txouts_len = 0;
+            for (TxOut txout: tx_outs)
+                txouts_len+= txout.getSerialized().length;
+            bos.write(CryptoKit.encodeVarint(txouts_len));
+            for (TxOut txout: tx_outs)
+                bos.write(txout.getSerialized());
+
+            byte[] buf = CryptoKit.intToLittleEndianBytes(this.locktime);
+            bos.write(buf,0,4);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bos.toByteArray();
     }
 
     @Override
