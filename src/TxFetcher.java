@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 public class TxFetcher {
 
-    static HashMap<String,Tx> cache;
+    static HashMap<String,Tx> cache = new HashMap<>();
 
     public static String getURL(boolean testnet) {
 
@@ -40,20 +40,27 @@ public class TxFetcher {
                 in.close();
 
                 byte[] raw  = CryptoKit.hexStringToByteArray(content.toString());
-                // no inputs, only coinbase?
+                // check if bytes 4,5 are 00 01 for segwit
                 if (raw[4] ==0) {
                     var bos = new ByteArrayOutputStream();
                     bos.write(raw,0,4);
                     bos.write(raw,6,raw.length-6);
                     raw = bos.toByteArray();
                     tx = Tx.parse(raw,testnet);
+                    //throw new Exception("FIX locktime pag 101");
                 }
-                tx = Tx.parse(raw,testnet);
+                else
+                    tx = Tx.parse(raw,testnet);
+
+                var serial = tx.getSerialString();
 
                 if (!tx.getId().equals(tx_id)) {
+                    System.out.println("WARNING:");
+                    System.out.println("*******************************************");
                     System.out.println("tx.getID:" + tx.getId());
                     System.out.println("tx_id:" + tx_id);
-                    throw new Exception("my exception");
+                    System.out.println("*******************************************");
+                    //throw new Exception("my exception");
                 }
             }
 

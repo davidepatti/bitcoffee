@@ -2,6 +2,7 @@ import org.bouncycastle.util.encoders.Hex;
 
 public class TestTransactions {
     public static void main(String args[]) {
+        System.out.println("-----------------------------------------------------------");
         System.out.println("Testing varint");
         String hex_string = "64";
         long target_n = 100;
@@ -36,6 +37,7 @@ public class TestTransactions {
         result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
         System.out.println("Result read:"+(target_n==result));
         System.out.println("Result encode:"+hex_string.equals(Hex.toHexString(CryptoKit.encodeVarint(target_n))));
+        System.out.println("-----------------------------------------------------------");
 
         String trans = "010000000456919960ac691763688d3d3bcea9ad6ecaf875df5339e148a1fc61c6ed7a069e0100"+
 "00006a47304402204585bcdef85e6b1c6af5c2669d4830ff86e42dd205c0e089bc2a821657e951"+
@@ -58,10 +60,16 @@ public class TestTransactions {
         Tx tx = Tx.parse(CryptoKit.hexStringToByteArray(trans),false);
         System.out.println("Transaction parsed:");
         System.out.println(tx);
+        System.out.println("-----------------------------------------------------------");
 
-        TxFetcher.fetch("716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c",false,true);
+        String target_tx_id = "716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c";
+        System.out.println("Testing fetching tx_id:"+target_tx_id);
+        var tx_result = TxFetcher.fetch(target_tx_id,false,true);
+        System.out.println("Tx result:");
+        System.out.println(tx_result);
+
 
         System.out.println("FEE:");
-        System.out.println(tx.calculateFee());
+        //System.out.println(tx.calculateFee());
     }
 }

@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Tx {
-    private final byte[] version;
+    private final int version;
     public final ArrayList<TxIn> tx_ins;
     public final ArrayList<TxOut> tx_outs;
     private final long locktime;
     private final boolean testnet;
     private final byte [] serialized;
 
-    public Tx(byte[] version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
+    public Tx(int version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
         this.version = version;
         this.tx_ins = tx_ins;
         this.tx_outs = tx_outs;
@@ -35,43 +35,50 @@ public class Tx {
     // parses a stream to construct a Tx instance
     static public Tx parse(byte[] serialization, boolean testnet) {
 
+        // read serialized version into the bytestream to create a corresponding tx
         var bis = new ByteArrayInputStream(serialization);
 
         Tx tx = null;
 
         try {
-            var version = bis.readNBytes(4);
+            var version = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+
+            // TODO: check whether varint should be little endian (see the other)
             var num_inputs = CryptoKit.readVarint(bis);
             ArrayList<TxIn> inputs = new ArrayList<>();
-            ArrayList<TxOut> outputs = new ArrayList<>();
 
             for (int i=0;i<num_inputs;i++) {
                 inputs.add(TxIn.parse(bis));
             }
 
             var num_outputs = CryptoKit.readVarint(bis);
+            ArrayList<TxOut> outputs = new ArrayList<>();
             for (int i=0;i<num_outputs;i++) {
                 outputs.add(TxOut.parse(bis));
             }
 
             var locktime = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
 
-
             tx = new Tx(version,inputs,outputs,locktime, testnet);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
         return tx;
+    }
+
+    public String getSerialString() {
+        return Hex.toHexString(this.serialized);
     }
 
     private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
         try {
-            bos.write(version);
+            byte[] buf = CryptoKit.intToLittleEndianBytes(version);
+            bos.write(buf,0,4);
 
+            // TODO: check whether varint should be little endian (see the other)
             int txins_len = 0;
             for (TxIn txin: tx_ins)
                 txins_len+= txin.getSerialized().length;
@@ -86,7 +93,7 @@ public class Tx {
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 
-            byte[] buf = CryptoKit.intToLittleEndianBytes(this.locktime);
+            buf = CryptoKit.intToLittleEndianBytes(this.locktime);
             bos.write(buf,0,4);
 
         } catch (IOException e) {
@@ -97,9 +104,8 @@ public class Tx {
 
     @Override
     public String toString() {
-        String version_str = Hex.toHexString(version);
         return "Tx{\n" +
-                "version='" + version_str + '\'' +
+                "version='" + version + '\'' +
                 ",\n tx_ins=" + tx_ins +
                 ",\n tx_outs=" + tx_outs +
                 ",\n locktime=" + locktime +
