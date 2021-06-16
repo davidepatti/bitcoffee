@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.http.HttpRequest;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -24,6 +25,7 @@ public class TxFetcher {
     }
 
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
+        System.out.println("DEBUG: fetching tx_id "+tx_id);
         Tx tx = null;
 
         try {
@@ -47,12 +49,14 @@ public class TxFetcher {
                     bos.write(raw,6,raw.length-6);
                     raw = bos.toByteArray();
                     tx = Tx.parse(raw,testnet);
-                    //throw new Exception("FIX locktime pag 101");
+                    byte[] lock_bytes = Arrays.copyOfRange(raw,raw.length-4,raw.length);
+                    tx.updateLockTime(CryptoKit.litteEndianBytesToInt(lock_bytes).longValue());
                 }
                 else
                     tx = Tx.parse(raw,testnet);
 
                 var serial = tx.getSerialString();
+                System.out.println("DEBUG: found transaction "+serial);
 
                 if (!tx.getId().equals(tx_id)) {
                     System.out.println("WARNING:");

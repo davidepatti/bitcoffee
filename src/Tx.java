@@ -9,9 +9,9 @@ public class Tx {
     private final int version;
     public final ArrayList<TxIn> tx_ins;
     public final ArrayList<TxOut> tx_outs;
-    private final long locktime;
+    private long locktime;
     private final boolean testnet;
-    private final byte [] serialized;
+    private byte [] serialized;
 
     public Tx(int version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
         this.version = version;
@@ -19,6 +19,11 @@ public class Tx {
         this.tx_outs = tx_outs;
         this.locktime = locktime;
         this.testnet = testnet;
+        this.serialized = serialize();
+    }
+
+    public void updateLockTime(long locktime) {
+        this.locktime = locktime;
         this.serialized = serialize();
     }
 

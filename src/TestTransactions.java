@@ -70,6 +70,6 @@ public class TestTransactions {
 
 
         System.out.println("FEE:");
-        //System.out.println(tx.calculateFee());
+        System.out.println(tx.calculateFee());
     }
 }
