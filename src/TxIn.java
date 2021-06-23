@@ -58,9 +58,9 @@ public class TxIn {
 
     private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
-        Script script = new Script(this.script_sig);
 
         try {
+            Script script = Script.parse(this.script_sig);
             // when serializing, convert to little endian
             // 32 bytes hash of the previous tx, in little endian
             bos.write(CryptoKit.reverseBytes(prev_tx));

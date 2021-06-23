@@ -45,9 +45,9 @@ public class TxOut {
 
         byte[] buf = CryptoKit.intToLittleEndianBytes(amount);
 
-        Script script = new Script(script_pubkey);
         // buf is 32 bytes little endian, we need only the first 8
         try {
+            Script script = Script.parse(script_pubkey);
             bos.write(buf,0,8);
             bos.write(script.serialize());
 

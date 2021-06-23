@@ -57,6 +57,9 @@ public class TestTransactions {
 "e7520d55feffffff0251430f00000000001976a914ab0c0b2e98b1ab6dbf67d4750b0a56244948"+
 "a87988ac005a6202000000001976a9143c82d7df364eb6c75be8c80df2b3eda8db57397088ac46430600";
 
+
+
+        /* TODO: re-enable
         Tx tx = Tx.parse(CryptoKit.hexStringToByteArray(trans),false);
         System.out.println("Transaction parsed:");
         System.out.println(tx);
@@ -71,5 +74,6 @@ public class TestTransactions {
 
         System.out.println("FEE:");
         System.out.println(tx.calculateFee());
+        */
     }
 }
