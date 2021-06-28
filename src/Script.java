@@ -88,6 +88,15 @@ public class Script {
                 System.out.println("Script parse pushing: "+cmd);
                 count+=data_len+2;
             }
+            // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
+            else if (current_byte==78) {
+                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+                var cmd = new ScriptCmd(OpCode.OP_PUSHDATA4, bis.readNBytes(data_len));
+                ops_stack.commands.push(cmd);
+                System.out.println("Script parse pushing: "+cmd);
+                count+=data_len+4;
+            }
+
             else {
                 byte[] bytes = new byte[1];
                 bytes[0] = (byte)current_byte;
