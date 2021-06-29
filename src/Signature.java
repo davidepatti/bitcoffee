@@ -1,3 +1,5 @@
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 
 public class Signature {
@@ -12,6 +14,64 @@ public class Signature {
     @Override
     public String toString() {
         return "Signature(" + r.toString(16) + "," + s.toString(16) + ')';
+    }
+
+    public static Signature parse(byte[] der_bytes) {
+        Signature sig = null;
+        var bis = new ByteArrayInputStream(der_bytes);
+
+        BigInteger s = null,r = null;
+
+        var compound = (byte)bis.read();
+        if (compound!=0x30) {
+            System.out.println("bad signature");
+            assert false;
+        }
+
+        var length = (byte)bis.read();
+
+        if (length+2!= der_bytes.length) {
+            System.out.println("bad signature length");
+            assert false;
+        }
+
+        var marker = (byte)bis.read();
+        if (marker!=0x02) {
+            System.out.println("bad signature ");
+            assert false;
+        }
+
+        var rlength = bis.read();
+        try {
+            var r_bytes = CryptoKit.to32bytes(bis.readNBytes(rlength));
+            r = new BigInteger(r_bytes);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ////////////////////////////////////////////////////////7
+
+        marker = (byte)bis.read();
+        if (marker!=0x02) {
+            System.out.println("bad signature ");
+            assert false;
+        }
+        var slength = bis.read();
+        try {
+            var s_bytes = CryptoKit.to32bytes(bis.readNBytes(slength));
+            s = new BigInteger(s_bytes);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (der_bytes.length != 6 + rlength + slength) {
+            System.out.println("Signature too long");
+            assert false;
+        }
+
+        return new Signature(r,s);
     }
 
     public String DER() {

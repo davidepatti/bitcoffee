@@ -69,7 +69,7 @@ public class S256Point extends FieldElementPoint{
     }
 
     // TODO: check a better place for these static-like function utilites
-    public S256Point parseSEC(String sec) {
+    public static S256Point parseSEC(String sec) {
         // TODO: is it necessary to convert to bytes?
         var sec_n = new BigInteger(sec,16);
         var sec_bytes = sec_n.toByteArray();

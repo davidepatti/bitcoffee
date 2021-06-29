@@ -1,19 +1,26 @@
+import org.bouncycastle.util.encoders.Hex;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Stack;
 
 public class Script {
-    Stack<ScriptCmd> stack;
+    Stack<ScriptCmd> commands;
 
     public Script(Stack<ScriptCmd> stack) {
-        this.stack = stack;
+        this.commands = stack;
+    }
+
+    public void addTop(Stack<ScriptCmd> other) {
+        this.commands.addAll(other);
     }
 
     public byte[] raw_serialize() throws IOException {
         var bos = new ByteArrayOutputStream();
 
-        for (ScriptCmd cmd : stack) {
+        for (ScriptCmd cmd : commands) {
             var len = cmd.value.length;
 
             if (cmd.type==OpCode.DATA) {
@@ -115,26 +122,118 @@ public class Script {
 
         return new Script(ops_stack);
     }
-    public boolean OP_DUP() {
-        if (this.stack.size()<1) return false;
-        this.stack.push(this.stack.peek());
+
+
+    public boolean evaluate() {
+        // TODO: check if would be better to make it immutable
+        var commands = this.commands;
+        var stack = new Stack<ScriptCmd>();
+        var altstack = new Stack<ScriptCmd>();
+
+        while (commands.size()>0) {
+            var cmd = commands.pop();
+
+            // firstly, if it is data, just move it to the stack
+
+            if (cmd.type==OpCode.DATA) stack.push(cmd);
+            else {
+
+                if (cmd.type == OpCode.OP_IF || cmd.type == OpCode.OP_NOTIF ) {
+
+                    // require manipulation of commands using the top of stack
+                    assert false;
+                }
+                else if (cmd.type == OpCode.OP_TOALTSTACK || cmd.type == OpCode.OP_FROMALTSTACK) {
+                    // require movement to/from altstack
+                        assert false;
+                    }
+                else if (cmd.type.getOpcode() >= 172 && cmd.type.getOpcode() <= 175){
+                    // require signature (CHECKSIG etc..)
+                    switch (cmd.type) {
+                        case OP_CHECKSIG:
+                            var z = CryptoKit.hexStringToByteArray("7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d");
+                            this.OP_CHECKSIG(stack,z);
+                            break;
+                        default:
+                            assert false;
+                    }
+                }
+                else {
+                    
+                    switch (cmd.type) {
+                        case OP_HASH160:
+                            this.OP_HASH160(stack);
+                            break;
+                        default:
+                            assert false;
+                    }
+                    // require only stack
+                }
+            }
+
+        }
+        if (stack.size()==0) return false;
+        if (stack.pop().value[0] == 0) return false;
+
+        return true;
+
+    }
+
+
+
+    public boolean OP_DUP(Stack<ScriptCmd> stack) {
+        if (stack.size()<1) return false;
+        stack.push(stack.peek());
         return true;
     }
 
-    public boolean OP_HASH256() {
-        if (this.stack.size()<1) return false;
-        var element = this.stack.pop();
+    public boolean OP_HASH256(Stack<ScriptCmd> stack) {
+        if (stack.size()<1) return false;
+        var element = stack.pop();
+        assert element.type==OpCode.DATA;
         var hashed = CryptoKit.hash256(element.value);
         stack.push(new ScriptCmd(element.type,hashed));
         return true;
     }
 
-    public boolean OP_HASH160() {
-        if (this.stack.size()<1) return false;
-        var element = this.stack.pop();
+    public boolean OP_HASH160(Stack<ScriptCmd> stack) {
+        if (stack.size()<1) return false;
+        var element = stack.pop();
+        assert element.type==OpCode.DATA;
         var hashed = CryptoKit.hash160(element.value);
         stack.push(new ScriptCmd(element.type,hashed));
         return true;
+    }
+
+    public boolean OP_CHECKSIG(Stack<ScriptCmd> stack, byte[] z) {
+        if (stack.size()<2) return false;
+
+        var sec_pubkey = stack.pop();
+        var der_signature = stack.pop();
+
+        var point = S256Point.parseSEC(Hex.toHexString(sec_pubkey.value));
+        // 1) check parse der signature
+        // 2) check
+        var sig = Signature.parse(der_signature.value);
+
+        if (point.verify(new BigInteger(z),sig)) {
+            // TODO: implement encode
+            stack.push(new ScriptCmd(OpCode.DATA,new byte[] {0x01}));
+        }
+        // TODO: check if can be same as empty (see encode)
+        else stack.push(new ScriptCmd(OpCode.OP_0));
+
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        String out = "Script{";
+        for (ScriptCmd cmd: this.commands) out = out+cmd;
+
+        out+="}\n";
+
+        return out;
 
     }
 }
