@@ -60,6 +60,10 @@ public class CryptoKit {
         return hash256(message.getBytes(StandardCharsets.UTF_8));
     }
 
+    public static final byte[] stringToBytes(String s ) {
+        return  s.getBytes(StandardCharsets.UTF_8);
+    }
+
     public static String encodeBase58(byte[] s) {
         String BASE58_AlPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         int count = 0;
