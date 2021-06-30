@@ -52,5 +52,25 @@ public class TestScript {
         System.out.println("Testing Combined script:");
         System.out.println(combined_script);
         System.out.println("--> Result: " +combined_script.evaluate(z));
+
+        System.out.println("---------------------------------------------------");
+        System.out.println("Testing encode_num:");
+
+        var n = -256;
+        var tn = "0081";
+        byte[] encoded_n = CryptoKit.encodeNum(n);
+        var res_n= Hex.toHexString(encoded_n);
+        System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
+
+        n = 258;
+        tn = "0201";
+        encoded_n = CryptoKit.encodeNum(n);
+        res_n= Hex.toHexString(encoded_n);
+        System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
+        n = -8;
+        tn = "88";
+        encoded_n = CryptoKit.encodeNum(n);
+        res_n= Hex.toHexString(encoded_n);
+        System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
     }
 }

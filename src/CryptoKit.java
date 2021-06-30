@@ -231,6 +231,49 @@ public class CryptoKit {
         }
         return null;
     }
+
+    // used for encoding stack nums
+    public static byte[] encodeNum(BigInteger n) {
+        byte[] res = null;
+        var bos = new ByteArrayOutputStream();
+
+        // empty byte if 0
+        if (n.compareTo(BigInteger.ZERO)==0)
+            return res;
+
+        var abs_n = n.abs();
+        boolean negative = n.compareTo(BigInteger.ZERO) <0;
+
+        // we revert the bytes of the number (should be little endian)
+        while (abs_n.compareTo(BigInteger.ZERO)!=0) {
+            var absn_bytes =abs_n.toByteArray();
+            bos.write(absn_bytes[absn_bytes.length-1]);
+            abs_n = abs_n.shiftRight(8);
+        }
+
+        res = bos.toByteArray();
+
+        // we must restore the sign, if necessary....
+        // if the most significant byte (rightmost, since is little endian)
+        // is like 1xxxxxxx we must be sure that the 1 is not considered as sign
+        if ((res[res.length-1] & 0x80)!=0) {
+            // we add a further 1xxxxxxxx byte on the right, to encode the sign
+            if (negative)
+                bos.write(0x80);
+            else
+                bos.write(0);
+            res = bos.toByteArray();
+        } // there was not 1xxxxxxxxx, so we can just add the 1 for the required sign
+        else if (negative) {
+            res = bos.toByteArray();
+            res[res.length-1] |= 0x80;
+        }
+        return res;
+    }
+
+    public static byte[] encodeNum(long n) {
+        return encodeNum(BigInteger.valueOf(n));
+    }
 }
 
 

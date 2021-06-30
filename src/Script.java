@@ -126,6 +126,8 @@ public class Script {
 
     public boolean evaluate(byte[] z) {
         // TODO: check if would be better to make it immutable
+        // TODO: decode/encode_num for OP_0 OP_16 and many others, as in:
+        // https://github.com/jimmysong/programmingbitcoin/blob/master/code-ch06/op.py
         var commands = this.commands;
         var stack = new Stack<ScriptCmd>();
         var altstack = new Stack<ScriptCmd>();
@@ -217,10 +219,11 @@ public class Script {
         var sig = Signature.parse(der_bytes);
 
         if (point.verify(new BigInteger(z),sig)) {
-            // TODO: implement encode
+            // TODO: implement encode_num(1)
             stack.push(new ScriptCmd(OpCode.DATA,new byte[] {0x01}));
         }
-        // TODO: check if can be same as empty (see encode)
+        //
+        // TODO: implement encode_num(0)
         else stack.push(new ScriptCmd(OpCode.OP_0));
 
         return false;
