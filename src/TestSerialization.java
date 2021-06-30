@@ -36,30 +36,37 @@ public class TestSerialization {
         System.out.println("res: "+sec33);
         System.out.println("----------------------------------------------------------");
 
-        var parsed_point65 = pk.point.parseSEC(sec65);
+        var parsed_point65 = S256Point.parseSEC(sec65);
         System.out.println("-->Testing parsed point from SEC65:");
         System.out.println(parsed_point65);
         System.out.println(pk.point.equals(parsed_point65));
         System.out.println("----------------------------------------------------------");
 
-        var parsed_point = pk.point.parseSEC(sec33);
+        var parsed_point = S256Point.parseSEC(sec33);
         System.out.println("-->Testing parsed point from compressed SEC33:");
         System.out.println(parsed_point);
         System.out.println(pk.point.equals(parsed_point));
+
+
         System.out.println("----------------------------------------------------------");
         var r = new BigInteger("37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6",16);
         var s = new BigInteger("8ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec",16);
-        System.out.println("-->Testing signature DER for ");
-        System.out.println("r="+r.toString(16));
-        System.out.println("s="+s.toString(16));
+        System.out.println("-->Testing signature DER for: ");
         Signature sig = new Signature(r,s);
+        System.out.println(sig);
         var der_str =sig.DER();
         System.out.println(der_str);
         String target_der = "3045022037206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c60221008ca63759c1157ebeaec0d03cecca119fc9a75bf8e6d0fa65c841c8e2738cdaec";
         System.out.println(der_str.equals(target_der));
+        System.out.println("Back parsing "+target_der);
+        Signature sig_res = Signature.parse(CryptoKit.hexStringToByteArray(target_der));
+        System.out.println("Result:");
+        System.out.println(sig_res);
+
+
+
         System.out.println("----------------------------------------------------------");
         System.out.println("-->Testing BASE58 encoding");
-
 
         String a1 = "7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d";
         System.out.println(CryptoKit.encodeBase58(CryptoKit.hexStringToByteArray(a1)));

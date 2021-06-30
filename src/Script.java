@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Stack;
 
 public class Script {
@@ -123,8 +124,7 @@ public class Script {
         return new Script(ops_stack);
     }
 
-
-    public boolean evaluate() {
+    public boolean evaluate(byte[] z) {
         // TODO: check if would be better to make it immutable
         var commands = this.commands;
         var stack = new Stack<ScriptCmd>();
@@ -145,13 +145,12 @@ public class Script {
                 }
                 else if (cmd.type == OpCode.OP_TOALTSTACK || cmd.type == OpCode.OP_FROMALTSTACK) {
                     // require movement to/from altstack
-                        assert false;
-                    }
+                    assert false;
+                }
                 else if (cmd.type.getOpcode() >= 172 && cmd.type.getOpcode() <= 175){
                     // require signature (CHECKSIG etc..)
                     switch (cmd.type) {
                         case OP_CHECKSIG:
-                            var z = CryptoKit.hexStringToByteArray("7c076ff316692a3d7eb3c3bb0f8b1488cf72e1afcd929e29307032997a838a3d");
                             this.OP_CHECKSIG(stack,z);
                             break;
                         default:
@@ -159,7 +158,7 @@ public class Script {
                     }
                 }
                 else {
-                    
+
                     switch (cmd.type) {
                         case OP_HASH160:
                             this.OP_HASH160(stack);
@@ -176,10 +175,7 @@ public class Script {
         if (stack.pop().value[0] == 0) return false;
 
         return true;
-
     }
-
-
 
     public boolean OP_DUP(Stack<ScriptCmd> stack) {
         if (stack.size()<1) return false;
@@ -208,13 +204,17 @@ public class Script {
     public boolean OP_CHECKSIG(Stack<ScriptCmd> stack, byte[] z) {
         if (stack.size()<2) return false;
 
-        var sec_pubkey = stack.pop();
+        var sec_pubkey_cmd = stack.pop();
         var der_signature = stack.pop();
 
-        var point = S256Point.parseSEC(Hex.toHexString(sec_pubkey.value));
+
+        // take off the last byte of the signature as that's the hash_type
+        // see: https://en.bitcoin.it/wiki/OP_CHECKSIG
+        var der_bytes = Arrays.copyOf(der_signature.value,der_signature.value.length-1);
+        var point = S256Point.parseSEC(sec_pubkey_cmd.value);
         // 1) check parse der signature
         // 2) check
-        var sig = Signature.parse(der_signature.value);
+        var sig = Signature.parse(der_bytes);
 
         if (point.verify(new BigInteger(z),sig)) {
             // TODO: implement encode

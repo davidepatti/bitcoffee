@@ -1,3 +1,5 @@
+import org.bouncycastle.util.encoders.Hex;
+
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
@@ -68,7 +70,12 @@ public class S256Point extends FieldElementPoint{
             return "03"+this.getSerialX();
     }
 
-    // TODO: check a better place for these static-like function utilites
+
+    public static S256Point parseSEC(byte[] sec_bytes) {
+        var sec = Hex.toHexString(sec_bytes);
+        return parseSEC(sec);
+    }
+
     public static S256Point parseSEC(String sec) {
         // TODO: is it necessary to convert to bytes?
         var sec_n = new BigInteger(sec,16);
