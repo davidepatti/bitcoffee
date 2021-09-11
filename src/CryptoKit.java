@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class CryptoKit {
 
@@ -22,8 +23,9 @@ public class CryptoKit {
         // TODO: removed when confirmed to avoid dep on bouncycastle
         var str_bc = Hex.toHexString(bytes);
         if (!str.equals(str_bc)) {
-            System.out.println("Failed check on bouncycastel replacement");
-            System.exit(-1);
+            System.out.println("*****WARNING: Failed check on bouncycastel replacement:"+str+" VS "+str_bc);
+
+            //System.exit(-1);
         }
 
         return str;
@@ -49,7 +51,17 @@ public class CryptoKit {
         d.update(r, 0, r.length);
         byte[] o = new byte[d.getDigestSize()];
         d.doFinal(o, 0);
-        return o;
+
+        // TODO: remove when confirmed to avoid dependecy
+
+        var o2 = Ripemd160.getHash(r);
+
+        if (!Arrays.equals(o2,o)) {
+            System.out.println("Failed check on RIPEMD160");
+            System.exit(-1);
+        }
+
+        return o2;
     }
     public static byte[] sha256(byte[] b) {
         MessageDigest digester = null;
@@ -89,9 +101,9 @@ public class CryptoKit {
             else break;
         }
         // TODO: fix this
-        if (count>1) {
-            System.out.println("Warning on encodeBase58 leading zero' byets");
-        }
+        if (count>1)
+            System.out.println("***WARNING on encodeBase58 leading zero bytes");
+
         var num = new BigInteger(1,s);
         String prefix = "";
         for (int c=0;c<count;c++)
