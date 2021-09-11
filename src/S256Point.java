@@ -1,5 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
@@ -72,7 +70,8 @@ public class S256Point extends FieldElementPoint{
 
 
     public static S256Point parseSEC(byte[] sec_bytes) {
-        var sec = Hex.toHexString(sec_bytes);
+        //var sec = Hex.toHexString(sec_bytes);
+        var sec = CryptoKit.bytesToHexString(sec_bytes);
         return parseSEC(sec);
     }
 

@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class TestScript {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         var bos = new ByteArrayOutputStream();
 
@@ -28,7 +28,7 @@ public class TestScript {
         test_hash160.push(new ScriptCmd(OpCode.OP_HASH160));
         test_hash160.push(new ScriptCmd(OpCode.DATA,hello));
         var test_script = new Script(test_hash160);
-        System.out.println("Testing hash160 on "+ Hex.toHexString(hello));
+        System.out.println("Testing hash160 on "+ CryptoKit.bytesToHexString(hello));
         // when debugging, check that stack remains with DATA d7d5ee7824ff93f94c3055af9382c86c68b5ca92
         System.out.println(test_script.evaluate(null));
         System.out.println("------------------------------------------------------");
@@ -59,18 +59,18 @@ public class TestScript {
         var n = -256;
         var tn = "0081";
         byte[] encoded_n = CryptoKit.encodeNum(n);
-        var res_n= Hex.toHexString(encoded_n);
+        var res_n= CryptoKit.bytesToHexString(encoded_n);
         System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
 
         n = 258;
         tn = "0201";
         encoded_n = CryptoKit.encodeNum(n);
-        res_n= Hex.toHexString(encoded_n);
+        res_n= CryptoKit.bytesToHexString(encoded_n);
         System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
         n = -8;
         tn = "88";
         encoded_n = CryptoKit.encodeNum(n);
-        res_n= Hex.toHexString(encoded_n);
+        res_n= CryptoKit.bytesToHexString(encoded_n);
         System.out.println("encoding "+n+ " result "+res_n + " --> "+res_n.equals(tn));
     }
 }

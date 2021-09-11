@@ -1,5 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,9 +27,9 @@ public class TxIn {
 
     @Override
     public String toString() {
-        String prev_tx_str = Hex.toHexString(prev_tx);
-        String script_sig_str = Hex.toHexString(script_sig);
-        String sequence = Hex.toHexString(this.sequence);
+        String prev_tx_str = CryptoKit.bytesToHexString(prev_tx);
+        String script_sig_str = CryptoKit.bytesToHexString(script_sig);
+        String sequence = CryptoKit.bytesToHexString(this.sequence);
 
         return "\nTxIn{" + "prev_tx='" + prev_tx_str + '\'' + ", prev_index=" + prev_index + ", script_sig=" + script_sig_str + ", sequence=" + sequence + '}';
     }
@@ -42,7 +40,7 @@ public class TxIn {
         TxIn tx_input = null;
         try {
             var prev_tx = CryptoKit.reverseBytes(bis.readNBytes(32));
-            String ser = Hex.toHexString(prev_tx);
+            String ser = CryptoKit.bytesToHexString(prev_tx);
             var prev_index = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
             var script_sig_len = (int)CryptoKit.readVarint(bis);
             var script_sig = bis.readNBytes(script_sig_len);
@@ -87,7 +85,7 @@ public class TxIn {
     }
 
     public Tx fetchTx(boolean testnet) {
-        return TxFetcher.fetch(Hex.toHexString(this.prev_tx),testnet,false);
+        return TxFetcher.fetch(CryptoKit.bytesToHexString(this.prev_tx),testnet,false);
     }
 
     public long getValue(boolean testnet) {

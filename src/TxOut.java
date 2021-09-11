@@ -1,5 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,7 +16,7 @@ public class TxOut {
 
     @Override
     public String toString() {
-        String script_str = Hex.toHexString(script_pubkey);
+        String script_str = CryptoKit.bytesToHexString(script_pubkey);
         return "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + '}';
     }
 

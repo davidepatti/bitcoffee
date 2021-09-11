@@ -1,7 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
-import java.util.Stack;
-
 public class ScriptCmd {
     public final byte[] value;
     public final OpCode type;
@@ -26,7 +22,8 @@ public class ScriptCmd {
 
     @Override
     public String toString() {
-        return "\n{" + Hex.toHexString(value) + ", " + type + "}";
+        //return "\n{" + Hex.toHexString(value) + ", " + type + "}";
+        return "\n{" + CryptoKit.bytesToHexString(value) + ", " + type + "}";
     }
 
 }

@@ -1,5 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
 import java.math.BigInteger;
 
 public class TestSecp256k1 {

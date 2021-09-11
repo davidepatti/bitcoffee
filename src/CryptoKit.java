@@ -17,8 +17,11 @@ public class CryptoKit {
     public static String bytesToHexString(byte [] bytes) {
         var num = new BigInteger(1,bytes);
         var str = num.toString(16);
+        if (str.length()%2!=0)
+            str = "0"+str;
         // TODO: removed when confirmed to avoid dep on bouncycastle
-        if (!str.equals(Hex.toHexString(bytes))) {
+        var str_bc = Hex.toHexString(bytes);
+        if (!str.equals(str_bc)) {
             System.out.println("Failed check on bouncycastel replacement");
             System.exit(-1);
         }

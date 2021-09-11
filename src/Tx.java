@@ -1,5 +1,3 @@
-import org.bouncycastle.util.encoders.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +26,7 @@ public class Tx {
     }
 
     public String getId() {
-        String hex = Hex.toHexString(this.hash());
+        String hex = CryptoKit.bytesToHexString(this.hash());
         return hex;
     }
 
@@ -73,7 +71,7 @@ public class Tx {
     }
 
     public String getSerialString() {
-        return Hex.toHexString(this.serialized);
+        return CryptoKit.bytesToHexString(this.serialized);
     }
 
     private byte[] serialize() {
