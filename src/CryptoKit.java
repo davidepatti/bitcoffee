@@ -1,4 +1,5 @@
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,6 +12,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class CryptoKit {
+
+    // TODO: Replace this whenever bytes->hex string
+    public static String bytesToHexString(byte [] bytes) {
+        var num = new BigInteger(1,bytes);
+        var str = num.toString(16);
+        // TODO: removed when confirmed to avoid dep on bouncycastle
+        if (!str.equals(Hex.toHexString(bytes))) {
+            System.out.println("Failed check on bouncycastel replacement");
+            System.exit(-1);
+        }
+
+        return str;
+    }
     // TODO: REPLACE THIS whenever hex-> bytes
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
@@ -34,7 +48,7 @@ public class CryptoKit {
         d.doFinal(o, 0);
         return o;
     }
-    public static final byte[] sha256(byte[] b) {
+    public static byte[] sha256(byte[] b) {
         MessageDigest digester = null;
         try {
             digester = MessageDigest.getInstance("SHA-256");
@@ -47,20 +61,20 @@ public class CryptoKit {
         return hash;
     }
 
-    public static final byte[] hash256(byte[] b) {
+    public static byte[] hash256(byte[] b) {
         return sha256(sha256(b));
     }
 
 
-    public static final byte[] hash160(byte[] b) {
+    public static byte[] hash160(byte[] b) {
         return RIPEMD160(sha256(b));
     }
 
-    public static final byte[] hash256(String message) {
+    public static byte[] hash256(String message) {
         return hash256(message.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static final byte[] stringToBytes(String s ) {
+    public static byte[] stringToBytes(String s ) {
         return  s.getBytes(StandardCharsets.UTF_8);
     }
 
@@ -81,7 +95,7 @@ public class CryptoKit {
             prefix = "1"+prefix;
 
         String result = "";
-        BigInteger[] num_mod = new BigInteger[2];
+        BigInteger[] num_mod;
         while (num.compareTo(BigInteger.ZERO)>0) {
             num_mod = num.divideAndRemainder(BigInteger.valueOf(58));
             num = num_mod[0];

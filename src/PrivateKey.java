@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class PrivateKey {
-    public final byte[] secret_bytes;
+    public final byte[] secret_bytes; // 32 bytes
     public final BigInteger secret_n;
     public final S256Point point;
 

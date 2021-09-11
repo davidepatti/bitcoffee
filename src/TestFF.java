@@ -3,7 +3,15 @@ import java.math.BigInteger;
 public class TestFF {
     // Finite Field tests
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
+        var n1 = new FieldElement(5,19);
+        var n2 = new FieldElement(3,19);
+        var res_n = n1.multiply(n2);
+        System.out.println("Testing Finite Field multiplication:");
+        System.out.print(n1+" * " +n2+ "="+res_n);
+        System.out.println("--> "+res_n.equals(new FieldElement(15,19)));
+
+
         final long prime = 223;
         var a = new FieldElement(0,prime);
         var b = new FieldElement(7,prime);
@@ -23,6 +31,7 @@ public class TestFF {
         p = new FieldElementPoint(x,y,a,b);
         System.out.println(p);
 
+        System.out.println("TEST: Point addition in prime "+prime);
         var x1 = new FieldElement(192,prime);
         var y1 = new FieldElement(105,prime);
         var x2 = new FieldElement(17,prime);
@@ -46,24 +55,11 @@ public class TestFF {
 
         System.out.println("TEST: Scalar multitplication in prime "+prime);
         for (int s=1;s<22;s++) {
-            var temp = point.multiply(BigInteger.valueOf(s));
+            //var temp = point.multiply(BigInteger.valueOf(s));
             var temp2 = point.multiplyBin(BigInteger.valueOf(s));
-            System.out.println("(47,71)*"+s+" = "+ temp.getCoordString());
+            //System.out.println("(47,71)*"+s+" = "+ temp.getCoordString());
             System.out.println("(47,71)*"+s+" = "+ temp2.getCoordString());
         }
-
-
-        /*
-        x = new FieldElement(42,prime);
-        y = new FieldElement(99,prime);
-        p = new FEPoint(x,y,a,b);
-        System.out.println(p);
-
-        x = new FieldElement(200,prime);
-        y = new FieldElement(119,prime);
-        p = new FEPoint(x,y,a,b);
-        System.out.println(p);
-         */
 
     }
 

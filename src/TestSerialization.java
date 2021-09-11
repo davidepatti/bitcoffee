@@ -3,14 +3,14 @@ import org.bouncycastle.util.encoders.Hex;
 import java.math.BigInteger;
 
 public class TestSerialization {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         System.out.println("g sec = "+Secp256k1.G.SEC65());
 
         var e = BigInteger.valueOf(5000);
         var pk = new PrivateKey(e.toByteArray());
         String target = "04ffe558e388852f0120e46af2d1b370f85854a8eb0841811ece0e3e03d282d57c315dc72890a4f10a1481c031b03b351b0dc79901ca18a00cf009dbdb157a1d10";
         var result = pk.point.SEC65();
-        System.out.println("-->Testing sec on e=5000: "+result.equals(target));
+        System.out.println("-->Testing sec on e="+e+": "+result.equals(target));
         System.out.println("res: "+result);
         System.out.println("----------------------------------------------------------");
 
@@ -82,9 +82,21 @@ public class TestSerialization {
         System.out.println("--> Testing Address for priv key hex:"+e_str);
         var pk_addr = new PrivateKey(CryptoKit.hexStringToByteArray(e_str));
         var target_addr1 = "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1";
-        var res_addr1 = pk_addr.point.getAddress();
+        var res_addr1 = pk_addr.point.getAddress(true);
         System.out.println("address:" + res_addr1);
-        System.out.println("--> Result:"+res_addr1.equals(target_addr1));;
+        System.out.println("--> Result:"+res_addr1.equals(target_addr1));
+
+        System.out.println("----------------------------------------------------------");
+        var name = "Satoshi Nakamoto";
+        System.out.println("Testing address for brainwallet: "+name);
+        var name_sha256 = CryptoKit.sha256(CryptoKit.stringToBytes(name));
+        var name_hex = CryptoKit.bytesToHexString(name_sha256);
+        var some_key = new PrivateKey(name_sha256);
+        var some_addr_compressed = some_key.point.getAddress(true);
+        var some_addr_not_compresssed = some_key.point.getAddress(false);
+        System.out.println("(sec33): "+ some_addr_compressed);
+        System.out.println("(sec65): "+ some_addr_not_compresssed);
+
         System.out.println("----------------------------------------------------------");
 
         var e2_n = BigInteger.valueOf(2020).pow(5);
@@ -93,7 +105,7 @@ public class TestSerialization {
         var target_addr2 = "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH";
         var res_addr2 = pk_addr2.point.getTestnetAddress();
         System.out.println("address:" + res_addr2);
-        System.out.println("--> Result:"+res_addr2.equals(target_addr2));;
+        System.out.println("--> Result:"+res_addr2.equals(target_addr2));
         System.out.println("----------------------------------------------------------");
 
         var ewif = "54321deadbeef";

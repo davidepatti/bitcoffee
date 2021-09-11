@@ -1,8 +1,10 @@
+import org.bouncycastle.util.encoders.Hex;
+
 import java.math.BigInteger;
 
 public class TestSecp256k1 {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         test_infinity();
         test_manual_signature();
         test_message_signature();
@@ -12,26 +14,26 @@ public class TestSecp256k1 {
 
     public static void test_signing() {
         var e_bytes = CryptoKit.hash256("secret");
-        var e_num = new BigInteger(1,e_bytes);
         var z_bytes = CryptoKit.hash256("Programming Bitcoin!");
-        var z_num = new BigInteger(1,z_bytes);
 
-        System.out.println("Signing message: Programming Bitcoin! with string secret");
-        System.out.println("secret = "+e_num.toString(16));
-        System.out.println("message = "+z_num.toString(16));
+        System.out.println("--------------------------------------------------");
+        System.out.println(">>> TEST: Signing message: \"Programming Bitcoin!\" with string \"secret\"");
+        System.out.println("secret = "+ CryptoKit.bytesToHexString(e_bytes));
+        System.out.println("message = "+CryptoKit.bytesToHexString(z_bytes));
         var prefixed_k = BigInteger.valueOf(1234567890);
         var pk = new PrivateKey(e_bytes);
         var signature_prefixed = pk.sign(z_bytes,prefixed_k);
         System.out.println("signature prefixed k ="+signature_prefixed);
         var sig_detk = pk.getDeterministicK(z_bytes);
-        var k = sig_detk;
         System.out.println("deterministic k = "+sig_detk.toString(16));
         var target_k = new BigInteger("e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e",16);
-        System.out.println("--> Test deterministic k: "+target_k.equals(target_k));
+        System.out.println("--------------------------------------------------");
+        System.out.println(">>> TEST: deterministic k: "+sig_detk.equals(target_k));
 
     }
     public static void test_infinity() {
-        System.out.println("Tesing sec256k1, you should see three points at infinity (null,null)");
+        System.out.println("--------------------------------------------------");
+        System.out.println(">>> TEST: sec256k1 computing G*N, you should see points at infinity (null,null)");
         // test 1: manually creating G with lower level classes
         var x = new FieldElement(Secp256k1.Gx,Secp256k1.p);
         var y = new FieldElement(Secp256k1.Gy,Secp256k1.p);
@@ -65,13 +67,13 @@ public class TestSecp256k1 {
         var u = z.multiply(s_inv.mod(Secp256k1.N));
         var v = r.multiply(s_inv.mod(Secp256k1.N));
         // u*G+v*point == r
-        System.out.print("--> Testing manual signature: ");
+        System.out.println("--------------------------------------------------");
+        System.out.print(">>> TEST: manual signature: ");
         System.out.println(Secp256k1.G.multiplyBin(u).add(point.multiplyBin(v)).getX().getNum().equals(r));
 
     }
 
     public static void test_message_signature() {
-        /****************************************************************/
         //  testing message signature (page 69)
         String secret = "my secret";
         String message = "my message";
@@ -90,7 +92,8 @@ public class TestSecp256k1 {
         var x_target = new BigInteger("28d003eab2e428d11983f3e97c3fa0addf3b42740df0d211795ffb3be2f6c52",16);
         var y_target = new BigInteger("ae987b9ec6ea159c78cb2a937ed89096fb218d9e7594f02b547526d8cd309e2",16);
         var t_point = new S256Point(x_target,y_target);
-        System.out.println("--> Testing message signature: "+point2.equals(t_point));
+        System.out.println("--------------------------------------------------");
+        System.out.println(">>> Testing message signature: "+point2.equals(t_point));
         System.out.println("z="+z_num.toString(16));
         System.out.println("r="+r.toString(16));
         System.out.println("s="+s.toString(16));
@@ -108,6 +111,7 @@ public class TestSecp256k1 {
         var s = new BigInteger("68342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4",16);
 
         var sig = new Signature(r,s);
+        System.out.println("--------------------------------------------------");
         System.out.println("--> Test Verify signature: "+P.verify(z,sig));
     }
 
