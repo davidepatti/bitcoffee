@@ -16,19 +16,22 @@ public class CryptoKit {
 
     // TODO: Replace this whenever bytes->hex string
     public static String bytesToHexString(byte [] bytes) {
-        var num = new BigInteger(1,bytes);
-        var str = num.toString(16);
-        if (str.length()%2!=0)
-            str = "0"+str;
+        final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
+
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        var str = new String(hexChars);
         // TODO: removed when confirmed to avoid dep on bouncycastle
         var str_bc = Hex.toHexString(bytes);
         if (!str.equals(str_bc)) {
             System.out.println("*****WARNING: Failed check on bouncycastel replacement:"+str+" VS "+str_bc);
-
             //System.exit(-1);
         }
-
-        return str;
+        return new String(hexChars);
     }
     // TODO: REPLACE THIS whenever hex-> bytes
     public static byte[] hexStringToByteArray(String s) {
@@ -261,48 +264,6 @@ public class CryptoKit {
         return null;
     }
 
-    // used for encoding stack nums
-    public static byte[] encodeNum(BigInteger n) {
-        byte[] res = null;
-        var bos = new ByteArrayOutputStream();
-
-        // empty byte if 0
-        if (n.compareTo(BigInteger.ZERO)==0)
-            return res;
-
-        var abs_n = n.abs();
-        boolean negative = n.compareTo(BigInteger.ZERO) <0;
-
-        // we revert the bytes of the number (should be little endian)
-        while (abs_n.compareTo(BigInteger.ZERO)!=0) {
-            var absn_bytes =abs_n.toByteArray();
-            bos.write(absn_bytes[absn_bytes.length-1]);
-            abs_n = abs_n.shiftRight(8);
-        }
-
-        res = bos.toByteArray();
-
-        // we must restore the sign, if necessary....
-        // if the most significant byte (rightmost, since is little endian)
-        // is like 1xxxxxxx we must be sure that the 1 is not considered as sign
-        if ((res[res.length-1] & 0x80)!=0) {
-            // we add a further 1xxxxxxxx byte on the right, to encode the sign
-            if (negative)
-                bos.write(0x80);
-            else
-                bos.write(0);
-            res = bos.toByteArray();
-        } // there was not 1xxxxxxxxx, so we can just add the 1 for the required sign
-        else if (negative) {
-            res = bos.toByteArray();
-            res[res.length-1] |= 0x80;
-        }
-        return res;
-    }
-
-    public static byte[] encodeNum(long n) {
-        return encodeNum(BigInteger.valueOf(n));
-    }
 }
 
 
