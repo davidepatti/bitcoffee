@@ -1,6 +1,7 @@
-enum OpCode {
+enum ScriptCmdType {
     // constants
-    DATA(-1), OP_PUSHDATA1(76), OP_PUSHDATA2(77), OP_PUSHDATA4(78),
+    DATA(-1),  // values from 1 to 75, indicating how many next bytes to read as data
+    OP_PUSHDATA1(76), OP_PUSHDATA2(77), OP_PUSHDATA4(78),
     OP_0(0x00),
     OP_1NEGATE(0x4f),
     OP_TRUE(0x51),
@@ -84,17 +85,17 @@ enum OpCode {
     OP_PUBKEY(0xfe),
     OP_INVALIDOPCODE(0xff);
 
-    private int opcode;
+    private int value;
 
-    private OpCode(int code) {
-        this.opcode = code;
+    private ScriptCmdType(int code) {
+        this.value = code;
     }
 
-    public static OpCode fromInt(int code ) {
+    public static ScriptCmdType fromInt(int code ) {
 
         try {
-            for (OpCode op : OpCode.values()) {
-                if (op.opcode == code ) return op;
+            for (ScriptCmdType op : ScriptCmdType.values()) {
+                if (op.value == code ) return op;
             }
             throw new Exception("Cannot find Opcode "+code);
         } catch (Exception e) {
@@ -103,7 +104,7 @@ enum OpCode {
         return null;
     }
 
-    public int getOpcode() {
-        return opcode;
+    public int getValue() {
+        return value;
     }
 }
