@@ -1,5 +1,5 @@
-import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-import org.bouncycastle.util.encoders.Hex;
+//import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+//import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class CryptoKit {
 
-    // TODO: Replace this whenever bytes->hex string
+    /***************************************************************************/
     public static String bytesToHexString(byte [] bytes) {
         final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
@@ -25,15 +25,17 @@ public class CryptoKit {
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         var str = new String(hexChars);
+        /*
         // TODO: removed when confirmed to avoid dep on bouncycastle
         var str_bc = Hex.toHexString(bytes);
         if (!str.equals(str_bc)) {
             System.out.println("*****WARNING: Failed check on bouncycastel replacement:"+str+" VS "+str_bc);
             //System.exit(-1);
         }
-        return new String(hexChars);
+        */
+        return str;
     }
-    // TODO: REPLACE THIS whenever hex-> bytes
+    /***************************************************************************/
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         // add missing leading 0 to make total amount even
@@ -49,23 +51,22 @@ public class CryptoKit {
         return data;
     }
 
+    /***************************************************************************/
     public static byte[] RIPEMD160(byte[] r) {
+        var o2 = Ripemd160.getHash(r);
+        /* // TODO: remove when confirmed to avoid dependecy
         RIPEMD160Digest d = new RIPEMD160Digest();
         d.update(r, 0, r.length);
         byte[] o = new byte[d.getDigestSize()];
         d.doFinal(o, 0);
-
-        // TODO: remove when confirmed to avoid dependecy
-
-        var o2 = Ripemd160.getHash(r);
-
         if (!Arrays.equals(o2,o)) {
             System.out.println("Failed check on RIPEMD160");
             System.exit(-1);
         }
-
+        */
         return o2;
     }
+    /***************************************************************************/
     public static byte[] sha256(byte[] b) {
         MessageDigest digester = null;
         try {
@@ -79,23 +80,28 @@ public class CryptoKit {
         return hash;
     }
 
+    /***************************************************************************/
     public static byte[] hash256(byte[] b) {
         return sha256(sha256(b));
     }
 
 
+    /***************************************************************************/
     public static byte[] hash160(byte[] b) {
         return RIPEMD160(sha256(b));
     }
 
+    /***************************************************************************/
     public static byte[] hash256(String message) {
         return hash256(message.getBytes(StandardCharsets.UTF_8));
     }
 
+    /***************************************************************************/
     public static byte[] stringToBytes(String s ) {
         return  s.getBytes(StandardCharsets.UTF_8);
     }
 
+    /***************************************************************************/
     public static String encodeBase58(byte[] s) {
         String BASE58_AlPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
         int count = 0;
@@ -124,6 +130,7 @@ public class CryptoKit {
         //return result;
     }
 
+    /***************************************************************************/
     public static String encodeBase58Checksum(byte[] b) {
         var hash_b = hash256(b);
         var bos = new ByteArrayOutputStream();
@@ -137,6 +144,7 @@ public class CryptoKit {
         return res_enc;
     }
 
+    /***************************************************************************/
     public static byte[] calcHmacSha256(byte[] secretKey, byte[] message) {
       byte[] hmacSha256 = null;
       try {
@@ -150,6 +158,7 @@ public class CryptoKit {
       return hmacSha256;
     }
 
+    /***************************************************************************/
     public static byte[] to32bytes(byte[] secret) {
         var bos = new ByteArrayOutputStream();
         for (int i=0;i<32-secret.length;i++)
@@ -158,6 +167,7 @@ public class CryptoKit {
         return bos.toByteArray();
     }
 
+    /***************************************************************************/
     public static BigInteger litteEndianBytesToInt(byte[] bytes) {
 
         var reversed_bytes = to32bytes(reverseBytes(bytes));
@@ -165,22 +175,26 @@ public class CryptoKit {
         return little;
     }
 
+    /***************************************************************************/
     public static byte[] intToLittleEndianBytes(long n) {
         return intToLittleEndianBytes(BigInteger.valueOf(n));
     }
 
+    /***************************************************************************/
     public static byte[] intToLittleEndianBytes(BigInteger bi) {
         byte[] extractedBytes = bi.toByteArray();
         byte[] reversed = reverseBytes(to32bytes(extractedBytes));
         return reversed;
     }
 
+    /***************************************************************************/
     public static BigInteger littleEndianBytesToInt(byte[] little_bytes) {
         byte[] reversed = to32bytes(reverseBytes(little_bytes));
         var n = new BigInteger(reversed);
         return n;
     }
 
+    /***************************************************************************/
     public static byte[] reverseBytes(byte[] bytes)  {
         int size = bytes.length;
         byte[] reversed_bytes = new byte[size];
@@ -192,6 +206,7 @@ public class CryptoKit {
 
     }
 
+    /***************************************************************************/
     public static long readVarint(ByteArrayInputStream bis) {
         byte[] buffer;
         long n=0;
@@ -220,11 +235,13 @@ public class CryptoKit {
 
     }
 
+    /***************************************************************************/
     public static long readVarint(byte[] bytes) {
         var bis = new ByteArrayInputStream(bytes);
         return readVarint(bis);
     }
 
+    /***************************************************************************/
     public static byte[] encodeVarint(long i) {
         byte[] buffer;
         byte[] result;
