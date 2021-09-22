@@ -202,9 +202,6 @@ public class Script {
 
     /*************************************************************************/
     public boolean evaluate(byte[] z) {
-        // TODO: check if would be better to make it immutable
-        // TODO: decode/encode_num for OP_0 OP_16 and many others, as in:
-        // https://github.com/jimmysong/programmingbitcoin/blob/master/code-ch06/op.py
         var cmds = new Stack<ScriptCmd>();
         cmds.addAll(this.commands); // make a copy
 
@@ -272,39 +269,36 @@ public class Script {
                         case OP_6:
                             this.OP_6(stack);
                             break;
-                        /*
                         case OP_7:
-                            this.OP_0(stack);
+                            this.OP_7(stack);
                             break;
                         case OP_8:
-                            this.OP_0(stack);
+                            this.OP_8(stack);
                             break;
                         case OP_9:
-                            this.OP_0(stack);
+                            this.OP_9(stack);
                             break;
                         case OP_10:
-                            this.OP_0(stack);
+                            this.OP_10(stack);
                             break;
                         case OP_11:
-                            this.OP_0(stack);
+                            this.OP_11(stack);
                             break;
                         case OP_12:
-                            this.OP_0(stack);
+                            this.OP_12(stack);
                             break;
                         case OP_13:
-                            this.OP_0(stack);
+                            this.OP_13(stack);
                             break;
                         case OP_14:
-                            this.OP_0(stack);
+                            this.OP_14(stack);
                             break;
                         case OP_15:
-                            this.OP_0(stack);
+                            this.OP_15(stack);
                             break;
                         case OP_16:
-                            this.OP_0(stack);
+                            this.OP_16(stack);
                             break;
-
-                         */
 
                         case OP_VERIFY:
                             this.OP_VERIFY(stack);
@@ -392,6 +386,46 @@ public class Script {
     }
     public boolean OP_6(Stack<byte[]> stack) {
         stack.push(encodeNum(6));
+        return true;
+    }
+    public boolean OP_7(Stack<byte[]> stack) {
+        stack.push(encodeNum(7));
+        return true;
+    }
+    public boolean OP_8(Stack<byte[]> stack) {
+        stack.push(encodeNum(8));
+        return true;
+    }
+    public boolean OP_9(Stack<byte[]> stack) {
+        stack.push(encodeNum(9));
+        return true;
+    }
+    public boolean OP_10(Stack<byte[]> stack) {
+        stack.push(encodeNum(10));
+        return true;
+    }
+    public boolean OP_11(Stack<byte[]> stack) {
+        stack.push(encodeNum(11));
+        return true;
+    }
+    public boolean OP_12(Stack<byte[]> stack) {
+        stack.push(encodeNum(12));
+        return true;
+    }
+    public boolean OP_13(Stack<byte[]> stack) {
+        stack.push(encodeNum(13));
+        return true;
+    }
+    public boolean OP_14(Stack<byte[]> stack) {
+        stack.push(encodeNum(14));
+        return true;
+    }
+    public boolean OP_15(Stack<byte[]> stack) {
+        stack.push(encodeNum(15));
+        return true;
+    }
+    public boolean OP_16(Stack<byte[]> stack) {
+        stack.push(encodeNum(16));
         return true;
     }
     public boolean OP_1NEGATE(Stack<byte[]> stack) {
