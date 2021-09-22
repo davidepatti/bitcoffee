@@ -63,11 +63,12 @@ enum ScriptCmdType {
     OP_0NOTEQUAL(0x92),
     OP_ADD(0x93),
     OP_SUB(0x94),
+    OP_MUL(0x95),
     OP_BOOLAND(0x9a),
     OP_BOOLOR(0x9b), // TODO: complete....
 
     // crypto
-    OP_RIPEMB160(0xa6),
+    OP_RIPEMD160(0xa6),
     OP_SHA1(0xa7),
     OP_SHA256(0xa8),
     OP_HASH160(0xa9),

@@ -12,6 +12,7 @@ public class Script {
         this.commands = stack;
     }
 
+    /*************************************************************************/
     // used for encoding stack nums
     public static byte[] encodeNum(BigInteger n) {
         // TOOD: check if better empty or null
@@ -51,22 +52,45 @@ public class Script {
         return res;
     }
 
+    /*************************************************************************/
     public static byte[] encodeNum(long n) {
         return encodeNum(BigInteger.valueOf(n));
     }
 
+    /*************************************************************************/
     public static BigInteger decodeNum(byte[] element) {
         BigInteger res = null;
-        if (element==null) return BigInteger.ZERO;
+        boolean negative;
+        if (element==null)
+            return BigInteger.ZERO;
+        var big_endian = CryptoKit.reverseBytes(element);
 
+        if ((big_endian[0] & 0x80) !=0 ) {
+            negative = true;
+            res = BigInteger.valueOf((int)(big_endian[0] & 0x7f));
+        }
+        else {
+            negative = false;
+            res = BigInteger.valueOf((int)(big_endian[0]));
+        }
+
+        for (int i=1; i<big_endian.length;i++) {
+            res = res.shiftLeft(8);
+            res = res.add(BigInteger.valueOf(big_endian[i]));
+        }
+
+        if (negative)
+            return res.negate();
 
         return res;
     }
 
+    /*************************************************************************/
     public void addTop(Stack<ScriptCmd> other) {
         this.commands.addAll(other);
     }
 
+    /*************************************************************************/
     public byte[] raw_serialize() throws IOException {
         var bos = new ByteArrayOutputStream();
 
@@ -97,6 +121,7 @@ public class Script {
         return bos.toByteArray();
     }
 
+    /*************************************************************************/
     public byte[] serialize() {
         var bos = new ByteArrayOutputStream();
         try {
@@ -112,6 +137,7 @@ public class Script {
         return bos.toByteArray();
     }
 
+    /*************************************************************************/
     public static Script parse(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
@@ -174,6 +200,7 @@ public class Script {
         return new Script(ops_stack);
     }
 
+    /*************************************************************************/
     public boolean evaluate(byte[] z) {
         // TODO: check if would be better to make it immutable
         // TODO: decode/encode_num for OP_0 OP_16 and many others, as in:
@@ -181,25 +208,34 @@ public class Script {
         var cmds = new Stack<ScriptCmd>();
         cmds.addAll(this.commands); // make a copy
 
-        var stack = new Stack<ScriptCmd>();
-        var altstack = new Stack<ScriptCmd>();
+        var stack = new Stack<byte[]>();
+        var altstack = new Stack<byte[]>();
+
+        System.out.println("*********************************************************************");
+        System.out.println("SCRIPT-> Starting evalutation of script:");
+        System.out.println("-------------------BEGIN SCRIPT -------------------------------------");
+        System.out.println(cmds);
+        System.out.println("-------------------END SCRIPT ---------------------------------------");
+
 
         while (cmds.size()>0) {
             var cmd = cmds.pop();
 
+            System.out.println("SCRIPT-> Analysing command: "+cmd);
+
             // firstly, if it is data, just move it to the stack
 
-            if (cmd.type== ScriptCmdType.DATA)
-                stack.push(cmd);
+            if (cmd.type== ScriptCmdType.DATA) {
+                System.out.println("SCRIPT-> data detected, moving on stack, value:"+CryptoKit.bytesToHexString(cmd.value));
+                stack.push(cmd.value);
+            }
             else { // not data element
 
                 if (cmd.type == ScriptCmdType.OP_IF || cmd.type == ScriptCmdType.OP_NOTIF ) {
+                    System.out.println("ERROR: OP_IF not implemented!");
+                    System.exit(-1);
 
                     // require manipulation of commands using the top of stack
-                    assert false;
-                }
-                else if (cmd.type == ScriptCmdType.OP_TOALTSTACK || cmd.type == ScriptCmdType.OP_FROMALTSTACK) {
-                    // require movement to/from altstack
                     assert false;
                 }
                 else if (cmd.type.getValue() >= 172 && cmd.type.getValue() <= 175){
@@ -215,11 +251,108 @@ public class Script {
                 else {
 
                     switch (cmd.type) {
+                        case OP_0:
+                            this.OP_0(stack);
+                            break;
+                        case OP_1:
+                            this.OP_1(stack);
+                            break;
+                        case OP_2:
+                            this.OP_2(stack);
+                            break;
+                        case OP_3:
+                            this.OP_3(stack);
+                            break;
+                        case OP_4:
+                            this.OP_4(stack);
+                            break;
+                        case OP_5:
+                            this.OP_5(stack);
+                            break;
+                        case OP_6:
+                            this.OP_6(stack);
+                            break;
+                        /*
+                        case OP_7:
+                            this.OP_0(stack);
+                            break;
+                        case OP_8:
+                            this.OP_0(stack);
+                            break;
+                        case OP_9:
+                            this.OP_0(stack);
+                            break;
+                        case OP_10:
+                            this.OP_0(stack);
+                            break;
+                        case OP_11:
+                            this.OP_0(stack);
+                            break;
+                        case OP_12:
+                            this.OP_0(stack);
+                            break;
+                        case OP_13:
+                            this.OP_0(stack);
+                            break;
+                        case OP_14:
+                            this.OP_0(stack);
+                            break;
+                        case OP_15:
+                            this.OP_0(stack);
+                            break;
+                        case OP_16:
+                            this.OP_0(stack);
+                            break;
+
+                         */
+
+                        case OP_VERIFY:
+                            this.OP_VERIFY(stack);
+                            break;
+
+                        case OP_RETURN:
+                            this.OP_RETURN(stack);
+                            break;
+                        case OP_TOALTSTACK:
+                            this.OP_TOALTSTACK(stack,altstack);
+                            break;
+                        case OP_FROMALTSTACK:
+                            this.OP_FROMALTSTACK(stack,altstack);
+                            break;
+                        case OP_EQUAL:
+                            this.OP_EQUAL(stack);
+                            break;
+                        case OP_EQUALVERIFY:
+                            this.OP_EQUALVERIFY(stack);
+                            break;
+                        case OP_ADD:
+                            this.OP_ADD(stack);
+                            break;
+                        case OP_SUB:
+                            this.OP_SUB(stack);
+                            break;
+                        case OP_MUL:
+                            this.OP_MUL(stack);
+                            break;
+                        case OP_RIPEMD160:
+                            this.OP_RIPEMD160(stack);
+                            break;
+                        case OP_SHA256:
+                            this.OP_SHA256(stack);
+                            break;
+                        case OP_DUP:
+                            this.OP_DUP(stack);
+                            break;
+                        case OP_HASH256:
+                            this.OP_HASH256(stack);
+                            break;
+
                         case OP_HASH160:
                             this.OP_HASH160(stack);
                             break;
                         default:
-                            assert false;
+                            System.out.println("FATAL: unsupported Script command "+cmd);
+                            System.exit(-1);
                     }
                     // require only stack
                 }
@@ -227,149 +360,167 @@ public class Script {
 
         }
         if (stack.size()==0) return false;
-        if (stack.pop().value[0] == 0) return false;
+        if (stack.pop() == null) return false;
 
         return true;
     }
 
-    public boolean OP_0(Stack<ScriptCmd> stack) {
-        var cmd = new ScriptCmd(ScriptCmdType.OP_0,this.encodeNum(0));
-        stack.push(cmd);
+    /*************************************************************************/
+    public boolean OP_0(Stack<byte[]> stack) {
+        stack.push(encodeNum(0));
         return true;
     }
-    public boolean OP_1(Stack<ScriptCmd> stack) {
-        var cmd = new ScriptCmd(ScriptCmdType.OP_1,this.encodeNum(1));
-        stack.push(cmd);
+    public boolean OP_1(Stack<byte[]> stack) {
+        stack.push(encodeNum(1));
         return true;
     }
-    public boolean OP_1NEGATE(Stack<ScriptCmd> stack) {
-        var cmd = new ScriptCmd(ScriptCmdType.OP_1NEGATE,this.encodeNum(-1));
-        stack.push(cmd);
+    public boolean OP_2(Stack<byte[]> stack) {
+        stack.push(encodeNum(2));
+        return true;
+    }
+    public boolean OP_3(Stack<byte[]> stack) {
+        stack.push(encodeNum(3));
+        return true;
+    }
+    public boolean OP_4(Stack<byte[]> stack) {
+        stack.push(encodeNum(4));
+        return true;
+    }
+    public boolean OP_5(Stack<byte[]> stack) {
+        stack.push(encodeNum(5));
+        return true;
+    }
+    public boolean OP_6(Stack<byte[]> stack) {
+        stack.push(encodeNum(6));
+        return true;
+    }
+    public boolean OP_1NEGATE(Stack<byte[]> stack) {
+        stack.push(encodeNum(-1));
         return true;
     }
     // TODO add the other OP_N *********************************
 
-    public boolean OP_IF(Stack<ScriptCmd> stack) {
+    public boolean OP_IF(Stack<byte[]> stack) {
         // TODO: implement
         if (stack.size()<1) return false;
 
         return true;
     }
 
-    public boolean OP_VERIFY(Stack<ScriptCmd> stack) {
+    public boolean OP_VERIFY(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        if (decodeNum(element.value).compareTo(BigInteger.ZERO)==0) {
+        if ((decodeNum(element).compareTo(BigInteger.ZERO))==0) {
             return false;
         }
         return true;
     }
-    public boolean OP_RETURN(Stack<ScriptCmd> stack) {
+    public boolean OP_RETURN(Stack<byte[]> stack) {
         return false;
     }
 
-    public boolean OP_TOALTSTACK(Stack<ScriptCmd> stack, Stack<ScriptCmd> altstack) {
+    public boolean OP_TOALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
         if (stack.size()<1) return false;
         altstack.push(stack.pop());
         return true;
     }
 
-    public boolean OP_FROMALTSTACK(Stack<ScriptCmd> stack, Stack<ScriptCmd> altstack) {
+    public boolean OP_FROMALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
         if (stack.size()<1) return false;
         stack.push(altstack.pop());
         return true;
     }
 
-    public boolean OP_EQUAL(Stack<ScriptCmd> stack) {
+    public boolean OP_EQUAL(Stack<byte[]> stack) {
         if (stack.size()<2) return false;
         var e1 = stack.pop();
         var e2 = stack.pop();
 
-        if (e1.equals(e2)) {
-            stack.push(new ScriptCmd(ScriptCmdType.DATA, encodeNum(0)));
+
+
+        if (Arrays.equals(e1,e2)) {
+            stack.push(encodeNum(1));
         }
             else {
-                stack.push(new ScriptCmd(ScriptCmdType.DATA, encodeNum(1)));
+                stack.push(encodeNum(0));
         }
         return true;
     }
 
-    public boolean OP_EQUALVERIFY(Stack<ScriptCmd> stack) {
+    public boolean OP_EQUALVERIFY(Stack<byte[]> stack) {
         return OP_EQUAL(stack) && OP_VERIFY(stack);
     }
 
-    public boolean OP_ADD(Stack<ScriptCmd> stack) {
+    public boolean OP_ADD(Stack<byte[]> stack) {
         if (stack.size()<2) return false;
 
-        var e1 = decodeNum(stack.pop().value);
-        var e2 = decodeNum(stack.pop().value);
+        var e1 = decodeNum(stack.pop());
+        var e2 = decodeNum(stack.pop());
 
-        stack.push(new ScriptCmd(ScriptCmdType.DATA,encodeNum(e1.add(e2))));
+        stack.push(encodeNum(e1.add(e2)));
         return true;
     }
 
-    public boolean OP_SUB(Stack<ScriptCmd> stack) {
+    public boolean OP_SUB(Stack<byte[]> stack) {
         if (stack.size()<2) return false;
 
-        var e1 = decodeNum(stack.pop().value);
-        var e2 = decodeNum(stack.pop().value);
+        var e1 = decodeNum(stack.pop());
+        var e2 = decodeNum(stack.pop());
 
-        stack.push(new ScriptCmd(ScriptCmdType.DATA,encodeNum(e2.subtract(e1))));
+        stack.push(encodeNum(e2.subtract(e1)));
         return true;
     }
 
-    public boolean OP_MUL(Stack<ScriptCmd> stack) {
+    public boolean OP_MUL(Stack<byte[]> stack) {
         if (stack.size()<2) return false;
 
-        var e1 = decodeNum(stack.pop().value);
-        var e2 = decodeNum(stack.pop().value);
+        var e1 = decodeNum(stack.pop());
+        var e2 = decodeNum(stack.pop());
 
-        stack.push(new ScriptCmd(ScriptCmdType.DATA,encodeNum(e2.multiply(e1))));
+        stack.push(encodeNum(e2.multiply(e1)));
         return true;
     }
 
-    public boolean OP_RIPEMD160(Stack<ScriptCmd> stack) {
+    public boolean OP_RIPEMD160(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
 
-        stack.push(new ScriptCmd(element.type,CryptoKit.RIPEMD160(element.value)));
+        stack.push(CryptoKit.RIPEMD160(element));
         return true;
     }
 
-    public boolean OP_SHA256(Stack<ScriptCmd> stack) {
+    public boolean OP_SHA256(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
 
-        stack.push(new ScriptCmd(element.type,CryptoKit.sha256(element.value)));
+        stack.push(CryptoKit.sha256(element));
         return true;
     }
 
-    public boolean OP_HASH160(Stack<ScriptCmd> stack) {
+    public boolean OP_HASH160(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        assert element.type== ScriptCmdType.DATA;
-        var hashed = CryptoKit.hash160(element.value);
-        stack.push(new ScriptCmd(element.type,hashed));
+        var hashed = CryptoKit.hash160(element);
+        stack.push(hashed);
         return true;
     }
 
-    public boolean OP_DUP(Stack<ScriptCmd> stack) {
+    public boolean OP_DUP(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         stack.push(stack.peek());
         return true;
     }
 
-    public boolean OP_HASH256(Stack<ScriptCmd> stack) {
+    public boolean OP_HASH256(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        assert element.type== ScriptCmdType.DATA;
-        var hashed = CryptoKit.hash256(element.value);
-        stack.push(new ScriptCmd(element.type,hashed));
+        var hashed = CryptoKit.hash256(element);
+        stack.push(hashed);
         return true;
     }
 
 
-    public boolean OP_CHECKSIG(Stack<ScriptCmd> stack, byte[] z) {
+    public boolean OP_CHECKSIG(Stack<byte[]> stack, byte[] z) {
         if (stack.size()<2) return false;
 
         var sec_pubkey_cmd = stack.pop();
@@ -377,23 +528,23 @@ public class Script {
 
         // take off the last byte of the signature as that's the hash_type
         // see: https://en.bitcoin.it/wiki/OP_CHECKSIG
-        var der_bytes = Arrays.copyOf(der_signature.value,der_signature.value.length-1);
-        var point = S256Point.parseSEC(sec_pubkey_cmd.value);
+        var der_bytes = Arrays.copyOf(der_signature,der_signature.length-1);
+        var point = S256Point.parseSEC(sec_pubkey_cmd);
         // 1) check parse der signature
         // 2) check
         var sig = Signature.parse(der_bytes);
 
         if (point.verify(new BigInteger(z),sig)) {
-            // TODO: implement encode_num(1)
-            stack.push(new ScriptCmd(ScriptCmdType.DATA,new byte[] {0x01}));
+            stack.push(encodeNum(1));
         }
         //
         // TODO: implement encode_num(0)
-        else stack.push(new ScriptCmd(ScriptCmdType.OP_0));
+        else stack.push(encodeNum(0));
 
         return false;
     }
 
+    /*************************************************************************/
     @Override
     public String toString() {
         String out = "Script{";
