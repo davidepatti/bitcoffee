@@ -56,13 +56,20 @@ public class TestTransactions {
 "e7520d55feffffff0251430f00000000001976a914ab0c0b2e98b1ab6dbf67d4750b0a56244948"+
 "a87988ac005a6202000000001976a9143c82d7df364eb6c75be8c80df2b3eda8db57397088ac46430600";
 
-
-
-        /* TODO: re-enable
         Tx tx = Tx.parse(CryptoKit.hexStringToByteArray(trans),false);
         System.out.println("Transaction parsed:");
         System.out.println(tx);
+
+       // ScriptSig second input
+       // "304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a71601035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937"
+
+        // ScriptPubKey second output
+        //OP_DUP OP_HASH160 ab0c0b2e98b1ab6dbf67d4750b0a56244948a879 \
+        //OP_EQUALVERIFY OP_CHECKSIG
         System.out.println("-----------------------------------------------------------");
+
+
+
 
         String target_tx_id = "716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c";
         System.out.println("Testing fetching tx_id:"+target_tx_id);
@@ -73,6 +80,5 @@ public class TestTransactions {
 
         System.out.println("FEE:");
         System.out.println(tx.calculateFee());
-        */
     }
 }

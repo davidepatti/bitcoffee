@@ -114,7 +114,7 @@ public class Script {
             } // operation, not data
             else {
                 bos.write((byte)cmd.type.getValue());
-                bos.write(cmd.value);
+                //bos.write(cmd.value);
             }
 
         }
@@ -141,7 +141,9 @@ public class Script {
     public static Script parse(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
-        var len = CryptoKit.readVarint(bis);
+        var hex = CryptoKit.bytesToHexString(serial);
+        System.out.println("Parsing script hex:"+hex);
+        var len = serial.length;
         int count =0;
         while (count < len) {
             var current_byte = bis.read();
@@ -313,11 +315,17 @@ public class Script {
                         case OP_FROMALTSTACK:
                             this.OP_FROMALTSTACK(stack,altstack);
                             break;
+                        case OP_2DUP:
+                            this.OP_2DUP(stack);
+                            break;
                         case OP_EQUAL:
                             this.OP_EQUAL(stack);
                             break;
                         case OP_EQUALVERIFY:
                             this.OP_EQUALVERIFY(stack);
+                            break;
+                        case OP_NOT:
+                            this.OP_NOT(stack);
                             break;
                         case OP_ADD:
                             this.OP_ADD(stack);
@@ -358,6 +366,7 @@ public class Script {
 
         return true;
     }
+
 
     /*************************************************************************/
     public boolean OP_0(Stack<byte[]> stack) {
@@ -465,6 +474,15 @@ public class Script {
         return true;
     }
 
+    private boolean OP_2DUP(Stack<byte[]> stack) {
+        if (stack.size()<2) return false;
+        var top1 = stack.peek();
+        var top2 = stack.elementAt(stack.size()-2);
+        stack.push(top2);
+        stack.push(top1);
+        return true;
+    }
+
     public boolean OP_EQUAL(Stack<byte[]> stack) {
         if (stack.size()<2) return false;
         var e1 = stack.pop();
@@ -483,6 +501,17 @@ public class Script {
 
     public boolean OP_EQUALVERIFY(Stack<byte[]> stack) {
         return OP_EQUAL(stack) && OP_VERIFY(stack);
+    }
+    public boolean OP_NOT(Stack<byte[]> stack) {
+        if (stack.size()<1) return false;
+
+        var element = decodeNum(stack.pop());
+        if (element.equals(BigInteger.ZERO))
+            stack.push(encodeNum(1));
+        else
+            stack.push(encodeNum(0));
+
+        return true;
     }
 
     public boolean OP_ADD(Stack<byte[]> stack) {

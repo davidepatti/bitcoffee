@@ -3,6 +3,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/*****************************************************************/
 public class Tx {
     private final int version;
     public final ArrayList<TxIn> tx_ins;
@@ -11,6 +12,7 @@ public class Tx {
     private final boolean testnet;
     private byte [] serialized;
 
+    /*****************************************************************/
     public Tx(int version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
         this.version = version;
         this.tx_ins = tx_ins;
@@ -20,21 +22,25 @@ public class Tx {
         this.serialized = serialize();
     }
 
+    /*****************************************************************/
     public void updateLockTime(long locktime) {
         this.locktime = locktime;
         this.serialized = serialize();
     }
 
+    /*****************************************************************/
     public String getId() {
         String hex = CryptoKit.bytesToHexString(this.hash());
         return hex;
     }
 
+    /*****************************************************************/
     public byte[] hash() {
         return CryptoKit.hash256(this.serialized);
     }
 
 
+    /*****************************************************************/
     // parses a stream to construct a Tx instance
     static public Tx parse(byte[] serialization, boolean testnet) {
 
@@ -70,10 +76,12 @@ public class Tx {
         return tx;
     }
 
+    /*****************************************************************/
     public String getSerialString() {
         return CryptoKit.bytesToHexString(this.serialized);
     }
 
+    /*****************************************************************/
     private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
@@ -105,6 +113,7 @@ public class Tx {
         return bos.toByteArray();
     }
 
+    /*****************************************************************/
     @Override
     public String toString() {
         return "Tx{\n" +
@@ -116,6 +125,7 @@ public class Tx {
                 '}';
     }
 
+    /*****************************************************************/
     public long calculateFee() {
         // in satoshis
         long total_in = 0;
