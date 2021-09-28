@@ -142,7 +142,7 @@ public class Script {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
         var hex = CryptoKit.bytesToHexString(serial);
-        System.out.println("Parsing script hex:"+hex);
+        //System.out.println("DEBUG: Parsing script hex:"+hex);
         var len = serial.length;
         int count =0;
         while (count < len) {
@@ -155,7 +155,7 @@ public class Script {
                 var n = current_byte;
                 var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(n));
                 ops_stack.push(cmd);
-                System.out.println("Script parsing found element data: "+cmd);
+                //System.out.println("DEBUG: Script parsing found element data: "+cmd);
                 count+=n;
             }
             // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
@@ -164,7 +164,7 @@ public class Script {
                 var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA1, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
-                System.out.println("Script parse operation: "+cmd);
+                //System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+1;
             }
             // OP_PUSHDATA_2 - the next two bytes indicate how many bytes to read for the element
@@ -172,7 +172,7 @@ public class Script {
                 var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA2, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
-                System.out.println("Script parse operation: "+cmd);
+                // System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+2;
             }
             // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
@@ -180,7 +180,7 @@ public class Script {
                 var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA4, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
-                System.out.println("Script parse operation: "+cmd);
+                // System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+4;
             }
 
@@ -188,13 +188,13 @@ public class Script {
                 byte[] bytes = new byte[1];
                 bytes[0] = (byte)current_byte;
                 var cmd = new ScriptCmd(ScriptCmdType.fromInt(current_byte), bytes);
-                System.out.println("Script parse operation: "+cmd);
+                //System.out.println("DEBUG: Script parse operation: "+cmd);
                 ops_stack.push(cmd);
             }
         }
             try {
                 if (count!=len)
-                    throw new Exception("Script parsin error");
+                    throw new Exception("Script parsing error: Wrong length (count="+count+",len="+len);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -220,12 +220,12 @@ public class Script {
         while (cmds.size()>0) {
             var cmd = cmds.pop();
 
-            System.out.println("SCRIPT-> Analysing command: "+cmd);
+            //System.out.println("DEBUG SCRIPT-> Analysing command: "+cmd);
 
             // firstly, if it is data, just move it to the stack
 
             if (cmd.type== ScriptCmdType.DATA) {
-                System.out.println("SCRIPT-> data detected, moving on stack, value:"+CryptoKit.bytesToHexString(cmd.value));
+                //System.out.println("DEBUG SCRIPT-> data detected, moving on stack, value:"+CryptoKit.bytesToHexString(cmd.value));
                 stack.push(cmd.value);
             }
             else { // not data element

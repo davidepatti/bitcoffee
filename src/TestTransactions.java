@@ -1,42 +1,10 @@
 
 public class TestTransactions {
     public static void main(String args[]) {
-        System.out.println("-----------------------------------------------------------");
-        System.out.println("Testing varint");
-        String hex_string = "64";
-        long target_n = 100;
-        System.out.println("hex="+hex_string+ " target_n="+target_n);
-        long result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
-        System.out.println("Result:"+(target_n==result));
 
-        hex_string = "fdff00";
-        target_n = 255;
-        System.out.println("hex="+hex_string+ " target_n="+target_n);
-        result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
-        System.out.println("Result read:"+(target_n==result));
-        System.out.println("Result encode:"+hex_string.equals(CryptoKit.bytesToHexString(CryptoKit.encodeVarint(target_n))));
-
-        hex_string = "fd2b02";
-        target_n = 555;
-        System.out.println("hex="+hex_string+ " target_n="+target_n);
-        result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
-        System.out.println("Result read:"+(target_n==result));
-        System.out.println("Result encode:"+hex_string.equals(CryptoKit.bytesToHexString(CryptoKit.encodeVarint(target_n))));
-
-        hex_string = "fe7f110100";
-        target_n = 70015;
-        System.out.println("hex="+hex_string+ " target_n="+target_n);
-        result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
-        System.out.println("Result read:"+(target_n==result));
-        System.out.println("Result encode:"+hex_string.equals(CryptoKit.bytesToHexString(CryptoKit.encodeVarint(target_n))));
-
-        hex_string = "ff6dc7ed3e60100000";
-        target_n = 18005558675309L;
-        System.out.println("hex="+hex_string+ " target_n="+target_n);
-        result = CryptoKit.readVarint(CryptoKit.hexStringToByteArray(hex_string));
-        System.out.println("Result read:"+(target_n==result));
-        System.out.println("Result encode:"+hex_string.equals(CryptoKit.bytesToHexString(CryptoKit.encodeVarint(target_n))));
-        System.out.println("-----------------------------------------------------------");
+        System.out.println("--------------------------------------------------------");
+        System.out.println(">> Test: Transaction decoding");
+        // Exercise 5 of chapter 5
 
         String trans = "010000000456919960ac691763688d3d3bcea9ad6ecaf875df5339e148a1fc61c6ed7a069e0100"+
 "00006a47304402204585bcdef85e6b1c6af5c2669d4830ff86e42dd205c0e089bc2a821657e951"+
@@ -60,25 +28,35 @@ public class TestTransactions {
         System.out.println("Transaction parsed:");
         System.out.println(tx);
 
-       // ScriptSig second input
-       // "304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a71601035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937"
 
-        // ScriptPubKey second output
-        //OP_DUP OP_HASH160 ab0c0b2e98b1ab6dbf67d4750b0a56244948a879 \
-        //OP_EQUALVERIFY OP_CHECKSIG
+        var res_script_sig = CryptoKit.bytesToHexString(tx.tx_ins.get(1).getScript_sig());
+        var res_script_pubkey = CryptoKit.bytesToHexString(tx.tx_outs.get(1).getScriptPubkey());
+        var target_sig = "47304402207899531a52d59a6de200179928ca900254a36b8dff8bb75f5f5d71b1cdc26125022008b422690b8461cb52c3cc30330b23d574351872b7c361e9aae3649071c1a7160121035d5c93d9ac96881f19ba1f686f15f009ded7c62efe85a872e6a19b43c15a2937";
+        var target_pub = "76a9143c82d7df364eb6c75be8c80df2b3eda8db57397088ac";
+
+        System.out.println(">> Testing TX ID:"+tx.getId());
+
+        System.out.println(">> Testing ScriptSig second input: "+res_script_sig.equals(target_sig));
+        System.out.println(">> ScriptPubKey second output:"+res_script_pubkey.equals(target_pub));
+
+        var fee = tx.calculateFee();
+        System.out.print(">> Test Calculated fee: "+fee);
+        long target_fee = 140500;
+        if (fee==target_fee) System.out.println(" Test fee OK!");
+        else
+            System.out.println(" Test fee ERROR");
+
         System.out.println("-----------------------------------------------------------");
 
 
 
-
+        //https://blockstream.info/api/tx/716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c/hex
         String target_tx_id = "716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c";
-        System.out.println("Testing fetching tx_id:"+target_tx_id);
+        System.out.println(">> Test fetching Transaction");
+        System.out.println("tx_id:"+target_tx_id);
         var tx_result = TxFetcher.fetch(target_tx_id,false,true);
-        System.out.println("Tx result:");
-        System.out.println(tx_result);
+        System.out.println("Tx result:"+tx_result);
 
 
-        System.out.println("FEE:");
-        System.out.println(tx.calculateFee());
     }
 }

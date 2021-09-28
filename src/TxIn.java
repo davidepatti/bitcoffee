@@ -41,15 +41,15 @@ public class TxIn {
         try {
             var prev_tx = CryptoKit.reverseBytes(bis.readNBytes(32));
             String prev_tx_hex = CryptoKit.bytesToHexString(prev_tx);
-            System.out.println("TxIn parsing: found previous_tx "+prev_tx_hex);
+            //System.out.println("TxIn parsing: found previous_tx "+prev_tx_hex);
 
             var prev_index = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
-            System.out.println("TxIn parsing: found prev_index "+prev_index);
+            //System.out.println("TxIn parsing: found prev_index "+prev_index);
 
             var script_sig_len = (int)CryptoKit.readVarint(bis);
             var script_sig = bis.readNBytes(script_sig_len);
             var script_sig_hex = CryptoKit.bytesToHexString(script_sig);
-            System.out.println("TxIn parsing: found ScriptSig "+script_sig_hex);
+            //System.out.println("TxIn parsing: found ScriptSig "+script_sig_hex);
             var sequence = CryptoKit.reverseBytes(bis.readNBytes(4));
             tx_input = new TxIn(prev_tx,prev_index,script_sig,sequence);
 
@@ -105,5 +105,7 @@ public class TxIn {
         return tx.tx_outs.get((int)this.prev_index).getScriptPubkey();
     }
 
-
+    public byte[] getScript_sig() {
+        return script_sig;
+    }
 }

@@ -30,8 +30,14 @@ public class Tx {
 
     /*****************************************************************/
     public String getId() {
-        String hex = CryptoKit.bytesToHexString(this.hash());
-        return hex;
+        var hash_bytes = this.hash();
+        // "Due to historical accident, the tx and block hashes that bitcoin core uses are byte-reversed.
+        // I’m not entirely sure why. May be something like using openssl bignum to store hashes or something like that,
+        // then printing them as a number."
+
+        // Wladimir van der Laan (Bitcoin Core developer)
+        String hex_id = CryptoKit.bytesToHexString(CryptoKit.reverseBytes(hash_bytes));
+        return hex_id;
     }
 
     /*****************************************************************/
@@ -69,6 +75,22 @@ public class Tx {
             var locktime = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
 
             tx = new Tx(version,inputs,outputs,locktime, testnet);
+
+
+            var original_ser = CryptoKit.bytesToHexString(serialization);
+            var created_ser = tx.getSerialString();
+
+
+            // sanity check, serialization should match the parsed one
+            if (created_ser.equals(original_ser)) {
+                System.out.println("Checking serialization coherence in parsed tx...ok");
+            }
+            else {
+                System.out.println("FATAL: mismatching serializations");
+                System.out.println("Original:"+original_ser);
+                System.out.println(" Created:"+created_ser);
+                System.exit(-1);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,17 +112,14 @@ public class Tx {
             bos.write(buf,0,4);
 
             // TODO: check whether varint should be little endian (see the other)
-            int txins_len = 0;
-            for (TxIn txin: tx_ins)
-                txins_len+= txin.getSerialized().length;
-            bos.write(CryptoKit.encodeVarint(txins_len));
+
+            int num_ins = tx_ins.size();
+            bos.write(CryptoKit.encodeVarint(num_ins));
             for (TxIn txin: tx_ins)
                 bos.write(txin.getSerialized());
 
-            int txouts_len = 0;
-            for (TxOut txout: tx_outs)
-                txouts_len+= txout.getSerialized().length;
-            bos.write(CryptoKit.encodeVarint(txouts_len));
+            int num_outs = tx_outs.size();
+            bos.write(CryptoKit.encodeVarint(num_outs));
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 
