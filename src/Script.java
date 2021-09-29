@@ -90,11 +90,22 @@ public class Script {
         this.commands.addAll(other);
     }
 
+    public void addTop(Script other_script) {
+        var other_cmds = other_script.commands;
+        this.commands.addAll(other_cmds);
+    }
+
     /*************************************************************************/
     public byte[] raw_serialize() throws IOException {
         var bos = new ByteArrayOutputStream();
 
-        for (ScriptCmd cmd : commands) {
+        var copy_cmd = new Stack<ScriptCmd>();
+
+        copy_cmd.addAll(commands);
+
+
+        while (!copy_cmd.empty()) {
+            var cmd = copy_cmd.pop();
             var len = cmd.value.length;
 
             if (cmd.type== ScriptCmdType.DATA) {
@@ -199,7 +210,13 @@ public class Script {
                 e.printStackTrace();
             }
 
-        return new Script(ops_stack);
+            var reversed = new Stack<ScriptCmd>();
+
+            while (!ops_stack.empty()) {
+                reversed.push(ops_stack.pop());
+            }
+
+        return new Script(reversed);
     }
 
     /*************************************************************************/

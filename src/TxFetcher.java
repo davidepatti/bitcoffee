@@ -15,19 +15,18 @@ public class TxFetcher {
     public static String getURL(boolean testnet) {
 
         if (testnet)
-            return "https://blockstream.info/testnet/api/";
+            return "https://blockstream.info/testnet/api";
         else
-            return "https://blockstream.info/api/";
+            return "https://blockstream.info/api";
     }
 
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
-        System.out.println("DEBUG: fetching TX with ID: "+tx_id);
         Tx tx = null;
 
         try {
             if (fresh || !(cache.containsKey(tx_id))) {
                 var url = new URL(getURL(testnet) + "/tx/" + tx_id + "/hex");
-                System.out.println("(trusting source:" + url + ")");
+                System.out.println("Fetching TX at:" + url + ")");
                 var con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
                 var in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -56,7 +55,7 @@ public class TxFetcher {
                     tx = Tx.parse(raw, testnet);
 
                 var serial = tx.getSerialString();
-                System.out.println("DEBUG: fetched raw tx: " + serial);
+                //System.out.println("DEBUG: fetched raw tx: " + serial);
 
                 // TODO: re-enable when properly dealing with witness data
                 if (!tx.getId().equals(tx_id)) {
@@ -67,9 +66,10 @@ public class TxFetcher {
                     System.out.println("*******************************************");
                     //throw new Exception("my exception");
                 } else {
-                    System.out.println("OK, matching ID:"+tx.getId());
+                    System.out.println("OK, fetched TX has matching ID:"+tx.getId());
                     //
                 }
+                cache.put(tx_id,tx);
             }
 
         } catch (MalformedURLException e) {
@@ -82,7 +82,6 @@ public class TxFetcher {
             e.printStackTrace();
         }
 
-        cache.put(tx_id,tx);
-        return tx;
+        return cache.get(tx_id);
     }
 }

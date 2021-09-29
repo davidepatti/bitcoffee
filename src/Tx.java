@@ -1,6 +1,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 /*****************************************************************/
@@ -46,6 +47,83 @@ public class Tx {
     }
 
 
+    public boolean verifyInput(int input_index) {
+        boolean eval = false;
+        var tx_in = tx_ins.get(input_index);
+        var prev_script_pubkey = tx_in.getPreviousTxScriptPubKey(false);
+        var prevspk = CryptoKit.bytesToHexString(prev_script_pubkey);
+        var z = this.getSigHash(input_index);
+        try {
+            var script_sig = Script.parse(tx_in.getScript_sig());
+            var script_combined = Script.parse(prev_script_pubkey);
+            script_combined.addTop(script_sig);
+            eval = script_combined.evaluate(z.toByteArray());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return eval;
+    }
+
+    //Returns the integer representation of the hash that needs to get signed for index input_index
+    public BigInteger getSigHash(int input_index) {
+        BigInteger x = null;
+
+        var bos = new ByteArrayOutputStream();
+
+        try {
+            byte[] buf = CryptoKit.intToLittleEndianBytes(version);
+            bos.write(buf,0,4);
+
+            int num_ins = tx_ins.size();
+            bos.write(CryptoKit.encodeVarint(num_ins));
+            for (int i=0;i < num_ins; i++) {
+
+                var prev_tx = tx_ins.get(i).getPrev_tx();
+                var pre_index = tx_ins.get(i).getPrev_index();
+                var sequence = tx_ins.get(i).getSequence();
+
+
+                // the script_sig of the index_input to be signed must be
+                // replaced with the script_pubkey found in the previous transaction output
+                // otherwise should be zero byte
+                if (i==input_index) {
+                    var script_pubkey = tx_ins.get(i).getPreviousTxScriptPubKey(false);
+                    var tx_in = new TxIn(prev_tx,pre_index,script_pubkey,sequence);
+                    bos.write(tx_in.getSerialized());
+                }
+                else {
+                    byte[] zero = {0};
+                    var tx_in = new TxIn(prev_tx,pre_index,zero,sequence);
+                    bos.write(tx_in.getSerialized());
+                }
+
+            }
+
+            int num_outs = tx_outs.size();
+            bos.write(CryptoKit.encodeVarint(num_outs));
+            for (TxOut txout: tx_outs)
+                bos.write(txout.getSerialized());
+
+            buf = CryptoKit.intToLittleEndianBytes(this.locktime);
+            bos.write(buf,0,4);
+
+            // SIGHASH_ALL hash type
+            buf = CryptoKit.intToLittleEndianBytes(1);
+            bos.write(buf,0,4);
+
+            var hashed256 = CryptoKit.hash256(bos.toByteArray());
+            x= new BigInteger(hashed256);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return x;
+    }
+
+
     /*****************************************************************/
     // parses a stream to construct a Tx instance
     static public Tx parse(byte[] serialization, boolean testnet) {
@@ -82,10 +160,7 @@ public class Tx {
 
 
             // sanity check, serialization should match the parsed one
-            if (created_ser.equals(original_ser)) {
-                System.out.println("Checking serialization coherence in parsed tx...ok");
-            }
-            else {
+            if (!created_ser.equals(original_ser)) {
                 System.out.println("FATAL: mismatching serializations");
                 System.out.println("Original:"+original_ser);
                 System.out.println(" Created:"+created_ser);
@@ -135,8 +210,7 @@ public class Tx {
     /*****************************************************************/
     @Override
     public String toString() {
-        return "Tx{\n" +
-                "version='" + version + '\'' +
+        return "Tx{ version='" + version + '\'' +
                 ",\n tx_ins=" + tx_ins +
                 ",\n tx_outs=" + tx_outs +
                 ",\n locktime=" + locktime +

@@ -100,12 +100,24 @@ public class TxIn {
         return amount;
     }
 
-    public byte[] getScriptPubKey(boolean testnet) {
+    public byte[] getPreviousTxScriptPubKey(boolean testnet) {
         var tx = fetchTx(testnet);
         return tx.tx_outs.get((int)this.prev_index).getScriptPubkey();
     }
 
     public byte[] getScript_sig() {
         return script_sig;
+    }
+
+    public byte[] getPrev_tx() {
+        return prev_tx;
+    }
+
+    public long getPrev_index() {
+        return prev_index;
+    }
+
+    public byte[] getSequence() {
+        return sequence;
     }
 }
