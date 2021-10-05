@@ -3,31 +3,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class TxIn {
-    private final byte[] prev_tx;
+    private final byte[] prev_tx_id;
     private final long prev_index;
     private final byte[] script_sig;
     private final byte[] sequence;
-    private final byte[] serialized;
 
-    public TxIn(byte[] prev_tx, long prev_index, byte[] script_sig, byte[] sequence) {
-        this.prev_tx = prev_tx;
+    public TxIn(byte[] prev_tx_id, long prev_index, byte[] script_sig, byte[] sequence) {
+        this.prev_tx_id = prev_tx_id;
         this.prev_index = prev_index;
         this.script_sig = script_sig;
         this.sequence = sequence;
 
-        this.serialized = this.serialize();
     }
-    public TxIn(byte[] prev_tx, long prev_index, byte[] script_sig) {
-        this.prev_tx = prev_tx;
+    public TxIn(byte[] prev_tx_id, long prev_index, byte[] script_sig) {
+        this.prev_tx_id = prev_tx_id;
         this.prev_index = prev_index;
         this.script_sig = script_sig;
         this.sequence = CryptoKit.hexStringToByteArray("ffffffff");
-        this.serialized = this.serialize();
     }
 
     @Override
     public String toString() {
-        String prev_tx_str = CryptoKit.bytesToHexString(prev_tx);
+        String prev_tx_str = CryptoKit.bytesToHexString(prev_tx_id);
         String script_sig_str = CryptoKit.bytesToHexString(script_sig);
         String sequence = CryptoKit.bytesToHexString(this.sequence);
 
@@ -64,17 +61,20 @@ public class TxIn {
         var bos = new ByteArrayOutputStream();
 
         try {
-            Script script = Script.parse(this.script_sig);
+            //Script script = Script.parse(this.script_sig);
+
             // when serializing, convert to little endian
             // 32 bytes hash of the previous tx, in little endian
-            bos.write(CryptoKit.reverseBytes(prev_tx));
+            bos.write(CryptoKit.reverseBytes(prev_tx_id));
 
             byte[] buf = CryptoKit.intToLittleEndianBytes(prev_index);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
 
-            bos.write(script.serialize());
-            buf = CryptoKit.reverseBytes(sequence);
+            var len = this.script_sig.length;
+            bos.write(CryptoKit.encodeVarint((long)len));
+            bos.write(this.script_sig);
+            buf = CryptoKit.reverseBytes(this.sequence);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
 
@@ -87,11 +87,11 @@ public class TxIn {
     }
 
     public byte[] getSerialized() {
-        return serialized;
+        return this.serialize();
     }
 
     public Tx fetchTx(boolean testnet) {
-        return TxFetcher.fetch(CryptoKit.bytesToHexString(this.prev_tx),testnet,false);
+        return TxFetcher.fetch(CryptoKit.bytesToHexString(this.prev_tx_id),testnet,false);
     }
 
     public long getValue(boolean testnet) {
@@ -109,8 +109,8 @@ public class TxIn {
         return script_sig;
     }
 
-    public byte[] getPrev_tx() {
-        return prev_tx;
+    public byte[] getPrev_tx_id() {
+        return prev_tx_id;
     }
 
     public long getPrev_index() {

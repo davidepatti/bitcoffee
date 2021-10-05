@@ -2,6 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -9,7 +10,10 @@ public class Script {
     Stack<ScriptCmd> commands;
 
     public Script(Stack<ScriptCmd> stack) {
-        this.commands = stack;
+        if (stack==null)
+            commands = new Stack<ScriptCmd>();
+        else
+            this.commands = stack;
     }
 
     /*************************************************************************/
@@ -85,6 +89,21 @@ public class Script {
         return res;
     }
 
+    /***************************************************************************/
+    // Convert the 20 bytes hash in a ScriptPubKey
+    public static Script hash160ToP2pkh(byte[] h160) {
+        var cmds = new Stack<ScriptCmd>();
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_CHECKSIG));
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUALVERIFY));
+        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_DUP));
+
+        Script script_pubkey = new Script(cmds);
+
+        return script_pubkey;
+    }
+
     /*************************************************************************/
     public void addTop(Stack<ScriptCmd> other) {
         this.commands.addAll(other);
@@ -94,14 +113,29 @@ public class Script {
         var other_cmds = other_script.commands;
         this.commands.addAll(other_cmds);
     }
+    /*************************************************************************/
+    public byte[] getBytes() {
+        try {
+            return this.raw_serialize();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     /*************************************************************************/
-    public byte[] raw_serialize() throws IOException {
+    private byte[] raw_serialize() throws IOException {
         var bos = new ByteArrayOutputStream();
 
         var copy_cmd = new Stack<ScriptCmd>();
 
         copy_cmd.addAll(commands);
+
+        if (copy_cmd.empty()) {
+            byte[] empty = {};
+            return empty;
+        }
 
 
         while (!copy_cmd.empty()) {
@@ -139,6 +173,7 @@ public class Script {
             var result = this.raw_serialize();
             var len = result.length;
             var len_bytes = CryptoKit.encodeVarint(len);
+            // serialization starts with the number script bytes that follows
             bos.write(len_bytes);
             bos.write(result);
 
@@ -149,12 +184,13 @@ public class Script {
     }
 
     /*************************************************************************/
-    public static Script parse(byte[] serial) throws IOException {
+    public static Script parseSerial(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
         var hex = CryptoKit.bytesToHexString(serial);
         //System.out.println("DEBUG: Parsing script hex:"+hex);
-        var len = serial.length;
+        var len = CryptoKit.readVarint(bis);
+
         int count =0;
         while (count < len) {
             var current_byte = bis.read();

@@ -5,7 +5,7 @@ import java.util.Stack;
 
 public class TestScript {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("---------------------------------------------------");
         System.out.println("Testing encode_num:");
 
@@ -33,24 +33,31 @@ public class TestScript {
         System.out.println("decoding "+res_n+" result "+decode_n+ "-->"+decode_n.equals(BigInteger.valueOf(n)));
 
         System.out.println("------------------------------------------------------");
+        System.out.println(">> TEST Parsing Simple Script");
         var bos = new ByteArrayOutputStream();
         //bos.write(3);
+        bos.write(CryptoKit.encodeVarint((long)3));
         bos.write(0x54);
         bos.write(0);
         bos.write(79);
+        var simple = bos.toByteArray();
+        System.out.println("script serial hex: "+CryptoKit.bytesToHexString(simple));
 
         try {
-            Script script = Script.parse(bos.toByteArray());
+            Script script = Script.parseSerial(simple);
+            System.out.println(script);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("------------------------------------------------------");
 
         var test_hash160 = new Stack<ScriptCmd>();
         var hello = CryptoKit.stringToBytes("hello world");
         test_hash160.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
         test_hash160.push(new ScriptCmd(ScriptCmdType.DATA,hello));
         var test_script = new Script(test_hash160);
-        System.out.println("Testing hash160 on "+ CryptoKit.bytesToHexString(hello));
+        System.out.println("------------------------------------------------------");
+        System.out.println(">> Testing hash160 on "+ CryptoKit.bytesToHexString(hello));
         // when debugging, check that stack remains with DATA d7d5ee7824ff93f94c3055af9382c86c68b5ca92
         System.out.println(test_script.evaluate(null));
         System.out.println("------------------------------------------------------");

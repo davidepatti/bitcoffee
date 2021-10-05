@@ -3,6 +3,7 @@
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,8 +12,23 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Stack;
 
 public class CryptoKit {
+
+    public static byte[] addLenPrefix(byte[] bytes) {
+        long len = bytes.length;
+        var varint = CryptoKit.encodeVarint(len);
+        var bos = new ByteArrayOutputStream();
+        try {
+            bos.write(varint);
+            bos.write(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bos.toByteArray();
+    }
 
     /***************************************************************************/
     public static String bytesToHexString(byte [] bytes) {
@@ -129,6 +145,40 @@ public class CryptoKit {
         return prefix+result;
         //return result;
     }
+    /***************************************************************************/
+    // get the 20 bytes of the hashed160 public key from the encoded58 address
+    public static byte[] decodeBase58(String address) {
+        String BASE58_AlPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+        var num = BigInteger.valueOf(0);
+
+        for (int i=0;i<address.length();i++) {
+            char c = address.charAt(i);
+            num = num.multiply(BigInteger.valueOf(58));
+            num = num.add(BigInteger.valueOf(BASE58_AlPHABET.indexOf(c)));
+        }
+
+        var combined = num.toByteArray();
+        var cobined_hex = CryptoKit.bytesToHexString(combined);
+        var len = combined.length;
+        byte[] checksum_start = Arrays.copyOfRange(combined,len-4,len);
+        var checksum_start_hex = CryptoKit.bytesToHexString(checksum_start);
+        var original = Arrays.copyOfRange(combined,0,len-4);
+        var computed_checksum = hash256(original);
+        var computed_checksim_start = Arrays.copyOfRange(computed_checksum,0,4);
+
+        if (!Arrays.equals(computed_checksim_start,checksum_start)) {
+            System.out.println("ERROR: Bad address checksum!");
+            System.out.println("Address: "+address);
+            System.out.println("Computed checksum:"+computed_checksim_start);
+            System.out.println("Original checksum:"+checksum_start);
+        }
+
+        // the first byte is the network prefix, the last four are the checksum
+        var hash_20_bytes = Arrays.copyOfRange(combined,1,len-4);
+
+        return hash_20_bytes;
+    }
+
 
     /***************************************************************************/
     public static String encodeBase58Checksum(byte[] b) {

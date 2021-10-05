@@ -20,6 +20,16 @@ public class TxOut {
         return "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + '}';
     }
 
+    public String printScript() {
+        try {
+            var script = Script.parseSerial(CryptoKit.addLenPrefix(this.script_pubkey));
+            return script.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Error printing script";
+    }
+
 
 
     public static TxOut parse(ByteArrayInputStream bis) {
@@ -29,7 +39,6 @@ public class TxOut {
             var amount = CryptoKit.litteEndianBytesToInt(bis.readNBytes(8)).longValue();
             var script_len = (int)CryptoKit.readVarint(bis);
             var script_pub_key = bis.readNBytes(script_len);
-
             txout = new TxOut(amount,script_pub_key);
 
         } catch (IOException e) {
@@ -39,22 +48,21 @@ public class TxOut {
     }
 
     private byte[] serialize() {
+
         var bos = new ByteArrayOutputStream();
-
-        byte[] buf = CryptoKit.intToLittleEndianBytes(amount);
-
-        // buf is 32 bytes little endian, we need only the first 8
         try {
-            Script script = Script.parse(script_pubkey);
+            byte[] buf = CryptoKit.intToLittleEndianBytes(amount);
+            // buf is 32 bytes little endian, we need only the first 8
             bos.write(buf,0,8);
-            bos.write(script.serialize());
+            var len = script_pubkey.length;
+            bos.write(CryptoKit.encodeVarint((long)len));
+            bos.write(this.script_pubkey);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return bos.toByteArray();
-
     }
 
     public byte[] getSerialized() {

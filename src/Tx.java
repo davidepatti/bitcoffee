@@ -47,6 +47,21 @@ public class Tx {
     }
 
 
+
+    /*****************************************************************/
+    public boolean verify() {
+        // we make sure we are not creating money
+        if (this.calculateFee()<0)
+            return false;
+
+        // each input has the correct scriptsig
+        for (int i=0;i<tx_ins.size();i++)
+            if (!this.verifyInput(i)) return false;
+        return true;
+    }
+
+
+    /*****************************************************************/
     public boolean verifyInput(int input_index) {
         boolean eval = false;
         var tx_in = tx_ins.get(input_index);
@@ -54,8 +69,8 @@ public class Tx {
         var prevspk = CryptoKit.bytesToHexString(prev_script_pubkey);
         var z = this.getSigHash(input_index);
         try {
-            var script_sig = Script.parse(tx_in.getScript_sig());
-            var script_combined = Script.parse(prev_script_pubkey);
+            var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScript_sig()));
+            var script_combined = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
             script_combined.addTop(script_sig);
             eval = script_combined.evaluate(z.toByteArray());
 
@@ -66,6 +81,7 @@ public class Tx {
         return eval;
     }
 
+    /*****************************************************************/
     //Returns the integer representation of the hash that needs to get signed for index input_index
     public BigInteger getSigHash(int input_index) {
         BigInteger x = null;
@@ -80,7 +96,7 @@ public class Tx {
             bos.write(CryptoKit.encodeVarint(num_ins));
             for (int i=0;i < num_ins; i++) {
 
-                var prev_tx = tx_ins.get(i).getPrev_tx();
+                var prev_tx = tx_ins.get(i).getPrev_tx_id();
                 var pre_index = tx_ins.get(i).getPrev_index();
                 var sequence = tx_ins.get(i).getSequence();
 
