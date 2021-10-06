@@ -7,8 +7,8 @@ import java.util.ArrayList;
 /*****************************************************************/
 public class Tx {
     private final int version;
-    public final ArrayList<TxIn> tx_ins;
-    public final ArrayList<TxOut> tx_outs;
+    private final ArrayList<TxIn> tx_ins;
+    private final ArrayList<TxOut> tx_outs;
     private long locktime;
     private final boolean testnet;
     private byte [] serialized;
@@ -69,7 +69,7 @@ public class Tx {
         var prevspk = CryptoKit.bytesToHexString(prev_script_pubkey);
         var z = this.getSigHash(input_index);
         try {
-            var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScript_sig()));
+            var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
             var script_combined = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
             script_combined.addTop(script_sig);
             eval = script_combined.evaluate(z.toByteArray());
@@ -79,6 +79,30 @@ public class Tx {
         }
 
         return eval;
+    }
+
+    public ArrayList<TxIn> getTxIns() {
+        return tx_ins;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public long getLocktime() {
+        return locktime;
+    }
+
+    public void setLocktime(long locktime) {
+        this.locktime = locktime;
+    }
+
+    public boolean isTestnet() {
+        return testnet;
+    }
+
+    public ArrayList<TxOut> getTxOuts() {
+        return tx_outs;
     }
 
     /*****************************************************************/
@@ -105,7 +129,7 @@ public class Tx {
                 // replaced with the script_pubkey found in the previous transaction output
                 // otherwise should be zero byte
                 if (i==input_index) {
-                    var script_pubkey = tx_ins.get(i).getPreviousTxScriptPubKey(false);
+                    var script_pubkey = tx_ins.get(i).getPreviousTxScriptPubKey(this.isTestnet());
                     var tx_in = new TxIn(prev_tx,pre_index,script_pubkey,sequence);
                     bos.write(tx_in.getSerialized());
                 }
@@ -226,7 +250,8 @@ public class Tx {
     /*****************************************************************/
     @Override
     public String toString() {
-        return "Tx{ version='" + version + '\'' +
+        return "Tx (id:"+this.getId()+")"+
+                ",\n{ version='" + version + '\'' +
                 ",\n tx_ins=" + tx_ins +
                 ",\n tx_outs=" + tx_outs +
                 ",\n locktime=" + locktime +
@@ -251,3 +276,4 @@ public class Tx {
         return fee;
     }
 }
+

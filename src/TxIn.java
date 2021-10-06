@@ -96,16 +96,16 @@ public class TxIn {
 
     public long getValue(boolean testnet) {
         var tx = fetchTx(testnet);
-        long amount = tx.tx_outs.get((int)this.prev_index).getAmount();
+        long amount = tx.getTxOuts().get((int)this.prev_index).getAmount();
         return amount;
     }
 
     public byte[] getPreviousTxScriptPubKey(boolean testnet) {
         var tx = fetchTx(testnet);
-        return tx.tx_outs.get((int)this.prev_index).getScriptPubkey();
+        return tx.getTxOuts().get((int)this.prev_index).getScriptPubkey();
     }
 
-    public byte[] getScript_sig() {
+    public byte[] getScriptSig() {
         return script_sig;
     }
 
