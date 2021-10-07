@@ -34,6 +34,11 @@ public class S256Point extends FieldElementPoint{
     }
 
     public boolean verify(BigInteger z, Signature sig) {
+        if (z.compareTo(BigInteger.ZERO)<0) {
+            System.out.println("FATAL: negative z value in S256Point verify()");
+            System.out.println("Please use unsigned conversion when converting bytes to z BigInteger");
+            System.exit(-1);
+        }
         var s_inv = sig.s.modPow(Secp256k1.N.subtract(BigInteger.TWO), Secp256k1.N);
         var u = z.multiply(s_inv.mod(Secp256k1.N));
         var v = sig.r.multiply(s_inv.mod(Secp256k1.N));

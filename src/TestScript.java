@@ -100,15 +100,5 @@ public class TestScript {
 
         System.out.println("Result: "+combined3.evaluate(null));
 
-
-
-
-        System.out.println("------------------------------------------------------");
-        System.out.println("Testing script p2pkh");
-
-
-
-
-
     }
 }

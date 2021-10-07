@@ -650,7 +650,11 @@ public class Script {
         // 2) check
         var sig = Signature.parse(der_bytes);
 
-        if (point.verify(new BigInteger(z),sig)) {
+
+        var z_pos = new BigInteger(1,z);
+        var alt_z = new BigInteger(z);
+
+        if (point.verify(z_pos,sig)) {
             stack.push(encodeNum(1));
         }
         //
