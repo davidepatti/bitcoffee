@@ -41,8 +41,8 @@ public class TestValidation {
 
         System.out.println(">> Testing SigHash on input 0 of tx:"+tx.getId());
 
-        z = tx.getSigHash(0);
-        System.out.println(z.toString(16));
+        var testsighash = tx.getSigHash(0);
+        System.out.println(CryptoKit.bytesToHexString(testsighash));
 
         System.out.print(">> Testing Verify Input:"+tx.verifyInput(0));
         System.out.println("--------------------------------------------------");
@@ -91,7 +91,7 @@ public class TestValidation {
         //for (TxOut txOut:tx_outs) System.out.println(txOut.printScript());
         var z2 = tx_obj.getSigHash(0);
         var pk2 = new PrivateKey(8675309);
-        var der2 = pk2.signDeterminisk(z2.toByteArray()).DER();
+        var der2 = pk2.signDeterminisk(z2).DER();
         // DER + SIGHASH_ALL
         var sig2 = CryptoKit.hexStringToByteArray(der2+"01");
         var sec2 = CryptoKit.hexStringToByteArray(pk2.point.SEC33());
@@ -114,7 +114,6 @@ public class TestValidation {
         System.out.println(tx_res2);
         System.out.println(tx_target2);
         System.out.println(">> RESULT:"+tx_res2.equals(tx_target2));
-
         System.out.println(newtx);
     }
 }

@@ -72,7 +72,7 @@ public class Tx {
             var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
             var script_combined = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
             script_combined.addTop(script_sig);
-            eval = script_combined.evaluate(z.toByteArray());
+            eval = script_combined.evaluate(z);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -107,8 +107,8 @@ public class Tx {
 
     /*****************************************************************/
     //Returns the integer representation of the hash that needs to get signed for index input_index
-    public BigInteger getSigHash(int input_index) {
-        BigInteger x = null;
+    public byte[] getSigHash(int input_index) {
+       byte[] x = null;
 
         var bos = new ByteArrayOutputStream();
 
@@ -154,7 +154,7 @@ public class Tx {
             bos.write(buf,0,4);
 
             var hashed256 = CryptoKit.hash256(bos.toByteArray());
-            x= new BigInteger(hashed256);
+            x= (hashed256);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -201,10 +201,10 @@ public class Tx {
 
             // sanity check, serialization should match the parsed one
             if (!created_ser.equals(original_ser)) {
-                System.out.println("FATAL: mismatching serializations");
+                System.out.println("wARNING: mismatching serializations (segwit tx?)");
                 System.out.println("Original:"+original_ser);
                 System.out.println(" Created:"+created_ser);
-                System.exit(-1);
+                //System.exit(-1);
             }
         } catch (IOException e) {
             e.printStackTrace();

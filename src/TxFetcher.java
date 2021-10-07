@@ -57,7 +57,9 @@ public class TxFetcher {
                 var serial = tx.getSerialString();
                 //System.out.println("DEBUG: fetched raw tx: " + serial);
 
+
                 // TODO: re-enable when properly dealing with witness data
+               /*
                 if (!tx.getId().equals(tx_id)) {
                     System.out.println("WARNING: Mismatching TX ID");
                     System.out.println("*******************************************");
@@ -69,6 +71,7 @@ public class TxFetcher {
                     System.out.println("OK, fetched TX has matching ID:"+tx.getId());
                     //
                 }
+                */
                 cache.put(tx_id,tx);
             }
 
