@@ -1,7 +1,7 @@
 import java.math.BigInteger;
 
 public class bitcoffee {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         if (args.length!=3) {
             System.out.println("Usage: bitcoffee sign \"secret\" \"message\"");
             System.exit(-1);

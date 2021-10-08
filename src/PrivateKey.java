@@ -31,14 +31,6 @@ public class PrivateKey {
         this.point = new S256Point(point);
     }
 
-    public PrivateKey(String secret) {
-        // no need to expand to 32bytes
-        this.secret_bytes = CryptoKit.hash256(secret);
-        this.secret_n = new BigInteger(1,this.secret_bytes);
-        var point = Secp256k1.G.multiplyBin(this.secret_n);
-        this.point = new S256Point(point);
-    }
-
     public Signature signRandomK(byte[] z_bytes) {
         int len = Secp256k1.N.bitLength();
         var k = new BigInteger(len,new Random());
@@ -86,6 +78,9 @@ public class PrivateKey {
 
         if (z_num.compareTo(Secp256k1.N)>0) {
             z_num = z_num.subtract(Secp256k1.N);
+            // TODO: check if we can safely remove this if statement
+            System.out.println("ERROR: unused z_num if statement occurred, check for the code");
+            System.exit(-1);
         }
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

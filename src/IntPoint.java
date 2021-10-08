@@ -10,6 +10,7 @@ public class IntPoint {
         if (this.x==BIGINF && this.y==BIGINF) return true;
 
         var left = y.pow(2);
+        assert x != null;
         var right = (x.pow(3)).add(x.multiply(a)).add(b);
 
         return  (left.compareTo(right)==0);

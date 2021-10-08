@@ -1,9 +1,5 @@
-//import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-//import org.bouncycastle.util.encoders.Hex;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Stack;
 
 public class CryptoKit {
 
@@ -21,6 +16,7 @@ public class CryptoKit {
         var varint = CryptoKit.encodeVarint(len);
         var bos = new ByteArrayOutputStream();
         try {
+            assert varint != null;
             bos.write(varint);
             bos.write(bytes);
         } catch (IOException e) {
@@ -41,14 +37,6 @@ public class CryptoKit {
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
         var str = new String(hexChars);
-        /*
-        // TODO: removed when confirmed to avoid dep on bouncycastle
-        var str_bc = Hex.toHexString(bytes);
-        if (!str.equals(str_bc)) {
-            System.out.println("*****WARNING: Failed check on bouncycastel replacement:"+str+" VS "+str_bc);
-            //System.exit(-1);
-        }
-        */
         return str;
     }
     /***************************************************************************/
@@ -70,16 +58,6 @@ public class CryptoKit {
     /***************************************************************************/
     public static byte[] RIPEMD160(byte[] r) {
         var o2 = Ripemd160.getHash(r);
-        /* // TODO: remove when confirmed to avoid dependecy
-        RIPEMD160Digest d = new RIPEMD160Digest();
-        d.update(r, 0, r.length);
-        byte[] o = new byte[d.getDigestSize()];
-        d.doFinal(o, 0);
-        if (!Arrays.equals(o2,o)) {
-            System.out.println("Failed check on RIPEMD160");
-            System.exit(-1);
-        }
-        */
         return o2;
     }
     /***************************************************************************/
@@ -92,6 +70,7 @@ public class CryptoKit {
             e.printStackTrace();
         }
 
+        assert digester != null;
         byte[] hash = digester.digest(b);
         return hash;
     }
@@ -130,19 +109,19 @@ public class CryptoKit {
             System.out.println("***WARNING on encodeBase58 leading zero bytes");
 
         var num = new BigInteger(1,s);
-        String prefix = "";
+        StringBuilder prefix = new StringBuilder();
         for (int c=0;c<count;c++)
-            prefix = "1"+prefix;
+            prefix.insert(0, "1");
 
-        String result = "";
+        StringBuilder result = new StringBuilder();
         BigInteger[] num_mod;
         while (num.compareTo(BigInteger.ZERO)>0) {
             num_mod = num.divideAndRemainder(BigInteger.valueOf(58));
             num = num_mod[0];
             int mod = num_mod[1].intValue();
-            result = BASE58_AlPHABET.charAt(mod)+result;
+            result.insert(0, BASE58_AlPHABET.charAt(mod));
         }
-        return prefix+result;
+        return prefix+ result.toString();
         //return result;
     }
     /***************************************************************************/
@@ -169,8 +148,8 @@ public class CryptoKit {
         if (!Arrays.equals(computed_checksim_start,checksum_start)) {
             System.out.println("ERROR: Bad address checksum!");
             System.out.println("Address: "+address);
-            System.out.println("Computed checksum:"+computed_checksim_start);
-            System.out.println("Original checksum:"+checksum_start);
+            System.out.println("Computed checksum:"+ Arrays.toString(computed_checksim_start));
+            System.out.println("Original checksum:"+ Arrays.toString(checksum_start));
         }
 
         // the first byte is the network prefix, the last four are the checksum
@@ -196,7 +175,7 @@ public class CryptoKit {
 
     /***************************************************************************/
     public static byte[] calcHmacSha256(byte[] secretKey, byte[] message) {
-      byte[] hmacSha256 = null;
+      byte[] hmacSha256;
       try {
         Mac mac = Mac.getInstance("HmacSHA256");
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "HmacSHA256");

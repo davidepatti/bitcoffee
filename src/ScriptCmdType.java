@@ -86,9 +86,9 @@ enum ScriptCmdType {
     OP_PUBKEY(0xfe),
     OP_INVALIDOPCODE(0xff);
 
-    private int value;
+    private final int value;
 
-    private ScriptCmdType(int code) {
+    ScriptCmdType(int code) {
         this.value = code;
     }
 

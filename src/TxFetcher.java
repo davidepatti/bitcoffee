@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class TxFetcher {
 
-    static HashMap<String,Tx> cache = new HashMap<>();
+    static final HashMap<String,Tx> cache = new HashMap<>();
 
     public static String getURL(boolean testnet) {
 
@@ -21,7 +21,7 @@ public class TxFetcher {
     }
 
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
-        Tx tx = null;
+        Tx tx;
 
         try {
             if (fresh || !(cache.containsKey(tx_id))) {

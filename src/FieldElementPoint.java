@@ -11,6 +11,7 @@ public class FieldElementPoint {
         if (this.x==null && this.y==null) return true;
 
         var left = y.pow(BigInteger.TWO);
+        assert x != null;
         var right = (x.pow(BigInteger.valueOf(3))).add(x.multiply(a)).add(b);
 
         return  (left.equals(right));

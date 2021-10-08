@@ -47,20 +47,20 @@ public class S256Point extends FieldElementPoint{
     }
 
     public String getSerialX() {
-        String x = this.getX().getNum().toString(16);
+        StringBuilder x = new StringBuilder(this.getX().getNum().toString(16));
         // put missing leading zeros to reach 32bytes hex
         while (x.length()<64) {
-            x = "0"+x;
+            x.insert(0, "0");
         }
-        return x;
+        return x.toString();
     }
     public String getSerialY() {
-        String y = this.getY().getNum().toString(16);
+        StringBuilder y = new StringBuilder(this.getY().getNum().toString(16));
         // put missing leading zeros to reach 32bytes hex
         while (y.length()<64) {
-            y = "0"+y;
+            y.insert(0, "0");
         }
-        return y;
+        return y.toString();
     }
 
     public String SEC65() {

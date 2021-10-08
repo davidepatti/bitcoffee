@@ -1,5 +1,3 @@
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -87,8 +85,6 @@ public class TestValidation {
         System.out.println(">> RESULT:"+target_txhex.equals(tx_obj.getSerialString()));
         System.out.println(tx_obj);
 
-        //System.out.println("Tx outs scripts");
-        //for (TxOut txOut:tx_outs) System.out.println(txOut.printScript());
         var z2 = tx_obj.getSigHash(0);
         var pk2 = new PrivateKey(8675309);
         var der2 = pk2.signDeterminisk(z2).DER();

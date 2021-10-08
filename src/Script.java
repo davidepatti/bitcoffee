@@ -2,12 +2,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
 public class Script {
-    Stack<ScriptCmd> commands;
+    final Stack<ScriptCmd> commands;
 
     public Script(Stack<ScriptCmd> stack) {
         if (stack==null)
@@ -25,7 +24,7 @@ public class Script {
 
         // empty byte if 0
         if (n.compareTo(BigInteger.ZERO)==0)
-            return res;
+            return null;
 
         var abs_n = n.abs();
         boolean negative = n.compareTo(BigInteger.ZERO) <0;
@@ -63,7 +62,7 @@ public class Script {
 
     /*************************************************************************/
     public static BigInteger decodeNum(byte[] element) {
-        BigInteger res = null;
+        BigInteger res;
         boolean negative;
         if (element==null)
             return BigInteger.ZERO;
@@ -174,6 +173,7 @@ public class Script {
             var len = result.length;
             var len_bytes = CryptoKit.encodeVarint(len);
             // serialization starts with the number script bytes that follows
+            assert len_bytes != null;
             bos.write(len_bytes);
             bos.write(result);
 
@@ -667,12 +667,12 @@ public class Script {
     /*************************************************************************/
     @Override
     public String toString() {
-        String out = "Script{";
-        for (ScriptCmd cmd: this.commands) out = out+cmd;
+        StringBuilder out = new StringBuilder("Script{");
+        for (ScriptCmd cmd: this.commands) out.append(cmd);
 
-        out+="}\n";
+        out.append("}\n");
 
-        return out;
+        return out.toString();
 
     }
 }

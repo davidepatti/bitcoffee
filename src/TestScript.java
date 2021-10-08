@@ -5,6 +5,7 @@ import java.util.Stack;
 
 public class TestScript {
 
+    @SuppressWarnings("ConstantConditions")
     public static void main(String[] args) throws IOException {
         System.out.println("---------------------------------------------------");
         System.out.println("Testing encode_num:");
