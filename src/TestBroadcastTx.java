@@ -15,16 +15,14 @@ public class TestBroadcastTx {
         System.out.println("Testnet address for secret:"+secret_text);
         System.out.println("address: "+myaddress);
         var wif = mypk.getWIF(true,true);
-        System.out.println("Use this WIF to import the private key: "+wif);
+        System.out.println("Use this WIF to import the private key into a wallet: "+wif);
         System.out.println("---------------------------------------------");
 
-        // replace the txid below
         System.out.println("---------------------------------------------");
         System.out.println("REPLACE THE ID BELOW WITH SOME TX ID WHERE YOUR RECEIVED BTC FOR ADDRESS: "+myaddress);
         //var prev_tx_id = "1818136d9d0ca83c369a70c41fd2b5d25e286895e358a0bcd872c17534846659";
         var prev_tx_id = "YOUR_SPENDABLE_TX_ID";
         var prev_tx = CryptoKit.hexStringToByteArray(prev_tx_id);
-
         // replace with your prev index
         var prev_index = 1;
         // leave the script below empty
