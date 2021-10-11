@@ -36,8 +36,7 @@ public class CryptoKit {
             hexChars[j * 2] = HEX_ARRAY[v >>> 4];
             hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-        var str = new String(hexChars);
-        return str;
+        return new String(hexChars);
     }
     /***************************************************************************/
     public static byte[] hexStringToByteArray(String s) {
@@ -57,8 +56,7 @@ public class CryptoKit {
 
     /***************************************************************************/
     public static byte[] RIPEMD160(byte[] r) {
-        var o2 = Ripemd160.getHash(r);
-        return o2;
+        return Ripemd160.getHash(r);
     }
     /***************************************************************************/
     public static byte[] sha256(byte[] b) {
@@ -71,8 +69,7 @@ public class CryptoKit {
         }
 
         assert digester != null;
-        byte[] hash = digester.digest(b);
-        return hash;
+        return digester.digest(b);
     }
 
     /***************************************************************************/
@@ -153,9 +150,8 @@ public class CryptoKit {
         }
 
         // the first byte is the network prefix, the last four are the checksum
-        var hash_20_bytes = Arrays.copyOfRange(combined,1,len-4);
 
-        return hash_20_bytes;
+        return Arrays.copyOfRange(combined,1,len-4);
     }
 
 
@@ -169,8 +165,7 @@ public class CryptoKit {
         bos.write(hash_b[2]);
         bos.write(hash_b[3]);
         var res = bos.toByteArray();
-        var res_enc = encodeBase58(res);
-        return res_enc;
+        return encodeBase58(res);
     }
 
     /***************************************************************************/
@@ -200,8 +195,7 @@ public class CryptoKit {
     public static BigInteger litteEndianBytesToInt(byte[] bytes) {
 
         var reversed_bytes = to32bytes(reverseBytes(bytes));
-        BigInteger little = new BigInteger(reversed_bytes);
-        return little;
+        return new BigInteger(reversed_bytes);
     }
 
     /***************************************************************************/
@@ -212,15 +206,13 @@ public class CryptoKit {
     /***************************************************************************/
     public static byte[] intToLittleEndianBytes(BigInteger bi) {
         byte[] extractedBytes = bi.toByteArray();
-        byte[] reversed = reverseBytes(to32bytes(extractedBytes));
-        return reversed;
+        return reverseBytes(to32bytes(extractedBytes));
     }
 
     /***************************************************************************/
     public static BigInteger littleEndianBytesToInt(byte[] little_bytes) {
         byte[] reversed = to32bytes(reverseBytes(little_bytes));
-        var n = new BigInteger(reversed);
-        return n;
+        return new BigInteger(reversed);
     }
 
     /***************************************************************************/

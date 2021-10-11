@@ -71,7 +71,7 @@ public class Script {
 
         if ((big_endian[0] & 0x80) !=0 ) {
             negative = true;
-            res = BigInteger.valueOf((int)(big_endian[0] & 0x7f));
+            res = BigInteger.valueOf(big_endian[0] & 0x7f);
         }
         else {
             negative = false;
@@ -99,9 +99,7 @@ public class Script {
         cmds.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
         cmds.push(new ScriptCmd(ScriptCmdType.OP_DUP));
 
-        Script script_pubkey = new Script(cmds);
-
-        return script_pubkey;
+        return new Script(cmds);
     }
 
     /*************************************************************************/
@@ -110,8 +108,7 @@ public class Script {
     }
 
     public void addTop(Script other_script) {
-        var other_cmds = other_script.commands;
-        this.commands.addAll(other_cmds);
+        this.commands.addAll(other_script.commands);
     }
     /*************************************************************************/
     public byte[] getBytes() {
@@ -133,8 +130,7 @@ public class Script {
         copy_cmd.addAll(commands);
 
         if (copy_cmd.empty()) {
-            byte[] empty = {};
-            return empty;
+            return new byte[]{};
         }
 
 
@@ -200,11 +196,10 @@ public class Script {
             // if byte is between 0x01 e 0x4b it indicates the number of bytes
             // to read the data element
             if (current_byte>=1 && current_byte <=75) {
-                var n = current_byte;
-                var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(n));
+                var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(current_byte));
                 ops_stack.push(cmd);
                 //System.out.println("DEBUG: Script parsing found element data: "+cmd);
-                count+=n;
+                count+= current_byte;
             }
             // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
             else if (current_byte==76) {
@@ -419,9 +414,7 @@ public class Script {
 
         }
         if (stack.size()==0) return false;
-        if (stack.pop() == null) return false;
-
-        return true;
+        return stack.pop() != null;
     }
 
 
@@ -502,18 +495,13 @@ public class Script {
 
     public boolean OP_IF(Stack<byte[]> stack) {
         // TODO: implement
-        if (stack.size()<1) return false;
-
-        return true;
+        return stack.size() >= 1;
     }
 
     public boolean OP_VERIFY(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        if ((decodeNum(element).compareTo(BigInteger.ZERO))==0) {
-            return false;
-        }
-        return true;
+        return (decodeNum(element).compareTo(BigInteger.ZERO)) != 0;
     }
     public boolean OP_RETURN(Stack<byte[]> stack) {
         return false;

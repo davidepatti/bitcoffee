@@ -72,7 +72,7 @@ public class TxIn {
             bos.write(buf,0,4);
 
             var len = this.script_sig.length;
-            bos.write(CryptoKit.encodeVarint((long)len));
+            bos.write(CryptoKit.encodeVarint(len));
             bos.write(this.script_sig);
             buf = CryptoKit.reverseBytes(this.sequence);
             // we need only the first 4 bytes of buf
@@ -96,8 +96,7 @@ public class TxIn {
 
     public long getValue(boolean testnet) {
         var tx = fetchTx(testnet);
-        long amount = tx.getTxOuts().get((int)this.prev_index).getAmount();
-        return amount;
+        return tx.getTxOuts().get((int) this.prev_index).getAmount();
     }
 
     public byte[] getPreviousTxScriptPubKey(boolean testnet) {

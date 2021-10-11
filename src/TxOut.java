@@ -55,7 +55,7 @@ public class TxOut {
             // buf is 32 bytes little endian, we need only the first 8
             bos.write(buf,0,8);
             var len = script_pubkey.length;
-            bos.write(CryptoKit.encodeVarint((long)len));
+            bos.write(CryptoKit.encodeVarint(len));
             bos.write(this.script_pubkey);
 
         } catch (IOException e) {

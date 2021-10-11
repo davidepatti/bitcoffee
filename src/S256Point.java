@@ -126,8 +126,7 @@ public class S256Point extends FieldElementPoint{
         }
 
         var sec_bytes = CryptoKit.hexStringToByteArray(sec);
-        var hash = CryptoKit.hash160(sec_bytes);
-        return hash;
+        return CryptoKit.hash160(sec_bytes);
     }
 
     public String getAddress(boolean compressed) {

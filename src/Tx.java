@@ -36,8 +36,7 @@ public class Tx {
         // then printing them as a number."
 
         // Wladimir van der Laan (Bitcoin Core developer)
-        String hex_id = CryptoKit.bytesToHexString(CryptoKit.reverseBytes(hash_bytes));
-        return hex_id;
+        return CryptoKit.bytesToHexString(CryptoKit.reverseBytes(hash_bytes));
     }
 
     /*****************************************************************/
@@ -152,8 +151,7 @@ public class Tx {
             buf = CryptoKit.intToLittleEndianBytes(1);
             bos.write(buf,0,4);
 
-            var hashed256 = CryptoKit.hash256(bos.toByteArray());
-            x= (hashed256);
+            x= (CryptoKit.hash256(bos.toByteArray()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,8 +269,7 @@ public class Tx {
             total_out+= txout.getAmount();
         }
 
-        long fee = total_in-total_out;
-        return fee;
+        return total_in-total_out;
     }
 }
 

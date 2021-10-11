@@ -28,8 +28,7 @@ public class FieldElement {
     }
 
     public FieldElement(long num, BigInteger prime) {
-        var n = BigInteger.valueOf(num);
-        this.num = n;
+        this.num = BigInteger.valueOf(num);
         this.prime = prime;
     }
 
@@ -70,8 +69,7 @@ public class FieldElement {
 
     public FieldElement divide(FieldElement other) {
         var exp = this.prime.subtract(BigInteger.TWO);
-        FieldElement res = this.multiply(other.pow(exp));
-        return res;
+        return this.multiply(other.pow(exp));
     }
 
     public FieldElement subtract(FieldElement other) {
