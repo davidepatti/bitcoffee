@@ -2,6 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -295,6 +296,9 @@ public class Script {
                     switch (cmd.type) {
                         case OP_CHECKSIG:
                             this.OP_CHECKSIG(stack,z);
+                            break;
+                        case OP_CHECKMULTISIG:
+                            this.OP_CHECKMULTISIG(stack,z);
                             break;
                         default:
                             assert false;
@@ -650,9 +654,7 @@ public class Script {
         // 2) check
         var sig = Signature.parse(der_bytes);
 
-
         var z_pos = new BigInteger(1,z);
-        var alt_z = new BigInteger(z);
 
         if (point.verify(z_pos,sig)) {
             stack.push(encodeNum(1));
@@ -663,6 +665,63 @@ public class Script {
 
         return false;
     }
+    /*************************************************************************/
+    public boolean OP_CHECKMULTISIG(Stack<byte[]> stack,byte[] z) {
+
+        if (stack.size()<2) return false;
+
+        var n = decodeNum(stack.pop());
+        if (stack.size() < n.longValue()+1)
+            return false;
+
+        var sec_pubkeys = new ArrayList<byte[]>();
+
+        for (int i =0;i<n.longValue();i++) {
+            sec_pubkeys.add(stack.pop());
+        }
+
+        var m = decodeNum(stack.pop());
+        if (stack.size() < m.longValue()+1)
+            return false;
+
+        var der_signatures = new ArrayList<byte[]>();
+
+        for (int i=0;i<m.longValue();i++) {
+            var sig_with_SIGHASH_ALL = stack.pop();
+            var sig = Arrays.copyOfRange(sig_with_SIGHASH_ALL,0,sig_with_SIGHASH_ALL.length-1);
+        }
+
+        // due to the off-by-one OP_CHECKMULTISIG bug
+        stack.pop();
+
+        var points = new ArrayList<S256Point>();
+
+        for (byte[] sec: sec_pubkeys) {
+            points.add(S256Point.parseSEC(sec));
+        }
+
+        var sigs = new ArrayList<Signature>();
+
+        for (byte[] sig: der_signatures) {
+            sigs.add(Signature.parse(sig));
+        }
+
+        for (Signature sig: sigs) {
+            if (points.size()==0) return false;
+
+            for (S256Point p: points) {
+
+                if (p.verify(new BigInteger(1,z),sig)) {
+                    points.remove(p);
+                    break;
+                }
+            }
+        }
+
+        stack.push(encodeNum(1));
+        return true;
+    }
+
 
     /*************************************************************************/
     @Override
