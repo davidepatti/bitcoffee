@@ -269,15 +269,49 @@ public class Script {
         while (cmds.size()>0) {
             var cmd = cmds.pop();
 
-            //System.out.println("DEBUG SCRIPT-> Analysing command: "+cmd);
-
-            // firstly, if it is data, just move it to the stack
+            // if it is data, just move it to the stack
 
             if (cmd.type== ScriptCmdType.DATA) {
-                //System.out.println("DEBUG SCRIPT-> data detected, moving on stack, value:"+CryptoKit.bytesToHexString(cmd.value));
                 stack.push(cmd.value);
+
+                //detect p2sh pattern
+
+                if (cmds.size()==3
+                        && cmds.elementAt(0).type==ScriptCmdType.OP_EQUAL
+                        && cmds.elementAt(1).type==ScriptCmdType.DATA
+                        && cmds.elementAt(1).value.length==20
+                        && cmds.elementAt(2).type==ScriptCmdType.OP_HASH160)
+                {
+                    cmds.pop(); // we already know it's op_hash160
+                    var h160 = cmds.pop(); // the hash value
+                    cmds.pop(); // we already know it's op equal
+
+                    if (!this.OP_HASH160(stack)) return false;
+                    stack.push(h160.value);
+                    if (!this.OP_EQUAL(stack)) return false;
+                    if (!this.OP_VERIFY(stack)) {
+                        System.out.println("******************* WARNING: bad p2sh h160");
+                        return false;
+                    }
+
+
+
+                    var bos = new ByteArrayOutputStream();
+                    try {
+                        bos.write(CryptoKit.encodeVarint(cmd.value.length));
+                        bos.write(cmd.value);
+                        var redeem_script = Script.parseSerial(bos.toByteArray());
+                        cmds.addAll(redeem_script.commands);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+                }
+
             }
-            else { // not data element
+            else { // not a data element, we must execute the opcode logic
 
                 if (cmd.type == ScriptCmdType.OP_IF || cmd.type == ScriptCmdType.OP_NOTIF ) {
                     System.out.println("ERROR: OP_IF not implemented!");

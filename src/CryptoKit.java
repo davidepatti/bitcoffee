@@ -302,6 +302,35 @@ public class CryptoKit {
         return null;
     }
 
+    public static String h160ToP2pkh(byte[] h160, boolean testnet) {
+        byte prefix;
+
+        if (testnet) prefix = 0x6f;
+                else
+                    prefix = 0;
+
+        var bos = new ByteArrayOutputStream();
+        bos.write(prefix);
+        bos.writeBytes(h160);
+        var res_bytes = bos.toByteArray();
+        return encodeBase58Checksum(res_bytes);
+    }
+
+    public static String h160ToP2sh(byte[] h160, boolean testnet) {
+        byte prefix;
+
+        if (testnet) prefix = (byte)0xc4;
+        else
+            prefix = 0x05;
+
+        var bos = new ByteArrayOutputStream();
+        bos.write(prefix);
+        bos.writeBytes(h160);
+        var res_bytes = bos.toByteArray();
+        return encodeBase58Checksum(res_bytes);
+    }
+
+
 }
 
 

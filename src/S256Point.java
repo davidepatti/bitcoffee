@@ -5,16 +5,6 @@ public class S256Point extends FieldElementPoint{
     private final BigInteger x;
     private final BigInteger y;
 
-    /* TODO: check if can be disabled
-    public S256Point(BigInteger x, BigInteger y) {
-        super(new FieldElement(x,Secp256k1.p),
-              new FieldElement(y,Secp256k1.p),
-              new FieldElement(Secp256k1.a,Secp256k1.p),
-              new FieldElement(Secp256k1.b,Secp256k1.p));
-        this.x = x;
-        this.y = y;
-    }
-     */
     public S256Point(BigInteger x, BigInteger y) {
         super(new S256Field(x),new S256Field(y), new S256Field(Secp256k1.a), new S256Field(Secp256k1.b));
         this.x = x;
@@ -129,27 +119,24 @@ public class S256Point extends FieldElementPoint{
         return CryptoKit.hash160(sec_bytes);
     }
 
-    public String getAddress(boolean compressed) {
+    public String getP2pkhAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        byte prefix = 0;
-        var bos = new ByteArrayOutputStream();
-        bos.write(prefix);
-        bos.writeBytes(h160);
-        var res_bytes = bos.toByteArray();
-        return CryptoKit.encodeBase58Checksum(res_bytes);
+        return CryptoKit.h160ToP2pkh(h160,false);
     }
 
-    public String getTestnetAddress() {
-        var h160 = this.getHash160(true);
-        byte prefix = 0x6f;
-        var bos = new ByteArrayOutputStream();
-        bos.write(prefix);
-        bos.writeBytes(h160);
-        var res_bytes = bos.toByteArray();
-        return CryptoKit.encodeBase58Checksum(res_bytes);
-
+    public String getP2pkhTestnetAddress() {
+        boolean compressed = true;
+        var h160 = this.getHash160(compressed);
+        return CryptoKit.h160ToP2pkh(h160,true);
     }
-    
-    
+
+    public String getP2shAddress(boolean compressed) {
+        var h160 = this.getHash160(compressed);
+        return CryptoKit.h160ToP2sh(h160,false);
+    }
+    public String getP2shTestnetAddress(boolean compressed) {
+        var h160 = this.getHash160(compressed);
+        return CryptoKit.h160ToP2sh(h160,true);
+    }
 
 }

@@ -79,7 +79,7 @@ public class TestSerialization {
         System.out.println("--> Testing Address for priv key hex:"+e_str);
         var pk_addr = new PrivateKey(CryptoKit.hexStringToByteArray(e_str));
         var target_addr1 = "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1";
-        var res_addr1 = pk_addr.point.getAddress(true);
+        var res_addr1 = pk_addr.point.getP2pkhAddress(true);
         System.out.println("address:" + res_addr1);
         System.out.println("--> Result:"+res_addr1.equals(target_addr1));
 
@@ -89,8 +89,8 @@ public class TestSerialization {
         var name_sha256 = CryptoKit.sha256(CryptoKit.stringToBytes(name));
         var name_hex = CryptoKit.bytesToHexString(name_sha256);
         var some_key = new PrivateKey(name_sha256);
-        var some_addr_compressed = some_key.point.getAddress(true);
-        var some_addr_not_compresssed = some_key.point.getAddress(false);
+        var some_addr_compressed = some_key.point.getP2pkhAddress(true);
+        var some_addr_not_compresssed = some_key.point.getP2pkhAddress(false);
         System.out.println("(sec33): "+ some_addr_compressed);
         System.out.println("(sec65): "+ some_addr_not_compresssed);
 
@@ -100,7 +100,7 @@ public class TestSerialization {
         System.out.println("--> Testing Address for priv key :"+e2_n);
         var pk_addr2 = new PrivateKey(e2_n);
         var target_addr2 = "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH";
-        var res_addr2 = pk_addr2.point.getTestnetAddress();
+        var res_addr2 = pk_addr2.point.getP2pkhTestnetAddress();
         System.out.println("address:" + res_addr2);
         System.out.println("--> Result:"+res_addr2.equals(target_addr2));
         System.out.println("----------------------------------------------------------");
