@@ -64,8 +64,24 @@ public class Tx {
         boolean eval = false;
         var tx_in = tx_ins.get(input_index);
         var prev_script_pubkey = tx_in.getPreviousTxScriptPubKey(false);
-        var prevspk = CryptoKit.bytesToHexString(prev_script_pubkey);
-        var z = this.getSigHash(input_index);
+        byte[] redeem_script = null;
+
+        try {
+            var script_pubkey = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
+            if (script_pubkey.isP2sh()) {
+                // the commands of the redeem script are encoded as data at the bottom of the scriptsig
+                var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
+                var cmd = script_sig.commands.elementAt(0);
+
+                redeem_script = cmd.value;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        var z = this.getSigHash(input_index,redeem_script);
+
         try {
             var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
             var script_combined = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
@@ -105,7 +121,13 @@ public class Tx {
 
     /*****************************************************************/
     //Returns the integer representation of the hash that needs to get signed for index input_index
+
     public byte[] getSigHash(int input_index) {
+        return getSigHash(input_index,null);
+    }
+
+
+    public byte[] getSigHash(int input_index, byte[] redeem_script) {
        byte[] x = null;
 
         var bos = new ByteArrayOutputStream();
@@ -118,16 +140,21 @@ public class Tx {
             bos.write(CryptoKit.encodeVarint(num_ins));
             for (int i=0;i < num_ins; i++) {
 
-                var prev_tx = tx_ins.get(i).getPrev_tx_id();
-                var pre_index = tx_ins.get(i).getPrev_index();
+                var prev_tx = tx_ins.get(i).getPrevTxId();
+                var pre_index = tx_ins.get(i).getPrevIndex();
                 var sequence = tx_ins.get(i).getSequence();
-
 
                 // the script_sig of the index_input to be signed must be
                 // replaced with the script_pubkey found in the previous transaction output
                 // otherwise should be zero byte
                 if (i==input_index) {
-                    var script_pubkey = tx_ins.get(i).getPreviousTxScriptPubKey(this.isTestnet());
+                    byte[] script_pubkey;
+
+                    if (redeem_script==null)
+                        script_pubkey = tx_ins.get(i).getPreviousTxScriptPubKey(this.isTestnet());
+                    else  // p2psh
+                        script_pubkey = redeem_script;
+
                     var tx_in = new TxIn(prev_tx,pre_index,script_pubkey,sequence);
                     bos.write(tx_in.getSerialized());
                 }

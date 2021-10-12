@@ -98,7 +98,7 @@ public class TestValidation {
 
         var txins = tx_obj.getTxIns();
         // at the moment, we chose to make tx class immutable, so a new txin must be created
-        TxIn new_txin = new TxIn(txins.get(0).getPrev_tx_id(),txins.get(0).getPrev_index(),scriptsig2.getBytes());
+        TxIn new_txin = new TxIn(txins.get(0).getPrevTxId(),txins.get(0).getPrevIndex(),scriptsig2.getBytes());
         txins.set(0,new_txin);
         var newtx = new Tx(tx_obj.getVersion(),tx_ins,tx_obj.getTxOuts(),tx_obj.getLocktime(),tx_obj.isTestnet());
         System.out.println("---------------------------------------------");

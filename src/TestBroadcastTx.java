@@ -73,7 +73,7 @@ public class TestBroadcastTx {
 
         var txins = tx_obj.getTxIns();
         // a new txin must be created to adde the signature by replacing the empty script one (input_index)
-        var new_txin = new TxIn(txins.get(input_index).getPrev_tx_id(),txins.get(input_index).getPrev_index(),scriptsig.getBytes());
+        var new_txin = new TxIn(txins.get(input_index).getPrevTxId(),txins.get(input_index).getPrevIndex(),scriptsig.getBytes());
         txins.set(input_index,new_txin);
         var newtx = new Tx(tx_obj.getVersion(),tx_ins,tx_obj.getTxOuts(),tx_obj.getLocktime(),tx_obj.isTestnet());
 

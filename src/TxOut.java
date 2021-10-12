@@ -16,8 +16,14 @@ public class TxOut {
 
     @Override
     public String toString() {
+        String res="INVALID";
         String script_str = CryptoKit.bytesToHexString(script_pubkey);
-        return "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + '}';
+        try {
+            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerial(CryptoKit.addLenPrefix(script_pubkey))+"]";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     public String printScript() {

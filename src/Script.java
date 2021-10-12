@@ -101,6 +101,37 @@ public class Script {
 
         return new Script(cmds);
     }
+    /*************************************************************************/
+    public static Script hash160ToP2psh(byte[] h160) {
+        var cmds = new Stack<ScriptCmd>();
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUAL));
+        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
+
+        return new Script(cmds);
+    }
+    /*************************************************************************/
+    // check for the pattern: OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG
+    public boolean isP2pkh() {
+        return (this.commands.size()==5
+                && commands.elementAt(0).type == ScriptCmdType.OP_CHECKSIG
+                && commands.elementAt(1).type == ScriptCmdType.OP_EQUALVERIFY
+                && commands.elementAt(2).type == ScriptCmdType.DATA
+                && commands.elementAt(2).value.length == 20
+                && commands.elementAt(3).type == ScriptCmdType.OP_HASH160
+                && commands.elementAt(4).type == ScriptCmdType.OP_DUP);
+    }
+
+    /*************************************************************************/
+    // check for the pattern: OP_HASH160 <20 byte hash> OP_EQUAL
+    public boolean isP2sh() {
+        return (this.commands.size()==3
+                && commands.elementAt(0).type == ScriptCmdType.OP_EQUAL
+                && commands.elementAt(1).type == ScriptCmdType.DATA
+                && commands.elementAt(1).value.length == 20
+                && commands.elementAt(2).type == ScriptCmdType.OP_HASH160);
+    }
+
 
     /*************************************************************************/
     public void addTop(Stack<ScriptCmd> other) {
@@ -111,6 +142,7 @@ public class Script {
         this.commands.addAll(other_script.commands);
     }
     /*************************************************************************/
+    // bytes encoding ops, without length prefix (required in serialization)
     public byte[] getBytes() {
         try {
             return this.raw_serialize();

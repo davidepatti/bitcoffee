@@ -108,11 +108,11 @@ public class TxIn {
         return script_sig;
     }
 
-    public byte[] getPrev_tx_id() {
+    public byte[] getPrevTxId() {
         return prev_tx_id;
     }
 
-    public long getPrev_index() {
+    public long getPrevIndex() {
         return prev_index;
     }
 
