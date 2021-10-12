@@ -11,7 +11,7 @@ public class TestBroadcastTx {
         var secret_bytes = CryptoKit.hash256(secret_text);
         var mypk = new PrivateKey(secret_bytes);
 
-        var myaddress = mypk.point.getTestnetAddress();
+        var myaddress = mypk.point.getP2pkhTestnetAddress();
         System.out.println("Testnet address for secret:"+secret_text);
         System.out.println("address: "+myaddress);
         var wif = mypk.getWIF(true,true);
