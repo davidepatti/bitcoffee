@@ -293,9 +293,7 @@ public class Script {
 
         System.out.println("*********************************************************************");
         System.out.println("SCRIPT-> Starting evalutation of script:");
-        System.out.println("-------------------BEGIN SCRIPT -------------------------------------");
-        System.out.println(cmds);
-        System.out.println("-------------------END SCRIPT ---------------------------------------");
+        System.out.println(this);
 
 
         while (cmds.size()>0) {
@@ -780,10 +778,13 @@ public class Script {
     /*************************************************************************/
     @Override
     public String toString() {
-        StringBuilder out = new StringBuilder("Script{");
-        for (ScriptCmd cmd: this.commands) out.append(cmd);
+        StringBuilder out = new StringBuilder("Script Stack:");
+        out.append("\n-----------------------------------------");
 
-        out.append("}\n");
+        for (int i=this.commands.size()-1; i>-1; i--) {
+            out.append(this.commands.get(i));
+        }
+        out.append("\n-----------------------------------------\n");
 
         return out.toString();
 
