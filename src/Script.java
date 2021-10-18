@@ -15,6 +15,92 @@ public class Script {
         else
             this.commands = stack;
     }
+    /*************************************************************************/
+    public Script(byte[] commands_bytes) {
+
+        Script script = null;
+        try {
+            script =  parseSerialisation(CryptoKit.addLenPrefix(commands_bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (script==null)
+            this.commands = new Stack<ScriptCmd>();
+        else
+            this.commands = script.commands;
+
+    }
+    /*************************************************************************/
+    public static Script parseSerialisation(byte[] serial) throws IOException {
+        Stack<ScriptCmd> ops_stack = new Stack<>();
+        var bis = new ByteArrayInputStream(serial);
+        var hex = CryptoKit.bytesToHexString(serial);
+        //System.out.println("DEBUG: Parsing script hex:"+hex);
+        var len = CryptoKit.readVarint(bis);
+
+        int count =0;
+        while (count < len) {
+            var current_byte = bis.read();
+            count++;
+
+            // if byte is between 0x01 e 0x4b it indicates the number of bytes
+            // to read the data element
+            if (current_byte>=1 && current_byte <=75) {
+                var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(current_byte));
+                ops_stack.push(cmd);
+                //System.out.println("DEBUG: Script parsing found element data: "+cmd);
+                count+= current_byte;
+            }
+            // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
+            else if (current_byte==76) {
+                // TODO: why little endian over a single byte?
+                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
+                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA1, bis.readNBytes(data_len));
+                ops_stack.push(cmd);
+                //System.out.println("DEBUG: Script parse operation: "+cmd);
+                count+=data_len+1;
+            }
+            // OP_PUSHDATA_2 - the next two bytes indicate how many bytes to read for the element
+            else if (current_byte==77) {
+                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
+                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA2, bis.readNBytes(data_len));
+                ops_stack.push(cmd);
+                // System.out.println("DEBUG: Script parse operation: "+cmd);
+                count+=data_len+2;
+            }
+            // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
+            else if (current_byte==78) {
+                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA4, bis.readNBytes(data_len));
+                ops_stack.push(cmd);
+                // System.out.println("DEBUG: Script parse operation: "+cmd);
+                count+=data_len+4;
+            }
+
+            else {
+                byte[] bytes = new byte[1];
+                bytes[0] = (byte)current_byte;
+                var cmd = new ScriptCmd(ScriptCmdType.fromInt(current_byte), bytes);
+                //System.out.println("DEBUG: Script parse operation: "+cmd);
+                ops_stack.push(cmd);
+            }
+        }
+        try {
+            if (count!=len)
+                throw new Exception("Script parsing error: Wrong length (count="+count+",len="+len);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        var reversed = new Stack<ScriptCmd>();
+
+        while (!ops_stack.empty()) {
+            reversed.push(ops_stack.pop());
+        }
+
+        return new Script(reversed);
+    }
 
     /*************************************************************************/
     // used for encoding stack nums
@@ -212,76 +298,7 @@ public class Script {
         return bos.toByteArray();
     }
 
-    /*************************************************************************/
-    public static Script parseSerial(byte[] serial) throws IOException {
-        Stack<ScriptCmd> ops_stack = new Stack<>();
-        var bis = new ByteArrayInputStream(serial);
-        var hex = CryptoKit.bytesToHexString(serial);
-        //System.out.println("DEBUG: Parsing script hex:"+hex);
-        var len = CryptoKit.readVarint(bis);
 
-        int count =0;
-        while (count < len) {
-            var current_byte = bis.read();
-            count++;
-
-            // if byte is between 0x01 e 0x4b it indicates the number of bytes
-            // to read the data element
-            if (current_byte>=1 && current_byte <=75) {
-                var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(current_byte));
-                ops_stack.push(cmd);
-                //System.out.println("DEBUG: Script parsing found element data: "+cmd);
-                count+= current_byte;
-            }
-            // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
-            else if (current_byte==76) {
-                // TODO: why little endian over a single byte?
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA1, bis.readNBytes(data_len));
-                ops_stack.push(cmd);
-                //System.out.println("DEBUG: Script parse operation: "+cmd);
-                count+=data_len+1;
-            }
-            // OP_PUSHDATA_2 - the next two bytes indicate how many bytes to read for the element
-            else if (current_byte==77) {
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA2, bis.readNBytes(data_len));
-                ops_stack.push(cmd);
-                // System.out.println("DEBUG: Script parse operation: "+cmd);
-                count+=data_len+2;
-            }
-            // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
-            else if (current_byte==78) {
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA4, bis.readNBytes(data_len));
-                ops_stack.push(cmd);
-                // System.out.println("DEBUG: Script parse operation: "+cmd);
-                count+=data_len+4;
-            }
-
-            else {
-                byte[] bytes = new byte[1];
-                bytes[0] = (byte)current_byte;
-                var cmd = new ScriptCmd(ScriptCmdType.fromInt(current_byte), bytes);
-                //System.out.println("DEBUG: Script parse operation: "+cmd);
-                ops_stack.push(cmd);
-            }
-        }
-            try {
-                if (count!=len)
-                    throw new Exception("Script parsing error: Wrong length (count="+count+",len="+len);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            var reversed = new Stack<ScriptCmd>();
-
-            while (!ops_stack.empty()) {
-                reversed.push(ops_stack.pop());
-            }
-
-        return new Script(reversed);
-    }
 
     /*************************************************************************/
     public boolean evaluate(byte[] z) {
@@ -330,7 +347,7 @@ public class Script {
                     try {
                         bos.write(CryptoKit.encodeVarint(cmd.value.length));
                         bos.write(cmd.value);
-                        var redeem_script = Script.parseSerial(bos.toByteArray());
+                        var redeem_script = Script.parseSerialisation(bos.toByteArray());
                         cmds.addAll(redeem_script.commands);
                     } catch (IOException e) {
                         e.printStackTrace();

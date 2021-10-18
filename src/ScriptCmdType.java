@@ -98,7 +98,9 @@ enum ScriptCmdType {
             for (ScriptCmdType op : ScriptCmdType.values()) {
                 if (op.value == code ) return op;
             }
-            throw new Exception("Cannot find Opcode "+code);
+            System.out.println("**************WARNING: UNKNOWN OPCODE "+code);
+            return OP_INVALIDOPCODE;
+
         } catch (Exception e) {
             e.printStackTrace();
         }

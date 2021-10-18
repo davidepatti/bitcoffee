@@ -45,7 +45,7 @@ public class TestScript {
         System.out.println("script serial hex: "+CryptoKit.bytesToHexString(simple));
 
         try {
-            Script script = Script.parseSerial(simple);
+            Script script = Script.parseSerialisation(simple);
             System.out.println(script);
         } catch (IOException e) {
             e.printStackTrace();

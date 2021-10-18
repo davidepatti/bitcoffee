@@ -26,7 +26,7 @@ public class TestP2SH {
         try {
             // Please notice: we need to parse the script anyway, because in the TxIn constructor we must
             // provide only the bytes encoding the ops, without the length prefix added when serialized
-            var redeem_script = Script.parseSerial(serial_redeem_script);
+            var redeem_script = Script.parseSerialisation(serial_redeem_script);
             System.out.println("Using redeem script:");
             System.out.println(redeem_script);
 
@@ -66,6 +66,12 @@ public class TestP2SH {
             var target_raw = "0100000001868278ed6ddfb6c1ed3ad5f8181eb0c7a385aa0836f01d5e4789e6bd304d87221a000000475221022626e955ea6ea6d98850c994f9107b036b1334f18ca8830bfff1295d21cfdb702103b287eaf122eea69030a0e9feed096bed8045c8b98bec453e1ffac7fbdbd4bb7152aeffffffff04d3b11400000000001976a914904a49878c0adfc3aa05de7afad2cc15f483a56a88ac7f400900000000001976a914418327e3f3dda4cf5b9089325a4b95abdfa0334088ac722c0c00000000001976a914ba35042cfe9fc66fd35ac2224eebdafd1028ad2788acdc4ace020000000017a91474d691da1574e6b3c192ecfb52cc8984ee7b6c56870000000001000000";
             System.out.println(">> RESULT Tx modified: "+res_raw.equals(target_raw));
             System.out.println(" -----------------------------------------------------------------");
+
+            var tx1 = Tx.parse(bos.toByteArray(),true);
+            var tx2 = Tx.parse(bos.toByteArray(),false);
+
+            System.out.println("t1 test"+ tx1.verify());
+            System.out.println("t2"+ tx2.verify());
 
             var z = CryptoKit.hash256(bos.toByteArray());
             point = S256Point.parseSEC(sec);

@@ -5,7 +5,7 @@ public class TestBroadcastTx {
     public static void main(String[] args) {
 
         System.out.println("---------------------------------------------");
-        System.out.println(">> Testing Transaction to be broadcasted");
+        System.out.println(">> Testing Transaction to be broadcasted in Testnet");
         // brainwallet style, use text to derive private key (be careful to not share it!)
         var secret_text = "REPLACE_WITH_YOUR_TEXT";
         var secret_bytes = CryptoKit.hash256(secret_text);
@@ -15,7 +15,7 @@ public class TestBroadcastTx {
         System.out.println("Testnet address for secret:"+secret_text);
         System.out.println("address: "+myaddress);
         var wif = mypk.getWIF(true,true);
-        System.out.println("Use this WIF to import the private key into a wallet: "+wif);
+        System.out.println("Use this WIF to import the private key into a wallet (testnet): "+wif);
         System.out.println("---------------------------------------------");
 
         System.out.println("---------------------------------------------");

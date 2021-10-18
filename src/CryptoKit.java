@@ -53,6 +53,21 @@ public class CryptoKit {
         }
         return data;
     }
+    /***************************************************************************/
+    public static String hexStringToAscii(String hexStr) {
+        StringBuilder output = new StringBuilder("");
+
+        for (int i = 0; i < hexStr.length(); i += 2) {
+            String str = hexStr.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+
+        return output.toString();
+    }
+    /***************************************************************************/
+    public static String bytesToAscii(byte[] bytes) {
+        return hexStringToAscii(bytesToHexString(bytes));
+    }
 
     /***************************************************************************/
     public static byte[] RIPEMD160(byte[] r) {
@@ -186,6 +201,14 @@ public class CryptoKit {
     public static byte[] to32bytes(byte[] secret) {
         var bos = new ByteArrayOutputStream();
         for (int i=0;i<32-secret.length;i++)
+            bos.write(0);
+        bos.writeBytes(secret);
+        return bos.toByteArray();
+    }
+    /***************************************************************************/
+    public static byte[] to64bytes(byte[] secret) {
+        var bos = new ByteArrayOutputStream();
+        for (int i=0;i<64-secret.length;i++)
             bos.write(0);
         bos.writeBytes(secret);
         return bos.toByteArray();

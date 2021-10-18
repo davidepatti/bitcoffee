@@ -19,7 +19,7 @@ public class TxOut {
         String res="INVALID";
         String script_str = CryptoKit.bytesToHexString(script_pubkey);
         try {
-            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerial(CryptoKit.addLenPrefix(script_pubkey))+"]";
+            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerialisation(CryptoKit.addLenPrefix(script_pubkey))+"]";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class TxOut {
 
     public String printScript() {
         try {
-            var script = Script.parseSerial(CryptoKit.addLenPrefix(this.script_pubkey));
+            var script = Script.parseSerialisation(CryptoKit.addLenPrefix(this.script_pubkey));
             return script.toString();
         } catch (IOException e) {
             e.printStackTrace();

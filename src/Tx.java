@@ -1,7 +1,9 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /*****************************************************************/
 public class Tx {
@@ -63,14 +65,14 @@ public class Tx {
     public boolean verifyInput(int input_index) {
         boolean eval = false;
         var tx_in = tx_ins.get(input_index);
-        var prev_script_pubkey = tx_in.getPreviousTxScriptPubKey(false);
+        var prev_script_pubkey = tx_in.getPreviousTxScriptPubKey(this.isTestnet());
         byte[] redeem_script = null;
 
         try {
-            var script_pubkey = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
+            var script_pubkey = Script.parseSerialisation(CryptoKit.addLenPrefix(prev_script_pubkey));
             if (script_pubkey.isP2sh()) {
                 // the commands of the redeem script are encoded as data at the bottom of the scriptsig
-                var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
+                var script_sig = Script.parseSerialisation(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
                 var cmd = script_sig.commands.elementAt(0);
 
                 redeem_script = cmd.value;
@@ -83,8 +85,8 @@ public class Tx {
         var z = this.getSigHash(input_index,redeem_script);
 
         try {
-            var script_sig = Script.parseSerial(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
-            var script_combined = Script.parseSerial(CryptoKit.addLenPrefix(prev_script_pubkey));
+            var script_sig = Script.parseSerialisation(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
+            var script_combined = Script.parseSerialisation(CryptoKit.addLenPrefix(prev_script_pubkey));
             script_combined.addTop(script_sig);
             eval = script_combined.evaluate(z);
 
@@ -297,6 +299,31 @@ public class Tx {
         }
 
         return total_in-total_out;
+    }
+
+    public boolean isCoinbase() {
+
+        if (this.getTxIns().size()!=1) return false;
+        var single_in = this.getTxIns().get(0);
+        if (!(new BigInteger(single_in.getPrevTxId()).equals(BigInteger.ZERO))) return false;
+        var prev_target = CryptoKit.hexStringToByteArray("ffffffff");
+        var prev = Arrays.copyOfRange(CryptoKit.intToLittleEndianBytes(single_in.getPrevIndex()),0,4);
+        if (!Arrays.equals(prev,prev_target)) return false;
+
+        return true;
+    }
+
+    public int getCoinbaseHeight() {
+        if (!this.isCoinbase()) return -1;
+        int height = -1;
+
+        try {
+            var scriptsig = Script.parseSerialisation(CryptoKit.addLenPrefix(this.getTxIns().get(0).getScriptSig()));
+            height = CryptoKit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return height;
     }
 }
 
