@@ -19,14 +19,14 @@ public class TxIn {
         this.prev_tx_id = prev_tx_id;
         this.prev_index = prev_index;
         this.script_sig = script_sig;
-        this.sequence = CryptoKit.hexStringToByteArray("ffffffff");
+        this.sequence = Kit.hexStringToByteArray("ffffffff");
     }
 
     @Override
     public String toString() {
-        String prev_tx_str = CryptoKit.bytesToHexString(prev_tx_id);
-        String script_sig_str = CryptoKit.bytesToHexString(script_sig);
-        String sequence = CryptoKit.bytesToHexString(this.sequence);
+        String prev_tx_str = Kit.bytesToHexString(prev_tx_id);
+        String script_sig_str = Kit.bytesToHexString(script_sig);
+        String sequence = Kit.bytesToHexString(this.sequence);
 
         return "\nTxIn{" + "prev_tx='" + prev_tx_str + '\'' + ", prev_index=" + prev_index + ", script_sig=" + script_sig_str + ", sequence=" + sequence + '}';
     }
@@ -36,18 +36,18 @@ public class TxIn {
     public static TxIn parse(ByteArrayInputStream bis) {
         TxIn tx_input = null;
         try {
-            var prev_tx = CryptoKit.reverseBytes(bis.readNBytes(32));
-            String prev_tx_hex = CryptoKit.bytesToHexString(prev_tx);
+            var prev_tx = Kit.reverseBytes(bis.readNBytes(32));
+            String prev_tx_hex = Kit.bytesToHexString(prev_tx);
             //System.out.println("TxIn parsing: found previous_tx "+prev_tx_hex);
 
-            var prev_index = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
+            var prev_index = Kit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
             //System.out.println("TxIn parsing: found prev_index "+prev_index);
 
-            var script_sig_len = (int)CryptoKit.readVarint(bis);
+            var script_sig_len = (int) Kit.readVarint(bis);
             var script_sig = bis.readNBytes(script_sig_len);
-            var script_sig_hex = CryptoKit.bytesToHexString(script_sig);
+            var script_sig_hex = Kit.bytesToHexString(script_sig);
             //System.out.println("TxIn parsing: found ScriptSig "+script_sig_hex);
-            var sequence = CryptoKit.reverseBytes(bis.readNBytes(4));
+            var sequence = Kit.reverseBytes(bis.readNBytes(4));
             tx_input = new TxIn(prev_tx,prev_index,script_sig,sequence);
 
         } catch (IOException e) {
@@ -65,16 +65,16 @@ public class TxIn {
 
             // when serializing, convert to little endian
             // 32 bytes hash of the previous tx, in little endian
-            bos.write(CryptoKit.reverseBytes(prev_tx_id));
+            bos.write(Kit.reverseBytes(prev_tx_id));
 
-            byte[] buf = CryptoKit.intToLittleEndianBytes(prev_index);
+            byte[] buf = Kit.intToLittleEndianBytes(prev_index);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
 
             var len = this.script_sig.length;
-            bos.write(CryptoKit.encodeVarint(len));
+            bos.write(Kit.encodeVarint(len));
             bos.write(this.script_sig);
-            buf = CryptoKit.reverseBytes(this.sequence);
+            buf = Kit.reverseBytes(this.sequence);
             // we need only the first 4 bytes of buf
             bos.write(buf,0,4);
 
@@ -91,7 +91,7 @@ public class TxIn {
     }
 
     public Tx fetchTx(boolean testnet) {
-        return TxFetcher.fetch(CryptoKit.bytesToHexString(this.prev_tx_id),testnet,false);
+        return TxFetcher.fetch(Kit.bytesToHexString(this.prev_tx_id),testnet,false);
     }
 
     public long getValue(boolean testnet) {

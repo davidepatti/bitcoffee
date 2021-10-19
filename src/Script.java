@@ -20,7 +20,7 @@ public class Script {
 
         Script script = null;
         try {
-            script =  parseSerialisation(CryptoKit.addLenPrefix(commands_bytes));
+            script =  parseSerialisation(Kit.addLenPrefix(commands_bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,9 +35,9 @@ public class Script {
     public static Script parseSerialisation(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
-        var hex = CryptoKit.bytesToHexString(serial);
+        var hex = Kit.bytesToHexString(serial);
         //System.out.println("DEBUG: Parsing script hex:"+hex);
-        var len = CryptoKit.readVarint(bis);
+        var len = Kit.readVarint(bis);
 
         int count =0;
         while (count < len) {
@@ -55,7 +55,7 @@ public class Script {
             // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
             else if (current_byte==76) {
                 // TODO: why little endian over a single byte?
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
+                var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA1, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 //System.out.println("DEBUG: Script parse operation: "+cmd);
@@ -63,7 +63,7 @@ public class Script {
             }
             // OP_PUSHDATA_2 - the next two bytes indicate how many bytes to read for the element
             else if (current_byte==77) {
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
+                var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA2, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 // System.out.println("DEBUG: Script parse operation: "+cmd);
@@ -71,7 +71,7 @@ public class Script {
             }
             // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
             else if (current_byte==78) {
-                var data_len = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+                var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
                 var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA4, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 // System.out.println("DEBUG: Script parse operation: "+cmd);
@@ -153,7 +153,7 @@ public class Script {
         boolean negative;
         if (element==null)
             return BigInteger.ZERO;
-        var big_endian = CryptoKit.reverseBytes(element);
+        var big_endian = Kit.reverseBytes(element);
 
         if ((big_endian[0] & 0x80) !=0 ) {
             negative = true;
@@ -267,7 +267,7 @@ public class Script {
             }
             else if (cmd.type== ScriptCmdType.OP_PUSHDATA2) {
                 bos.write((byte) ScriptCmdType.OP_PUSHDATA2.getValue());
-                var len_bytes = CryptoKit.intToLittleEndianBytes(len);
+                var len_bytes = Kit.intToLittleEndianBytes(len);
                 bos.write(len_bytes,0,2);
                 bos.write(cmd.value);
             } // operation, not data
@@ -286,7 +286,7 @@ public class Script {
         try {
             var result = this.raw_serialize();
             var len = result.length;
-            var len_bytes = CryptoKit.encodeVarint(len);
+            var len_bytes = Kit.encodeVarint(len);
             // serialization starts with the number script bytes that follows
             assert len_bytes != null;
             bos.write(len_bytes);
@@ -345,7 +345,7 @@ public class Script {
 
                     var bos = new ByteArrayOutputStream();
                     try {
-                        bos.write(CryptoKit.encodeVarint(cmd.value.length));
+                        bos.write(Kit.encodeVarint(cmd.value.length));
                         bos.write(cmd.value);
                         var redeem_script = Script.parseSerialisation(bos.toByteArray());
                         cmds.addAll(redeem_script.commands);
@@ -674,7 +674,7 @@ public class Script {
         if (stack.size()<1) return false;
         var element = stack.pop();
 
-        stack.push(CryptoKit.RIPEMD160(element));
+        stack.push(Kit.RIPEMD160(element));
         return true;
     }
 
@@ -682,14 +682,14 @@ public class Script {
         if (stack.size()<1) return false;
         var element = stack.pop();
 
-        stack.push(CryptoKit.sha256(element));
+        stack.push(Kit.sha256(element));
         return true;
     }
 
     public boolean OP_HASH160(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        var hashed = CryptoKit.hash160(element);
+        var hashed = Kit.hash160(element);
         stack.push(hashed);
         return true;
     }
@@ -703,7 +703,7 @@ public class Script {
     public boolean OP_HASH256(Stack<byte[]> stack) {
         if (stack.size()<1) return false;
         var element = stack.pop();
-        var hashed = CryptoKit.hash256(element);
+        var hashed = Kit.hash256(element);
         stack.push(hashed);
         return true;
     }

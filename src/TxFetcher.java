@@ -39,7 +39,7 @@ public class TxFetcher {
 
                 var content_string = content.toString();
 
-                byte[] raw = CryptoKit.hexStringToByteArray(content_string);
+                byte[] raw = Kit.hexStringToByteArray(content_string);
                 // check if bytes 4,5 are 00 01 for segwit
                 if (raw[4] == 0) {
                     System.out.println("Warning SEGWIT detected, removing flag 00 01 (bytes 4 and 5)");
@@ -50,7 +50,7 @@ public class TxFetcher {
                     raw = bos.toByteArray();
                     tx = Tx.parse(raw, testnet);
                     byte[] lock_bytes = Arrays.copyOfRange(raw, raw.length - 4, raw.length);
-                    tx.updateLockTime(CryptoKit.litteEndianBytesToInt(lock_bytes).longValue());
+                    tx.updateLockTime(Kit.litteEndianBytesToInt(lock_bytes).longValue());
                 } else
                     tx = Tx.parse(raw, testnet);
 

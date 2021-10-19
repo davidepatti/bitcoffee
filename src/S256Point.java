@@ -1,4 +1,3 @@
-import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 
 public class S256Point extends FieldElementPoint{
@@ -66,7 +65,7 @@ public class S256Point extends FieldElementPoint{
 
     public static S256Point parseSEC(byte[] sec_bytes) {
         //var sec = Hex.toHexString(sec_bytes);
-        var sec = CryptoKit.bytesToHexString(sec_bytes);
+        var sec = Kit.bytesToHexString(sec_bytes);
         return parseSEC(sec);
     }
 
@@ -115,28 +114,28 @@ public class S256Point extends FieldElementPoint{
             sec = this.SEC65();
         }
 
-        var sec_bytes = CryptoKit.hexStringToByteArray(sec);
-        return CryptoKit.hash160(sec_bytes);
+        var sec_bytes = Kit.hexStringToByteArray(sec);
+        return Kit.hash160(sec_bytes);
     }
 
     public String getP2pkhAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return CryptoKit.h160ToP2pkh(h160,false);
+        return Kit.h160ToP2pkh(h160,false);
     }
 
     public String getP2pkhTestnetAddress() {
         boolean compressed = true;
         var h160 = this.getHash160(compressed);
-        return CryptoKit.h160ToP2pkh(h160,true);
+        return Kit.h160ToP2pkh(h160,true);
     }
 
     public String getP2shAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return CryptoKit.h160ToP2sh(h160,false);
+        return Kit.h160ToP2sh(h160,false);
     }
     public String getP2shTestnetAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return CryptoKit.h160ToP2sh(h160,true);
+        return Kit.h160ToP2sh(h160,true);
     }
 
 }

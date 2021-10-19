@@ -8,7 +8,7 @@ public class TestBroadcastTx {
         System.out.println(">> Testing Transaction to be broadcasted in Testnet");
         // brainwallet style, use text to derive private key (be careful to not share it!)
         var secret_text = "REPLACE_WITH_YOUR_TEXT";
-        var secret_bytes = CryptoKit.hash256(secret_text);
+        var secret_bytes = Kit.hash256(secret_text);
         var mypk = new PrivateKey(secret_bytes);
 
         var myaddress = mypk.point.getP2pkhTestnetAddress();
@@ -22,7 +22,7 @@ public class TestBroadcastTx {
         System.out.println("REPLACE THE ID BELOW WITH SOME TX ID WHERE YOUR RECEIVED BTC FOR ADDRESS: "+myaddress);
         //var prev_tx_id = "1818136d9d0ca83c369a70c41fd2b5d25e286895e358a0bcd872c17534846659";
         var prev_tx_id = "YOUR_SPENDABLE_TX_ID";
-        var prev_tx = CryptoKit.hexStringToByteArray(prev_tx_id);
+        var prev_tx = Kit.hexStringToByteArray(prev_tx_id);
         // replace with your prev index
         var prev_index = 1;
         // leave the script below empty
@@ -35,7 +35,7 @@ public class TestBroadcastTx {
         var change_amount = (int)(btc_change_amount*100000000);
         //var change_address = "mnwUykq9XxccVMuXgwrA97gSxYxFs4vNRW";
         var change_address = "YOUR_CHANGE_ADDRESS";
-        var change_h160 = CryptoKit.decodeBase58(change_address);
+        var change_h160 = Kit.decodeBase58(change_address);
 
         // not modify, creating script from the address above
         var change_script = Script.hash160ToP2pkh(change_h160);
@@ -47,7 +47,7 @@ public class TestBroadcastTx {
         var target_address = "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt";
         var target_btc_amount = 0.0001;
         var target_amount = (int)(target_btc_amount*100000000);
-        var target_h160 = CryptoKit.decodeBase58(target_address);
+        var target_h160 = Kit.decodeBase58(target_address);
         var target_script = Script.hash160ToP2pkh(target_h160);
         var target_output = new TxOut(target_amount,target_script.getBytes());
 
@@ -63,8 +63,8 @@ public class TestBroadcastTx {
         var z = tx_obj.getSigHash(input_index);
         var der = mypk.signDeterminisk(z).DER();
         // DER + SIGHASH_ALL
-        var sig = CryptoKit.hexStringToByteArray(der+"01");
-        var sec = CryptoKit.hexStringToByteArray(mypk.point.SEC33());
+        var sig = Kit.hexStringToByteArray(der+"01");
+        var sec = Kit.hexStringToByteArray(mypk.point.SEC33());
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmdType.DATA,sec));
         cmds.push(new ScriptCmd(ScriptCmdType.DATA,sig));

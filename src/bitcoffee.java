@@ -10,9 +10,9 @@ public class bitcoffee {
         if (args[0].equals("sign")) {
             var secret = args[1];
             var message = args[2];
-            var secret_bytes = CryptoKit.hash256(secret);
+            var secret_bytes = Kit.hash256(secret);
             var secret_num = new BigInteger(1,secret_bytes);
-            var msg_bytes = CryptoKit.hash256(message);
+            var msg_bytes = Kit.hash256(message);
             var msg_num = new BigInteger(1,msg_bytes);
             System.out.println("Signing (secret:"+secret+" message:"+message+")");
 

@@ -1,4 +1,3 @@
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,10 +26,10 @@ public class Block {
     /********************************************************************************/
     public static Block parseSerial(byte[] serial)  {
         try (var bis = new ByteArrayInputStream(serial)) {
-            var version = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4));
-            var prev_block = CryptoKit.reverseBytes(bis.readNBytes(32));
-            var merkle_root = CryptoKit.reverseBytes(bis.readNBytes(32));
-            var timestamp = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+            var version = Kit.litteEndianBytesToInt(bis.readNBytes(4));
+            var prev_block = Kit.reverseBytes(bis.readNBytes(32));
+            var merkle_root = Kit.reverseBytes(bis.readNBytes(32));
+            var timestamp = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
             var bits = bis.readNBytes(4);
             var nonce = bis.readNBytes(4);
             return new Block(version.intValue(),prev_block,merkle_root,timestamp,bits,nonce);
@@ -46,13 +45,13 @@ public class Block {
     public byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
-        var n = CryptoKit.intToLittleEndianBytes(this.version);
+        var n = Kit.intToLittleEndianBytes(this.version);
         var nb = Arrays.copyOfRange(n,0,4);
         try {
             bos.write(nb);
-            bos.write(CryptoKit.reverseBytes(this.prev_block));
-            bos.write(CryptoKit.reverseBytes(merkle_root));
-            bos.write(Arrays.copyOfRange(CryptoKit.intToLittleEndianBytes(timestamp),0,4));
+            bos.write(Kit.reverseBytes(this.prev_block));
+            bos.write(Kit.reverseBytes(merkle_root));
+            bos.write(Arrays.copyOfRange(Kit.intToLittleEndianBytes(timestamp),0,4));
             bos.write(bits);
             bos.write(nonce);
         } catch (IOException e) {
@@ -71,7 +70,7 @@ public class Block {
     /********************************************************************************/
     public byte[] hash256() {
         var s = this.serialize();
-        return CryptoKit.reverseBytes(CryptoKit.hash256(s));
+        return Kit.reverseBytes(Kit.hash256(s));
     }
     /********************************************************************************/
 
@@ -100,7 +99,7 @@ public class Block {
         BigInteger target;
 
         var exp = bits[3];
-        var coeff = CryptoKit.litteEndianBytesToInt(Arrays.copyOfRange(bits,0,3));
+        var coeff = Kit.litteEndianBytesToInt(Arrays.copyOfRange(bits,0,3));
         target = coeff.multiply(BigInteger.valueOf(256).pow(exp-3));
 
         return target;
@@ -112,18 +111,18 @@ public class Block {
 
     public String getTargetHexString() {
         var ba = getTarget().toByteArray();
-        ba = CryptoKit.to32bytes(ba);
-        return CryptoKit.bytesToHexString(ba);
+        ba = Kit.to32bytes(ba);
+        return Kit.bytesToHexString(ba);
     }
     /********************************************************************************/
     public String getHashHexString() {
         var ba = this.hash256();
-        return CryptoKit.bytesToHexString(ba);
+        return Kit.bytesToHexString(ba);
     }
 
     /********************************************************************************/
     public double difficulty() {
-        var f = new BigInteger(1,CryptoKit.hexStringToByteArray("ffff"));
+        var f = new BigInteger(1, Kit.hexStringToByteArray("ffff"));
 
         var n = f.multiply(BigInteger.valueOf(256).pow(0x1d-3));
 
@@ -134,7 +133,7 @@ public class Block {
     public boolean checkPoW() {
 
         var hash = this.hash256();
-        var proof = CryptoKit.litteEndianBytesToInt(hash);
+        var proof = Kit.litteEndianBytesToInt(hash);
 
         return proof.compareTo(this.getTarget())<0;
     }
@@ -153,12 +152,16 @@ public class Block {
         return new_bits;
     }
     /********************************************************************************/
+    /*  Converts target int bits format
+     */
     public static byte[] targetToBits(BigInteger target) {
         var raw_bytes = target.toByteArray();
 
         var bos = new ByteArrayOutputStream();
 
-        if (raw_bytes[0]>0x7f)
+        // target is always positive, so if the first bit is 1
+        // we shift so it's not considered as sign
+        if ((raw_bytes[0] & 0x80) == 0x80)
             bos.write(0);
         try {
             bos.write(raw_bytes);
@@ -169,17 +172,19 @@ public class Block {
         raw_bytes = bos.toByteArray();
 
         var exponent = raw_bytes.length;
-        var coeff = CryptoKit.reverseBytes(Arrays.copyOfRange(raw_bytes,0,3));
+        // the first three digits of the number in 256 base
+        var coeff = Arrays.copyOfRange(raw_bytes,0,3);
 
         bos = new ByteArrayOutputStream();
         try {
-            bos.write(coeff);
+            // coeff is in little endian
+            bos.write(Kit.reverseBytes(coeff));
             bos.write((byte)exponent);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        raw_bytes = Arrays.copyOfRange(bos.toByteArray(),0,4);
+        raw_bytes = bos.toByteArray();
 
         return raw_bytes;
     }
@@ -213,11 +218,11 @@ public class Block {
     public String toString() {
         return "\nBlock{" +
                 "\nversion=" + version +
-                ",\nprev_block=" + CryptoKit.bytesToHexString(prev_block) +
-                ",\nmerkle_root=" + CryptoKit.bytesToHexString(merkle_root) +
+                ",\nprev_block=" + Kit.bytesToHexString(prev_block) +
+                ",\nmerkle_root=" + Kit.bytesToHexString(merkle_root) +
                 ",\ntimestamp=" + timestamp +
-                ",\nbits=" + CryptoKit.bytesToHexString(bits) +
-                ",\nnonce=" + CryptoKit.bytesToHexString(nonce) +
+                ",\nbits=" + Kit.bytesToHexString(bits) +
+                ",\nnonce=" + Kit.bytesToHexString(nonce) +
                 '}';
     }
 }

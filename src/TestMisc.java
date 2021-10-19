@@ -20,8 +20,8 @@ public class TestMisc {
         var n1_b = n1.toByteArray();
         var n2_b = n2.toByteArray();
 
-        byte[] s1 = CryptoKit.hexStringToByteArray(n1_hex);
-        byte[] s2 = CryptoKit.hexStringToByteArray(n2_hex);
+        byte[] s1 = Kit.hexStringToByteArray(n1_hex);
+        byte[] s2 = Kit.hexStringToByteArray(n2_hex);
 
     }
 }

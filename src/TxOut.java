@@ -17,9 +17,9 @@ public class TxOut {
     @Override
     public String toString() {
         String res="INVALID";
-        String script_str = CryptoKit.bytesToHexString(script_pubkey);
+        String script_str = Kit.bytesToHexString(script_pubkey);
         try {
-            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerialisation(CryptoKit.addLenPrefix(script_pubkey))+"]";
+            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerialisation(Kit.addLenPrefix(script_pubkey))+"]";
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class TxOut {
 
     public String printScript() {
         try {
-            var script = Script.parseSerialisation(CryptoKit.addLenPrefix(this.script_pubkey));
+            var script = Script.parseSerialisation(Kit.addLenPrefix(this.script_pubkey));
             return script.toString();
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,8 +42,8 @@ public class TxOut {
         TxOut txout = null;
 
         try {
-            var amount = CryptoKit.litteEndianBytesToInt(bis.readNBytes(8)).longValue();
-            var script_len = (int)CryptoKit.readVarint(bis);
+            var amount = Kit.litteEndianBytesToInt(bis.readNBytes(8)).longValue();
+            var script_len = (int) Kit.readVarint(bis);
             var script_pub_key = bis.readNBytes(script_len);
             txout = new TxOut(amount,script_pub_key);
 
@@ -57,11 +57,11 @@ public class TxOut {
 
         var bos = new ByteArrayOutputStream();
         try {
-            byte[] buf = CryptoKit.intToLittleEndianBytes(amount);
+            byte[] buf = Kit.intToLittleEndianBytes(amount);
             // buf is 32 bytes little endian, we need only the first 8
             bos.write(buf,0,8);
             var len = script_pubkey.length;
-            bos.write(CryptoKit.encodeVarint(len));
+            bos.write(Kit.encodeVarint(len));
             bos.write(this.script_pubkey);
 
         } catch (IOException e) {

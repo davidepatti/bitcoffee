@@ -38,12 +38,12 @@ public class Tx {
         // then printing them as a number."
 
         // Wladimir van der Laan (Bitcoin Core developer)
-        return CryptoKit.bytesToHexString(CryptoKit.reverseBytes(hash_bytes));
+        return Kit.bytesToHexString(Kit.reverseBytes(hash_bytes));
     }
 
     /*****************************************************************/
     public byte[] hash() {
-        return CryptoKit.hash256(this.serialized);
+        return Kit.hash256(this.serialized);
     }
 
 
@@ -69,10 +69,10 @@ public class Tx {
         byte[] redeem_script = null;
 
         try {
-            var script_pubkey = Script.parseSerialisation(CryptoKit.addLenPrefix(prev_script_pubkey));
+            var script_pubkey = Script.parseSerialisation(Kit.addLenPrefix(prev_script_pubkey));
             if (script_pubkey.isP2sh()) {
                 // the commands of the redeem script are encoded as data at the bottom of the scriptsig
-                var script_sig = Script.parseSerialisation(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
+                var script_sig = Script.parseSerialisation(Kit.addLenPrefix(tx_in.getScriptSig()));
                 var cmd = script_sig.commands.elementAt(0);
 
                 redeem_script = cmd.value;
@@ -85,8 +85,8 @@ public class Tx {
         var z = this.getSigHash(input_index,redeem_script);
 
         try {
-            var script_sig = Script.parseSerialisation(CryptoKit.addLenPrefix(tx_in.getScriptSig()));
-            var script_combined = Script.parseSerialisation(CryptoKit.addLenPrefix(prev_script_pubkey));
+            var script_sig = Script.parseSerialisation(Kit.addLenPrefix(tx_in.getScriptSig()));
+            var script_combined = Script.parseSerialisation(Kit.addLenPrefix(prev_script_pubkey));
             script_combined.addTop(script_sig);
             eval = script_combined.evaluate(z);
 
@@ -135,11 +135,11 @@ public class Tx {
         var bos = new ByteArrayOutputStream();
 
         try {
-            byte[] buf = CryptoKit.intToLittleEndianBytes(version);
+            byte[] buf = Kit.intToLittleEndianBytes(version);
             bos.write(buf,0,4);
 
             int num_ins = tx_ins.size();
-            bos.write(CryptoKit.encodeVarint(num_ins));
+            bos.write(Kit.encodeVarint(num_ins));
             for (int i=0;i < num_ins; i++) {
 
                 var prev_tx = tx_ins.get(i).getPrevTxId();
@@ -169,18 +169,18 @@ public class Tx {
             }
 
             int num_outs = tx_outs.size();
-            bos.write(CryptoKit.encodeVarint(num_outs));
+            bos.write(Kit.encodeVarint(num_outs));
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 
-            buf = CryptoKit.intToLittleEndianBytes(this.locktime);
+            buf = Kit.intToLittleEndianBytes(this.locktime);
             bos.write(buf,0,4);
 
             // SIGHASH_ALL hash type
-            buf = CryptoKit.intToLittleEndianBytes(1);
+            buf = Kit.intToLittleEndianBytes(1);
             bos.write(buf,0,4);
 
-            x= (CryptoKit.hash256(bos.toByteArray()));
+            x= (Kit.hash256(bos.toByteArray()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -200,28 +200,28 @@ public class Tx {
         Tx tx = null;
 
         try {
-            var version = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+            var version = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
 
             // TODO: check whether varint should be little endian (see the other)
-            var num_inputs = CryptoKit.readVarint(bis);
+            var num_inputs = Kit.readVarint(bis);
             ArrayList<TxIn> inputs = new ArrayList<>();
 
             for (int i=0;i<num_inputs;i++) {
                 inputs.add(TxIn.parse(bis));
             }
 
-            var num_outputs = CryptoKit.readVarint(bis);
+            var num_outputs = Kit.readVarint(bis);
             ArrayList<TxOut> outputs = new ArrayList<>();
             for (int i=0;i<num_outputs;i++) {
                 outputs.add(TxOut.parse(bis));
             }
 
-            var locktime = CryptoKit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
+            var locktime = Kit.litteEndianBytesToInt(bis.readNBytes(4)).longValue();
 
             tx = new Tx(version,inputs,outputs,locktime, testnet);
 
 
-            var original_ser = CryptoKit.bytesToHexString(serialization);
+            var original_ser = Kit.bytesToHexString(serialization);
             var created_ser = tx.getSerialString();
 
 
@@ -241,7 +241,7 @@ public class Tx {
 
     /*****************************************************************/
     public String getSerialString() {
-        return CryptoKit.bytesToHexString(this.serialized);
+        return Kit.bytesToHexString(this.serialized);
     }
 
     /*****************************************************************/
@@ -249,22 +249,22 @@ public class Tx {
         var bos = new ByteArrayOutputStream();
 
         try {
-            byte[] buf = CryptoKit.intToLittleEndianBytes(version);
+            byte[] buf = Kit.intToLittleEndianBytes(version);
             bos.write(buf,0,4);
 
             // TODO: check whether varint should be little endian (see the other)
 
             int num_ins = tx_ins.size();
-            bos.write(CryptoKit.encodeVarint(num_ins));
+            bos.write(Kit.encodeVarint(num_ins));
             for (TxIn txin: tx_ins)
                 bos.write(txin.getSerialized());
 
             int num_outs = tx_outs.size();
-            bos.write(CryptoKit.encodeVarint(num_outs));
+            bos.write(Kit.encodeVarint(num_outs));
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 
-            buf = CryptoKit.intToLittleEndianBytes(this.locktime);
+            buf = Kit.intToLittleEndianBytes(this.locktime);
             bos.write(buf,0,4);
 
         } catch (IOException e) {
@@ -306,8 +306,8 @@ public class Tx {
         if (this.getTxIns().size()!=1) return false;
         var single_in = this.getTxIns().get(0);
         if (!(new BigInteger(single_in.getPrevTxId()).equals(BigInteger.ZERO))) return false;
-        var prev_target = CryptoKit.hexStringToByteArray("ffffffff");
-        var prev = Arrays.copyOfRange(CryptoKit.intToLittleEndianBytes(single_in.getPrevIndex()),0,4);
+        var prev_target = Kit.hexStringToByteArray("ffffffff");
+        var prev = Arrays.copyOfRange(Kit.intToLittleEndianBytes(single_in.getPrevIndex()),0,4);
         if (!Arrays.equals(prev,prev_target)) return false;
 
         return true;
@@ -318,8 +318,8 @@ public class Tx {
         int height = -1;
 
         try {
-            var scriptsig = Script.parseSerialisation(CryptoKit.addLenPrefix(this.getTxIns().get(0).getScriptSig()));
-            height = CryptoKit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
+            var scriptsig = Script.parseSerialisation(Kit.addLenPrefix(this.getTxIns().get(0).getScriptSig()));
+            height = Kit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
         } catch (IOException e) {
             e.printStackTrace();
         }

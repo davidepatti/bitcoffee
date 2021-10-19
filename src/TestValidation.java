@@ -6,7 +6,7 @@ public class TestValidation {
     public static void main(String[] args) {
         System.out.println("--------------------------------------------------");
         var raw_tx = "0100000001813f79011acb80925dfe69b3def355fe914bd1d96a3f5f71bf8303c6a989c7d1000000006b483045022100ed81ff192e75a3fd2304004dcadb746fa5e24c5031ccfcf21320b0277457c98f02207a986d955c6e0cb35d446a89d3f56100f4d7f67801c31967743a9c8e10615bed01210349fc4e631e3624a545de3f89f5d8684c7b8138bd94bdd531d2e213bf016b278afeffffff02a135ef01000000001976a914bc3b654dca7e56b04dca18f2566cdaf02e8d9ada88ac99c39800000000001976a9141c4bc762dd5423e332166702cb75f40df79fea1288ac19430600";
-        var tx = Tx.parse(CryptoKit.hexStringToByteArray(raw_tx),false);
+        var tx = Tx.parse(Kit.hexStringToByteArray(raw_tx),false);
         System.out.println(">> Checking fee for tx id:"+tx.getId());
         var fee = tx.calculateFee();
         if (fee>=0)
@@ -19,12 +19,12 @@ public class TestValidation {
         var der = "3045022100ed81ff192e75a3fd2304004dcadb746fa5e24c5031ccfcf21320b0277457c98f02207a986d955c6e0cb35d446a89d3f56100f4d7f67801c31967743a9c8e10615bed";
         var z = new BigInteger("27e0c5994dec7824e56dec6b2fcb342eb7cdb0d0957c2fce9882f715e85d81a6",16);
         var point = S256Point.parseSEC(sec);
-        var signature = Signature.parse(CryptoKit.hexStringToByteArray(der));
+        var signature = Signature.parse(Kit.hexStringToByteArray(der));
         System.out.println(" >> Verify signature test: "+point.verify(z,signature));
         System.out.println("--------------------------------------------------");
 
         var mod_tx = "0100000001813f79011acb80925dfe69b3def355fe914bd1d96a3f5f71bf8303c6a989c7d1000000001976a914a802fc56c704ce87c42d7c92eb75e7896bdc41ae88acfeffffff02a135ef01000000001976a914bc3b654dca7e56b04dca18f2566cdaf02e8d9ada88ac99c39800000000001976a9141c4bc762dd5423e332166702cb75f40df79fea1288ac1943060001000000";
-        var h256 = CryptoKit.hash256(CryptoKit.hexStringToByteArray(mod_tx));
+        var h256 = Kit.hash256(Kit.hexStringToByteArray(mod_tx));
         z = new BigInteger(h256);
         System.out.println(">> Testing hex z:"+z.toString(16).equals("27e0c5994dec7824e56dec6b2fcb342eb7cdb0d0957c2fce9882f715e85d81a6"));
         System.out.println("--------------------------------------------------");
@@ -33,41 +33,41 @@ public class TestValidation {
         der = "3045022100ed81ff192e75a3fd2304004dcadb746fa5e24c5031ccfcf21320b0277457c98f02207a986d955c6e0cb35d446a89d3f56100f4d7f67801c31967743a9c8e10615bed";
         z = new BigInteger("27e0c5994dec7824e56dec6b2fcb342eb7cdb0d0957c2fce9882f715e85d81a6",16);
         point = S256Point.parseSEC(sec);
-        signature = Signature.parse(CryptoKit.hexStringToByteArray(der));
+        signature = Signature.parse(Kit.hexStringToByteArray(der));
         System.out.println(">> Test verify: "+point.verify(z,signature));
         System.out.println("--------------------------------------------------");
 
         System.out.println(">> Testing SigHash on input 0 of tx:"+tx.getId());
 
         var testsighash = tx.getSigHash(0);
-        System.out.println(CryptoKit.bytesToHexString(testsighash));
+        System.out.println(Kit.bytesToHexString(testsighash));
 
         System.out.print(">> Testing Verify Input:"+tx.verifyInput(0));
         System.out.println("--------------------------------------------------");
         System.out.println(">> Testing Transaction creation");
-        var prev_tx = CryptoKit.hexStringToByteArray("0d6fe5213c0b3291f208cba8bfb59b7476dffacc4e5cb66f6eb20a080843a299");
+        var prev_tx = Kit.hexStringToByteArray("0d6fe5213c0b3291f208cba8bfb59b7476dffacc4e5cb66f6eb20a080843a299");
         var prev_index = 13;
         byte[] script_null = {};
         var tx_in = new TxIn(prev_tx,prev_index,script_null);
         System.out.println(tx_in);
         var change_amount = (int)(0.33*100000000);
         var change_address = "mzx5YhAH9kNHtcN481u6WkjeHjYtVeKVh2";
-        var change_h160 = CryptoKit.decodeBase58(change_address);
+        var change_h160 = Kit.decodeBase58(change_address);
         System.out.println("---------------------------------------------------");
         System.out.println(">> TESTING: decoded change_h160 for address :"+change_address);
-        var result_tdc = CryptoKit.bytesToHexString(change_h160);
+        var result_tdc = Kit.bytesToHexString(change_h160);
         var target_decoded_change = "d52ad7ca9b3d096a38e752c2018e6fbc40cdf26f";
         System.out.println(">> RESULT:"+result_tdc.equals(target_decoded_change));
         System.out.println("---------------------------------------------------");
 
         var change_script = Script.hash160ToP2pkh(change_h160);
         var change_script_bytes = change_script.getBytes();
-        var change_script_serial_hex = CryptoKit.bytesToHexString(change_script_bytes);
+        var change_script_serial_hex = Kit.bytesToHexString(change_script_bytes);
         var change_output = new TxOut(change_amount,change_script_bytes);
 
         var target_amount = (int)(0.1*100000000);
         var target_address = "mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf";
-        var target_h160 = CryptoKit.decodeBase58(target_address);
+        var target_h160 = Kit.decodeBase58(target_address);
         var target_script = Script.hash160ToP2pkh(target_h160);
         var target_output = new TxOut(target_amount,target_script.getBytes());
 
@@ -89,8 +89,8 @@ public class TestValidation {
         var pk2 = new PrivateKey(8675309);
         var der2 = pk2.signDeterminisk(z2).DER();
         // DER + SIGHASH_ALL
-        var sig2 = CryptoKit.hexStringToByteArray(der2+"01");
-        var sec2 = CryptoKit.hexStringToByteArray(pk2.point.SEC33());
+        var sig2 = Kit.hexStringToByteArray(der2+"01");
+        var sec2 = Kit.hexStringToByteArray(pk2.point.SEC33());
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmdType.DATA,sec2));
         cmds.push(new ScriptCmd(ScriptCmdType.DATA,sig2));

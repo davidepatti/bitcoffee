@@ -9,11 +9,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-public class CryptoKit {
+public class Kit {
 
     public static byte[] addLenPrefix(byte[] bytes) {
         long len = bytes.length;
-        var varint = CryptoKit.encodeVarint(len);
+        var varint = Kit.encodeVarint(len);
         var bos = new ByteArrayOutputStream();
         try {
             assert varint != null;
@@ -149,10 +149,10 @@ public class CryptoKit {
         }
 
         var combined = num.toByteArray();
-        var cobined_hex = CryptoKit.bytesToHexString(combined);
+        var cobined_hex = Kit.bytesToHexString(combined);
         var len = combined.length;
         byte[] checksum_start = Arrays.copyOfRange(combined,len-4,len);
-        var checksum_start_hex = CryptoKit.bytesToHexString(checksum_start);
+        var checksum_start_hex = Kit.bytesToHexString(checksum_start);
         var original = Arrays.copyOfRange(combined,0,len-4);
         var computed_checksum = hash256(original);
         var computed_checksim_start = Arrays.copyOfRange(computed_checksum,0,4);
@@ -201,14 +201,6 @@ public class CryptoKit {
     public static byte[] to32bytes(byte[] secret) {
         var bos = new ByteArrayOutputStream();
         for (int i=0;i<32-secret.length;i++)
-            bos.write(0);
-        bos.writeBytes(secret);
-        return bos.toByteArray();
-    }
-    /***************************************************************************/
-    public static byte[] to64bytes(byte[] secret) {
-        var bos = new ByteArrayOutputStream();
-        for (int i=0;i<64-secret.length;i++)
             bos.write(0);
         bos.writeBytes(secret);
         return bos.toByteArray();
@@ -311,9 +303,6 @@ public class CryptoKit {
             result = bos.toByteArray();
             return result;
         }
-        // check if less than 2^64
-        // cannot use long
-        //else if (i<new BigInteger("10000000000000000",16).longValue()) {
         else if (BigInteger.valueOf(i).compareTo(BigInteger.TWO.pow(64))<0) {
             buffer = intToLittleEndianBytes(i);
             prefix = (byte)0xff;
@@ -352,7 +341,6 @@ public class CryptoKit {
         var res_bytes = bos.toByteArray();
         return encodeBase58Checksum(res_bytes);
     }
-
 
 }
 

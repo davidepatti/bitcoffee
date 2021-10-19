@@ -26,7 +26,7 @@ public class ScriptCmd {
     @Override
     public String toString() {
         //return "\n{" + Hex.toHexString(value) + ", " + type + "}";
-        return "\n{" + CryptoKit.bytesToHexString(value) + ", " + type + "}";
+        return "\n{" + Kit.bytesToHexString(value) + ", " + type + "}";
     }
 
     @Override

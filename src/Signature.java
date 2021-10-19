@@ -43,7 +43,7 @@ public class Signature {
 
         var rlength = bis.read();
         try {
-            var r_bytes = CryptoKit.to32bytes(bis.readNBytes(rlength));
+            var r_bytes = Kit.to32bytes(bis.readNBytes(rlength));
             r = new BigInteger(r_bytes);
 
         } catch (IOException e) {
@@ -59,7 +59,7 @@ public class Signature {
         }
         var slength = bis.read();
         try {
-            var s_bytes = CryptoKit.to32bytes(bis.readNBytes(slength));
+            var s_bytes = Kit.to32bytes(bis.readNBytes(slength));
             s = new BigInteger(s_bytes);
 
         } catch (IOException e) {

@@ -11,21 +11,21 @@ public class PrivateKey {
 
     public PrivateKey(byte[] secret) {
         this.secret_n = new BigInteger(1,secret);
-        this.secret_bytes = CryptoKit.to32bytes(secret);
+        this.secret_bytes = Kit.to32bytes(secret);
         var point = Secp256k1.G.multiplyBin(secret_n);
         this.point = new S256Point(point);
     }
     public PrivateKey(BigInteger n) {
-        var secret_bin = CryptoKit.hexStringToByteArray(n.toString(16));
-        this.secret_bytes = CryptoKit.to32bytes(secret_bin);
+        var secret_bin = Kit.hexStringToByteArray(n.toString(16));
+        this.secret_bytes = Kit.to32bytes(secret_bin);
         this.secret_n = n;
         var point = Secp256k1.G.multiplyBin(this.secret_n);
         this.point = new S256Point(point);
     }
 
     public PrivateKey(long n) {
-        var secret_bin= CryptoKit.hexStringToByteArray(Long.toHexString(n));
-        this.secret_bytes = CryptoKit.to32bytes(secret_bin);
+        var secret_bin= Kit.hexStringToByteArray(Long.toHexString(n));
+        this.secret_bytes = Kit.to32bytes(secret_bin);
         this.secret_n = BigInteger.valueOf(n);
         var point = Secp256k1.G.multiplyBin(this.secret_n);
         this.point = new S256Point(point);
@@ -92,8 +92,8 @@ public class PrivateKey {
 
         byte[] all = bos.toByteArray();
 
-        k = CryptoKit.calcHmacSha256(k,all);
-        v = CryptoKit.calcHmacSha256(k,v);
+        k = Kit.calcHmacSha256(k,all);
+        v = Kit.calcHmacSha256(k,v);
 
         bos = new ByteArrayOutputStream();
         bos.writeBytes(v);
@@ -102,13 +102,13 @@ public class PrivateKey {
         bos.writeBytes(z_bytes);
 
         all = bos.toByteArray();
-        k = CryptoKit.calcHmacSha256(k,all);
-        v = CryptoKit.calcHmacSha256(k,v);
+        k = Kit.calcHmacSha256(k,all);
+        v = Kit.calcHmacSha256(k,v);
 
         boolean go_on = true;
 
         while (go_on) {
-            v = CryptoKit.calcHmacSha256(k,v);
+            v = Kit.calcHmacSha256(k,v);
             var candidate = new BigInteger(1,v);
 
             if (candidate.compareTo(BigInteger.ONE)>=0 &&
@@ -118,8 +118,8 @@ public class PrivateKey {
             bos = new ByteArrayOutputStream();
             bos.writeBytes(v);
             bos.write(zero);
-            k = CryptoKit.calcHmacSha256(k,bos.toByteArray());
-            v = CryptoKit.calcHmacSha256(k,v);
+            k = Kit.calcHmacSha256(k,bos.toByteArray());
+            v = Kit.calcHmacSha256(k,v);
         }
 
         return new BigInteger(z_bytes);
@@ -140,7 +140,7 @@ public class PrivateKey {
 
         var toencode = bos.toByteArray();
 
-        return CryptoKit.encodeBase58Checksum(toencode);
+        return Kit.encodeBase58Checksum(toencode);
     }
 
 }
