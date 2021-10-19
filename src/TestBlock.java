@@ -75,13 +75,32 @@ public class TestBlock {
         System.out.println("Target: "+block.getTargetHexString());
         System.out.println("Check PoW:"+block.checkPoW());
         System.out.println("-------------------------------------------------------");
-
         System.out.println(">> Testing new bits");
         var prev_bits = Kit.hexStringToByteArray("54d80118");
         var time_diff = 302400;
         var target_bits = Kit.hexStringToByteArray("00157617");
         var new_bits = Block.computeNewBits(prev_bits,time_diff);
         System.out.println("Result:"+ Arrays.equals(target_bits,new_bits));
+
+        System.out.println("-------------------------------------------------------");
+        System.out.println(">> Testing Difficulty adjustment");
+        var last_block = Block.parseSerial(Kit.hexStringToByteArray("000000203471101bbda3fe307664b3283a9ef0e97d9a38a7eacd8800000000000000000010c8aba8479bbaa5e0848152fd3c2289ca50e1c3e58c9a4faaafbdf5803c5448ddb845597e8b0118e43a81d3"));
+        var first_block = Block.parseSerial(Kit.hexStringToByteArray("02000020f1472d9db4b563c35f97c428ac903f23b7fc055d1cfc26000000000000000000b3f449fcbe1bc4cfbcb8283a0d2c037f961a3fdf2b8bedc144973735eea707e1264258597e8b0118e5f00474"));
+        System.out.println("First block:");
+        System.out.println(first_block);
+        System.out.println("Last block:");
+        System.out.println(last_block);
+
+        time_diff = last_block.getTimestamp()-first_block.getTimestamp();
+        System.out.println("Time differential: "+time_diff+", updating bits: "+Kit.bytesToHexString(first_block.getBits()));
+        new_bits = Block.computeNewBits(first_block.getBits(),time_diff);
+        System.out.println("new bits: "+Kit.bytesToHexString(new_bits));
+        System.out.println(">> "+Kit.bytesToHexString(new_bits).equals("80df6217"));
+
+
+
+
+
 
     }
 }
