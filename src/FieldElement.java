@@ -32,11 +32,6 @@ public class FieldElement {
         this.prime = prime;
     }
 
-    public FieldElement(FieldElement other) {
-        this.num = other.num;
-        this.prime = other.prime;
-    }
-
     public FieldElement add(FieldElement other) {
         if (this.prime.compareTo(other.prime)!=0) {
             System.out.println("Different fields "+this.prime+" and "+other.prime);

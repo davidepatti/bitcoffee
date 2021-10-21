@@ -59,19 +59,6 @@ public class TxFetcher {
 
 
                 // TODO: re-enable when properly dealing with witness data
-               /*
-                if (!tx.getId().equals(tx_id)) {
-                    System.out.println("WARNING: Mismatching TX ID");
-                    System.out.println("*******************************************");
-                    System.out.println("tx.getID:" + tx.getId());
-                    System.out.println("tx_id:" + tx_id);
-                    System.out.println("*******************************************");
-                    //throw new Exception("my exception");
-                } else {
-                    System.out.println("OK, fetched TX has matching ID:"+tx.getId());
-                    //
-                }
-                */
                 cache.put(tx_id,tx);
             }
 

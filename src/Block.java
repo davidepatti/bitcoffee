@@ -147,9 +147,8 @@ public class Block {
 
         var prev_target = Block.bitsToTarget(prev_bits);
         var new_target = prev_target.multiply(BigInteger.valueOf(time_diff)).divide(BigInteger.valueOf(TWO_WEEKS));
-        var new_bits = Block.targetToBits(new_target);
 
-        return new_bits;
+        return Block.targetToBits(new_target);
     }
     /********************************************************************************/
     /*  Converts target int bits format

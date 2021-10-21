@@ -308,9 +308,7 @@ public class Tx {
         if (!(new BigInteger(single_in.getPrevTxId()).equals(BigInteger.ZERO))) return false;
         var prev_target = Kit.hexStringToByteArray("ffffffff");
         var prev = Arrays.copyOfRange(Kit.intToLittleEndianBytes(single_in.getPrevIndex()),0,4);
-        if (!Arrays.equals(prev,prev_target)) return false;
-
-        return true;
+        return Arrays.equals(prev, prev_target);
     }
 
     public int getCoinbaseHeight() {

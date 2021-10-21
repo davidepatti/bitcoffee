@@ -66,7 +66,7 @@ public class PrivateKey {
         return new Signature(r,s);
     }
 
-    @SuppressWarnings("LoopConditionNotUpdatedInsideLoop")
+    @SuppressWarnings({"LoopConditionNotUpdatedInsideLoop", "ConstantConditions"})
     public BigInteger getDeterministicK(byte[] z_bytes){
         byte[] k = new byte[32];
         byte[] v = new byte[32];

@@ -2,6 +2,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 // TODO: abstract to common element
+@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 public class FieldElementPoint {
     private final FieldElement x,y,a,b;
     static final FieldElement BIGINF = null;
@@ -105,16 +106,18 @@ public class FieldElementPoint {
 
     }
 
-    // TODO: check binary expansion optimisation page 57
-    // TODO: move to other implementation by default
-    public FieldElementPoint multiply(BigInteger factor) {
-        BigInteger n;
-        FieldElementPoint sum = new FieldElementPoint(this);
-        for (n = BigInteger.ONE; n.compareTo(factor)<0;n=n.add(BigInteger.ONE)) {
-            sum = sum.add(this);
-        }
-        return sum;
-    }
+// --Commented out by Inspection START (19/10/21, 12:14):
+//    // TODO: check binary expansion optimisation page 57
+//    // TODO: move to other implementation by default
+//    public FieldElementPoint multiply(BigInteger factor) {
+//        BigInteger n;
+//        FieldElementPoint sum = new FieldElementPoint(this);
+//        for (n = BigInteger.ONE; n.compareTo(factor)<0;n=n.add(BigInteger.ONE)) {
+//            sum = sum.add(this);
+//        }
+//        return sum;
+//    }
+// --Commented out by Inspection STOP (19/10/21, 12:14)
 
     // TODO: check for G point optimisation page 61
     public FieldElementPoint multiplyBin(BigInteger coefficient) {

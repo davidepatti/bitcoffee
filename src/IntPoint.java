@@ -5,6 +5,7 @@ public class IntPoint {
     private final BigInteger x,y,a,b;
     static final BigInteger BIGINF = null;
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean inTheCurve() {
         // point at infinity should not be checked
         if (this.x==BIGINF && this.y==BIGINF) return true;
