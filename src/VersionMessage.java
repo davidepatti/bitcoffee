@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
 
-public class VersionMessage {
+public class VersionMessage extends Message {
     final private int version;
     final private long services;
     final private long timestamp;
@@ -23,10 +23,9 @@ public class VersionMessage {
     final private boolean relay;
 
 
-    public final byte[] command = Kit.stringToBytes("version");
-
-
     public VersionMessage() {
+
+        this.command = Kit.stringToBytes("version");
 
         var timestamp = Instant.now().getEpochSecond();
         var rand = new Random();
@@ -50,6 +49,7 @@ public class VersionMessage {
     // short constructor for testing purposes
     public VersionMessage(long timestamp, byte[] nonce) {
 
+        this.command = Kit.stringToBytes("version");
         this.version = 70015;
         this.services = 0;
         this.timestamp = timestamp;
@@ -66,6 +66,7 @@ public class VersionMessage {
     }
 
     public VersionMessage(int version, long services, long timestamp, long receiver_services, byte[] receiver_ip, int receiver_port, long sender_services, byte[] sender_ip, int sender_port, byte[] nonce, byte[] user_agent,int latest_block, boolean relay) {
+        this.command = Kit.stringToBytes("version");
         this.version = version;
         this.services = services;
 
@@ -86,12 +87,7 @@ public class VersionMessage {
         this.relay = relay;
     }
 
-    public static VersionMessage parse(byte[] bytes) {
-        var bis = new ByteArrayInputStream(bytes);
-
-        return null;
-    }
-
+    @Override
     public byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
@@ -155,5 +151,10 @@ public class VersionMessage {
                 ", latest_block=" + latest_block +
                 ", relay=" + relay +
                 '}';
+    }
+
+    @Override
+    public Message parse(byte[] bytes) {
+        return null;
     }
 }
