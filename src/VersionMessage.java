@@ -1,9 +1,11 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Random;
 
 public class VersionMessage {
     final private int version;
@@ -20,6 +22,31 @@ public class VersionMessage {
     final private int latest_block;
     final private boolean relay;
 
+
+    public final byte[] command = Kit.stringToBytes("version");
+
+
+    public VersionMessage() {
+
+        var timestamp = Instant.now().getEpochSecond();
+        var rand = new Random();
+        var nonce = Kit.intToLittleEndianBytes(rand.nextLong());
+
+        this.version = 70015;
+        this.services = 0;
+        this.timestamp = timestamp;
+        this.receiver_services = 0;
+        this.receiver_ip = Kit.hexStringToByteArray("00000000");
+        this.receiver_port = 8333;
+        this.sender_services = 0;
+        this.sender_ip = Kit.hexStringToByteArray("00000000");
+        this.sender_port = 8333;
+        this.nonce = nonce;
+        this.user_agent = Kit.stringToBytes("/programmingbitcoin:0.1/");
+        this.latest_block = 0;
+        this.relay = false;
+
+    }
     // short constructor for testing purposes
     public VersionMessage(long timestamp, byte[] nonce) {
 

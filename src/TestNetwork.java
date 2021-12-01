@@ -1,4 +1,7 @@
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class TestNetwork {
 
@@ -26,6 +29,42 @@ public class TestNetwork {
         System.out.println("RESULT: "+ Arrays.equals(serialized_bytes,serialized_target));
         System.out.println("-------------------------------------------------------");
         System.out.println(">>Testing Network Connection");
+
+        String host = "testnet.programmingbitcoin.com";
+        int port = 18333;
+        try {
+            System.out.println("CONNECTING TO "+host+" port "+port);
+            var socket = new Socket(host,port);
+            System.out.println("CONNECTED...");
+
+            var is = socket.getInputStream();
+            var os = socket.getOutputStream();
+            version_msg = new VersionMessage(0,Kit.hexStringToByteArray("0000000000000000"));
+            envelope = new NetworkEnvelope(version_msg.command, version_msg.serialize(), true);
+
+            var env_bytes = envelope.serialize();
+
+            System.out.println("SENDING: ");
+            System.out.println(envelope);
+            os.write(env_bytes);
+
+            var sc = new Scanner(is);
+
+            while (true) {
+                System.out.println("WAITING RESPONSE....");
+                while (is.available()==0);
+                var rec = is.readAllBytes();
+
+                //var rec = sc.nextLine();
+                System.out.println("************ RECEIVED:");
+                System.out.println(Kit.bytesToHexString(rec));
+                var new_msg = NetworkEnvelope.parse(rec,true);
+                System.out.println(new_msg);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
