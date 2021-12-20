@@ -4,16 +4,20 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+
+// the message that is transmitted is inside a network envelope
+// the command field and the internal payload will differentiate among the different message types (version, ack etc...)
+
 public class NetworkEnvelope {
     final public static String NETWORK_MAGIC = "f9beb4d9";
     final public static String TESTNET_NETWORK_MAGIC = "0b110907";
-    final private byte[] command;
+    final private String command;
     final private byte[] payload;
     final private boolean testnet;
     final private byte[] magic;
 
 
-    public NetworkEnvelope(byte[] command, byte[] payload, boolean testnet) {
+    public NetworkEnvelope(String command, byte[] payload, boolean testnet) {
         this.command = command;
         this.payload = payload;
         this.testnet = testnet;
@@ -57,7 +61,7 @@ public class NetworkEnvelope {
                 System.out.println("ERROR: Wrong calculated CHECKSUM "+Kit.bytesToHexString(calculated_checksum)+" expected: "+Kit.bytesToHexString(checksum));
                 //throw new IOException("Wrong payload checksum");
             }
-            return new NetworkEnvelope(command,payload,testnet);
+            return new NetworkEnvelope(Kit.bytesToAscii(command),payload,testnet);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,15 +82,16 @@ public class NetworkEnvelope {
                 throw new IOException(" Wrong magic:"+Kit.bytesToHexString(this.magic));
             }
             bos.write(this.magic);
-            bos.write(this.command);
+            bos.write(Kit.stringToBytes(this.command));
 
             // pad with zeros at the end to reach 12 bytes
-            for (int i =0;i<12-this.command.length;i++)
+            for (int i =0;i<12-this.command.length();i++)
                 bos.write(0);
 
             bos.write(Kit.intToLittleEndianBytes(this.payload.length),0,4);
             bos.write(Kit.hash256(this.payload),0,4);
-            bos.write(this.payload);
+            if (this.payload!=null)
+                bos.write(this.payload);
 
             serial = bos.toByteArray();
 
@@ -99,9 +104,17 @@ public class NetworkEnvelope {
 
     @Override
     public String toString() {
-        return "NetworkEnvelope{" +
-                "command=" + Kit.hexStringToAscii(Kit.bytesToHexString(command)) +
-                ", payload=" + Kit.bytesToHexString(payload) +
-                '}';
+        var str =  "NetworkEnvelope{" + "command=" + command;
+
+        if (this.payload!=null) str+= ", payload=" + Kit.bytesToHexString(payload)+'}';
+        return str;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public byte[] getPayload() {
+        return payload;
     }
 }

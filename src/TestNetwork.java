@@ -1,11 +1,13 @@
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class TestNetwork {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("-------------------------------------------------------");
         System.out.println(">>Testing NetworkEnvelope");
 
@@ -18,7 +20,7 @@ public class TestNetwork {
 
         System.out.println("-------------------------------------------------------");
         System.out.println(">>Testing VersionMessage");
-        var version_msg = new VersionMessage(0,Kit.hexStringToByteArray("0000000000000000"));
+        var version_msg = new MessageVersion(0,Kit.hexStringToByteArray("0000000000000000"));
 
         System.out.println("--> serializing:");
         System.out.println(version_msg);
@@ -32,40 +34,62 @@ public class TestNetwork {
 
         String host = "testnet.programmingbitcoin.com";
         int port = 18333;
-        try {
-            System.out.println("CONNECTING TO "+host+" port "+port);
-            var socket = new Socket(host,port);
-            System.out.println("CONNECTED...");
 
-            var is = socket.getInputStream();
-            var os = socket.getOutputStream();
-            version_msg = new VersionMessage(0,Kit.hexStringToByteArray("0000000000000000"));
-            envelope = new NetworkEnvelope(version_msg.command, version_msg.serialize(), true);
+        /*
+        System.out.println("CONNECTING TO "+host+" port "+port);
+        var socket = new Socket(host,port);
+        System.out.println("CONNECTED...");
 
-            var env_bytes = envelope.serialize();
+        var is = socket.getInputStream();
+        var os = socket.getOutputStream();
+        version_msg = new MessageVersion(0,Kit.hexStringToByteArray("0000000000000000"));
+        envelope = new NetworkEnvelope(version_msg.command, version_msg.serialize(), true);
 
-            System.out.println("SENDING: ");
-            System.out.println(envelope);
-            os.write(env_bytes);
+        var env_bytes = envelope.serialize();
 
-            var sc = new Scanner(is);
+        System.out.println("SENDING: ");
+        System.out.println(envelope);
+        os.write(env_bytes);
 
-            while (true) {
-                System.out.println("WAITING RESPONSE....");
-                while (is.available()==0);
-                var rec = is.readAllBytes();
+        var sc = new Scanner(is);
 
-                //var rec = sc.nextLine();
-                System.out.println("************ RECEIVED:");
-                System.out.println(Kit.bytesToHexString(rec));
-                var new_msg = NetworkEnvelope.parse(rec,true);
-                System.out.println(new_msg);
-            }
+        while (true) {
+            System.out.println("WAITING RESPONSE....");
+            while (is.available()==0);
+            var rec = is.readAllBytes();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            //var rec = sc.nextLine();
+            System.out.println("************ RECEIVED:");
+            System.out.println(Kit.bytesToHexString(rec));
+            var new_msg = NetworkEnvelope.parse(rec,true);
+            System.out.println(new_msg);
         }
 
+         */
+
+        var node = new SimpleNode(host,port,true,false);
+        var version = new MessageVersion();
+        node.send(version);
+        var verack_received = false;
+        var version_received = false;
+
+
+        Set<String> messageSet = new HashSet<>();
+
+        messageSet.add(MessageVersion.command);
+        messageSet.add(MessageVerAck.command);
+
+        while (!verack_received && !version_received) {
+            var message = node.waitFor(messageSet);
+
+            if (message.getCommand().equals("verack")) {
+                verack_received = true;
+            }
+            else {
+                version_received = true;
+                node.send(new MessageVerAck());
+            }
+        }
 
     }
 }

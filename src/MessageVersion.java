@@ -1,13 +1,10 @@
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Random;
 
-public class VersionMessage extends Message {
+public class MessageVersion extends Message {
     final private int version;
     final private long services;
     final private long timestamp;
@@ -21,11 +18,10 @@ public class VersionMessage extends Message {
     final private byte[] user_agent;
     final private int latest_block;
     final private boolean relay;
+    final static String command = "version";
 
 
-    public VersionMessage() {
-
-        this.command = Kit.stringToBytes("version");
+    public MessageVersion() {
 
         var timestamp = Instant.now().getEpochSecond();
         var rand = new Random();
@@ -41,15 +37,15 @@ public class VersionMessage extends Message {
         this.sender_ip = Kit.hexStringToByteArray("00000000");
         this.sender_port = 8333;
         this.nonce = nonce;
-        this.user_agent = Kit.stringToBytes("/programmingbitcoin:0.1/");
+        //this.user_agent = Kit.stringToBytes("/programmingbitcoin:0.1/");
+        this.user_agent = Kit.stringToBytes("/bitcoffee:0.1/");
         this.latest_block = 0;
         this.relay = false;
 
     }
     // short constructor for testing purposes
-    public VersionMessage(long timestamp, byte[] nonce) {
+    public MessageVersion(long timestamp, byte[] nonce) {
 
-        this.command = Kit.stringToBytes("version");
         this.version = 70015;
         this.services = 0;
         this.timestamp = timestamp;
@@ -65,8 +61,7 @@ public class VersionMessage extends Message {
         this.relay = false;
     }
 
-    public VersionMessage(int version, long services, long timestamp, long receiver_services, byte[] receiver_ip, int receiver_port, long sender_services, byte[] sender_ip, int sender_port, byte[] nonce, byte[] user_agent,int latest_block, boolean relay) {
-        this.command = Kit.stringToBytes("version");
+    public MessageVersion(int version, long services, long timestamp, long receiver_services, byte[] receiver_ip, int receiver_port, long sender_services, byte[] sender_ip, int sender_port, byte[] nonce, byte[] user_agent, int latest_block, boolean relay) {
         this.version = version;
         this.services = services;
 
@@ -156,5 +151,10 @@ public class VersionMessage extends Message {
     @Override
     public Message parse(byte[] bytes) {
         return null;
+    }
+
+    @Override
+    public String getCommand() {
+        return command;
     }
 }

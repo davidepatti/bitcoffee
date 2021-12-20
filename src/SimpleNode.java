@@ -1,8 +1,11 @@
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SimpleNode {
 
@@ -37,6 +40,7 @@ public class SimpleNode {
 
     private void initConnection() {
         try {
+            System.out.println("Simple node, starting connecton to "+host);
             this.socket = new Socket(host,this.port);
             bis = socket.getInputStream();
             bos = socket.getOutputStream();
@@ -47,7 +51,7 @@ public class SimpleNode {
     }
 
     public void send(Message message) {
-        var envelope = new NetworkEnvelope(message.command, message.serialize(), this.testnet);
+        var envelope = new NetworkEnvelope(message.getCommand(), message.serialize(), this.testnet);
 
         //if (logging)
         System.out.println("Sending messsage : "+envelope);
@@ -68,6 +72,47 @@ public class SimpleNode {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public void Handshake() {
+        var message = new MessageVersion();
+        this.send(message);
+        this.waitFor(MessageVerAck.command);
+    }
+
+    public Message waitFor(String command) {
+        Set<String> set = new HashSet<>();
+        set.add(command);
+        return waitFor(set);
+    }
+
+
+    public Message waitFor(Set<String> messageSet) {
+
+        // TODO: support for message set
+
+        boolean stop = false;
+
+        while (!stop) {
+            var env = this.read();
+            var command = env.getCommand();
+
+            if (command.equals("version")) {
+                this.send(new MessageVerAck());
+                stop = true;
+
+                return new MessageVersion();
+            }
+            else
+            if (command.equals("ping")) {
+                var nonce = new BigInteger(env.getPayload()).longValue();
+                this.send(new MessagePong(nonce));
+                stop = true;
+                return new MessagePing(nonce);
+            }
+        }
+
         return null;
     }
 
