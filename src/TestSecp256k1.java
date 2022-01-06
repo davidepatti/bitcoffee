@@ -14,24 +14,32 @@ public class TestSecp256k1 {
         var e_bytes = Kit.hash256("secret");
         var z_bytes = Kit.hash256("Programming Bitcoin!");
 
-        System.out.println("--------------------------------------------------");
-        System.out.println(">>> TEST: Signing message: \"Programming Bitcoin!\" with string \"secret\"");
-        System.out.println("secret = "+ Kit.bytesToHexString(e_bytes));
-        System.out.println("message = "+ Kit.bytesToHexString(z_bytes));
+        var test = new Test<String>("Signing Message");
+        test.begin();
+
+        Test.__BEGIN_NOTES("Message sign with prefixed K");
+        System.out.println("Signing message: \"Programming Bitcoin!\" with string \"secret\"");
+        String secret = Kit.bytesToHexString(e_bytes);
+        String message = Kit.bytesToHexString(z_bytes);
+        System.out.println("secret = "+secret );
+        System.out.println("message = "+message);
         var prefixed_k = BigInteger.valueOf(1234567890);
         var pk = new PrivateKey(e_bytes);
         var signature_prefixed = pk.sign(z_bytes,prefixed_k);
         System.out.println("signature prefixed k ="+signature_prefixed);
+        Test.__END_NOTES();
+
         var sig_detk = pk.getDeterministicK(z_bytes);
-        System.out.println("deterministic k = "+sig_detk.toString(16));
-        var target_k = new BigInteger("e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e",16);
-        System.out.println("--------------------------------------------------");
-        System.out.println(">>> TEST: deterministic k: "+sig_detk.equals(target_k));
+        var target_k = "e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e";
+        var desc = "secret:"+secret+"\nmessage:"+message;
+        test.check("determininistic K",desc,target_k,sig_detk.toString(16));
+        test.end();
 
     }
     public static void test_infinity() {
-        System.out.println("--------------------------------------------------");
-        System.out.println(">>> TEST: sec256k1 computing G*N, you should see points at infinity (null,null)");
+        var test = new Test<String>("sec256k1 computing G*N");
+        test.begin();
+        Test.__BEGIN_NOTES("you should see points at infinity (null,null)");
         // test 1: manually creating G with lower level classes
         var x = new FieldElement(Secp256k1.Gx,Secp256k1.p);
         var y = new FieldElement(Secp256k1.Gy,Secp256k1.p);
@@ -49,9 +57,13 @@ public class TestSecp256k1 {
         // test 3: using specialized subclass
         var G4 = new S256Point(Secp256k1.Gx,Secp256k1.Gy);
         System.out.println(G4.multiplyBin(Secp256k1.N));
+        Test.__END_NOTES();
+        test.end();
     }
 
     public static void test_manual_signature() {
+        var test = new Test<BigInteger>("Manual Signature");
+        test.begin();
         // testing manual signature
         var z = new BigInteger("bc62d4b80d9e36da29c16c5d4d9f11731f36052c72401a76c23c0fb5a9b74423",16);
         var r = new BigInteger("37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6",16);
@@ -65,16 +77,19 @@ public class TestSecp256k1 {
         var u = z.multiply(s_inv.mod(Secp256k1.N));
         var v = r.multiply(s_inv.mod(Secp256k1.N));
         // u*G+v*point == r
-        System.out.println("--------------------------------------------------");
-        System.out.print(">>> TEST: manual signature: ");
-        System.out.println(Secp256k1.G.multiplyBin(u).add(point.multiplyBin(v)).getX().getNum().equals(r));
-
+        var res = Secp256k1.G.multiplyBin(u).add(point.multiplyBin(v)).getX().getNum();
+        test.check("u*G+v*point = r",r,res);
+        test.end();
     }
 
     public static void test_message_signature() {
-        //  testing message signature (page 69)
+        var test = new Test<S256Point>("Message signature (S256Point)");
+        test.begin();
+
+        Test.__BEGIN_NOTES("strings used (Song, page 69)");
         String secret = "my secret";
         String message = "my message";
+        Test.__END_NOTES();
 
         var e_bytes = Kit.hash256(secret);
         var e_num = new BigInteger(1,e_bytes);
@@ -90,16 +105,14 @@ public class TestSecp256k1 {
         var x_target = new BigInteger("28d003eab2e428d11983f3e97c3fa0addf3b42740df0d211795ffb3be2f6c52",16);
         var y_target = new BigInteger("ae987b9ec6ea159c78cb2a937ed89096fb218d9e7594f02b547526d8cd309e2",16);
         var t_point = new S256Point(x_target,y_target);
-        System.out.println("--------------------------------------------------");
-        System.out.println(">>> Testing message signature: "+point2.equals(t_point));
-        System.out.println("z="+z_num.toString(16));
-        System.out.println("r="+r.toString(16));
-        System.out.println("s="+s.toString(16));
-        System.out.println("e="+e_num.toString(16));
-        System.out.println("e*G="+point2);
+
+        var desc = "z="+z_num.toString(16)+"\nr="+r.toString(16)+"\ns="+s.toString(16)+"\ne="+e_num.toString(16);
+        test.check("e*G",desc,t_point,point2);
+        test.end();
     }
 
     public static void test_verify_signature() {
+        var test = new Test<Boolean>("Verify Signature");
         // Exercise 6 page 67
         var p_x = new BigInteger("887387e452b8eacc4acfde10d9aaf7f6d9a0f975aabb10d006e4da568744d06c",16);
         var p_y = new BigInteger("61de6d95231cd89026e286df3b6ae4a894a3378e393e93a0f45b666329a0ae34",16);
@@ -109,8 +122,9 @@ public class TestSecp256k1 {
         var s = new BigInteger("68342ceff8935ededd102dd876ffd6ba72d6a427a3edb13d26eb0781cb423c4",16);
 
         var sig = new Signature(r,s);
-        System.out.println("--------------------------------------------------");
-        System.out.println("--> Test Verify signature: "+P.verify(z,sig));
+        var desc = "P="+P+"\nz="+z+"\nsig="+sig;
+        test.check("P.verify(z,sig)",desc,true,P.verify(z,sig));
+        test.end();
     }
 
 }

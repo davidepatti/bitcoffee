@@ -1,88 +1,51 @@
-import java.math.BigInteger;
+public class Test<T> {
+    String name;
+    private boolean failed = false;
+    private static int testn = 0;
 
-public class Test {
+    public Test(String name) {
+        this.name = name;
+    }
 
-    public static void main(String[] args) {
-	// write your code here
+    public void begin() {
+        System.out.println("********************************************************");
+        System.out.println("  STARTING TEST SET: "+name);
+        System.out.println("********************************************************");
 
-        // test equality
-        var a = new FieldElement(3,13);
-        var b = new FieldElement(3,13);
-        System.out.println("Equality: "+a.equals(b));
+    }
+    public void end() {
+        //System.out.println(" <<<<<<<<<<< ENDED TEST SET: "+name+"\n");
+        System.out.println("_");
+    }
 
+    public void check(String subtest_name, String desc, T target, T result) {
+        System.out.println("---------------------------------------------------");
+        System.out.println("-> Starting Subtest n."+(++testn)+": "+subtest_name);
+        System.out.println("---------------------------------------------------");
+        System.out.println("[Description]\n "+desc);
+        System.out.println("---------------------------------------------------");
+        System.out.println("\tTarget: "+target);
+        System.out.println("\tResult: "+result);
 
-        // test mult  /////////////////////////////////
-        a = new FieldElement(3,13);
-        b = new FieldElement(12,13);
-        var target = new FieldElement(10,13);
-        var res = a.multiply(b);
-        System.out.println(a+" * "+b+" = "+target+" mult:"+ res.equals(target));
-        //////////////////////////////////////////////////
+        failed = !(target.equals(result));
+        if (failed) {
+            System.out.println("\t-> TEST FAILED: "+name+"/"+subtest_name);
+            System.exit(-1);
+            System.out.println("---------------------------------------------------");
+        }
+        else
+            System.out.println("\t-> TEST OK: "+name+"/"+subtest_name);
+    }
 
-        // test pow p-1
-        var prime = BigInteger.valueOf(13);
-        res = a.pow(prime.subtract(BigInteger.ONE));
-        target = new FieldElement(1,prime);
-        System.out.println(a+" pow("+prime+"-1) = "+res+ " "+res.equals(target));
+    public void check(String subtest_name, T target, T result) {
+        check(subtest_name,"-",target,result);
+    }
 
-
-        // test negative exp
-        a = new FieldElement(7,13);
-        target = new FieldElement(8,13);
-        var exp = BigInteger.valueOf(-3);
-        res = a.pow(exp);
-        System.out.println(a+" pow("+exp+") = "+res+" "+res.equals(target));
-
-
-        // test division
-        a = new FieldElement(2,19);
-        b = new FieldElement(7,19);
-        // 2/7 -> 2* 7 (19-2)
-        res = a.divide(b);
-        target = new FieldElement(3,19);
-        System.out.println(a+" div "+b+" = "+res+ " "+res.equals(target));
-
-        a = new FieldElement(7,19);
-        b = new FieldElement(5,19);
-        target = new FieldElement(9,19);
-        res = a.divide(b);
-        System.out.println(a+" div "+b+" = "+res+ " "+res.equals(target));
-
-
-        ///////////// Elliptic curve
-
-        // infinity point is also identity point, result should not change
-        var p1 = new IntPoint(-1,-1,5,7);
-        var inf = new IntPoint(IntPoint.BIGINF, IntPoint.BIGINF, BigInteger.valueOf(5),BigInteger.valueOf(7));
-        var point_target = p1;
-        var point_result = p1.add(inf);
-        System.out.println(p1+" + Inf = "+point_result+" "+point_result.equals(point_target));
-
-        var p2 = new IntPoint(-1,1,5,7);
-        point_result = p2.add(inf);
-        point_target = p2;
-        System.out.println(p2+" + Inf = "+point_result+" "+point_result.equals(point_target));
-
-        point_result = p1.add(p2);
-        point_target = inf;
-        System.out.println(p1+"+"+p2+" = "+point_result+" "+point_result.equals(point_target));
-
-
-        p1 = new IntPoint(3,7,5,7);
-        p2 = new IntPoint(-1,-1,5,7);
-        point_target = new IntPoint(2,-5,5,7);
-        point_result = p1.add(p2);
-        System.out.println(p1+" + "+p2+" = "+point_result+ " "+point_result.equals(point_target));
-
-        point_result = p2.add(p2);
-        point_target = new IntPoint(18,77,5,7);
-        System.out.println(p2+" + "+p2+" = "+point_result+ " "+point_result.equals(point_target));
-
-
-
-
-
-
-
+    public static void __BEGIN_NOTES(String zone_test) {
+        System.out.println("---------------------------------------------------");
+        System.out.println(" ___________BEGIN_NOTES: "+zone_test);
+    }
+    public static void __END_NOTES() {
+        System.out.println("____________END NOTES__________________");
     }
 }

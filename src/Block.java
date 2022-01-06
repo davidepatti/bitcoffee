@@ -67,6 +67,10 @@ public class Block {
         return bos.toByteArray();
     }
 
+    public String getSerialString() {
+        return Kit.bytesToHexString(this.serialize());
+    }
+
     /********************************************************************************/
     public byte[] hash256() {
         var s = this.serialize();
