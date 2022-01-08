@@ -219,13 +219,13 @@ public class Block {
 
     @Override
     public String toString() {
-        return "\nBlock{" +
-                "\nversion=" + version +
-                ",\nprev_block=" + Kit.bytesToHexString(prev_block) +
-                ",\nmerkle_root=" + Kit.bytesToHexString(merkle_root) +
-                ",\ntimestamp=" + timestamp +
-                ",\nbits=" + Kit.bytesToHexString(bits) +
-                ",\nnonce=" + Kit.bytesToHexString(nonce) +
-                '}';
+        return "\nBlock\n{" +
+                "\nversion: " + version +
+                "\nprev_block: " + Kit.bytesToHexString(prev_block) +
+                "\nmerkle_root: " + Kit.bytesToHexString(merkle_root) +
+                "\ntimestamp: " + timestamp +
+                "\nbits: " + Kit.bytesToHexString(bits) +
+                "\nnonce: " + Kit.bytesToHexString(nonce) +
+                "\n}";
     }
 }
