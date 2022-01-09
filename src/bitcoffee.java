@@ -1,4 +1,7 @@
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class bitcoffee {
     public static void main(String[] args) {
@@ -23,6 +26,16 @@ public class bitcoffee {
                 }
                 cmd_parsetx(args[1]);
                 break;
+            case "getp2pkaddr":
+                if (args.length!=3) {
+                    System.out.println("Usage getp2pkaddr <secret> mainnet/testnet");
+                    System.exit(-1);
+                }
+                if (args[2].equals("testnet"))
+                    cmd_getp2pkaddr(args[1],true);
+                else
+                    cmd_getp2pkaddr(args[1],false);
+                break;
             case "difficulty":
                 if (args.length!=3) {
                     System.out.println("Usage difficulty <startingserialhex> <endingserialhex>");
@@ -30,15 +43,30 @@ public class bitcoffee {
                 }
                 cmd_difficulty(args[1],args[2]);
                 break;
+            case "createtx":
+                cmd_createtx();
+                break;
+
+            case "help":
+                cmd_help();
+                break;
+
             default:
                 System.out.println("Unknown command "+args[0]);
         }
+    }
 
-
-        if (args[0].equals("sign")) {
-            cmd_sign(args[1],args[2]);
-        }
-
+    private static void cmd_help() {
+        System.out.println("sign");
+            System.out.println("\tUsage sign <message> <secret>");
+        System.out.println("parseblock");
+            System.out.println("\tUsage parseblock <serialhex>");
+        System.out.println("getp2pkaddr");
+            System.out.println("\tUsage getp2pkaddr <secret> mainnet/testnet");
+        System.out.println("difficulty");
+            System.out.println("\tUsage difficulty <startingserialhex> <endingserialhex>");
+        System.out.println("createtx");
+        System.out.println("\t Interactively create a TX for broadcasting");
     }
 
     private static void cmd_sign(String secret,String message) {
@@ -90,6 +118,120 @@ public class bitcoffee {
 
         var new_bits = Block.computeNewBits(first_block.getBits(),time_diff);
         System.out.println("New bits: "+Kit.bytesToHexString(new_bits));
+
+    }
+
+    private static void cmd_getp2pkaddr(String secret, boolean testnet) {
+        // brainwallet style, use text to derive private key (be careful to not share it!)
+        var secret_text = secret;
+        var secret_bytes = Kit.hash256(secret_text);
+        var mypk = new PrivateKey(secret_bytes);
+
+        var myaddress = mypk.point.getP2pkhTestnetAddress();
+        if (testnet)
+            System.out.println("Testnet address for secret:" + secret_text);
+        else
+            System.out.println("Mainnet address for secret:" + secret_text);
+
+        System.out.println("address: " + myaddress);
+        var wif = mypk.getWIF(true, true);
+        System.out.println("Use this WIF to import the private key into a wallet: " + wif);
+        System.out.println("---------------------------------------------");
+
+        System.out.println("---------------------------------------------");
+    }
+
+    private static void cmd_createtx() {
+        System.out.println("Tx creation - WARNING: experimental, testnet only!");
+        System.out.println("------------------------------------------------------------------");
+        System.out.print("Insert the source address:");
+        String myad;
+        var sc = new Scanner(System.in);
+        var myaddress = sc.nextLine();
+        System.out.print("Insert the secret (brainwallet) used to create the private key:");
+        var secret_text = sc.nextLine();
+        var secret_bytes = Kit.hash256(secret_text);
+        var mypk = new PrivateKey(secret_bytes);
+
+        System.out.print("Enter the previous tx id containing the UTXO:");
+        var prev_tx_id = sc.nextLine();
+
+        //var prev_tx_id = "1818136d9d0ca83c369a70c41fd2b5d25e286895e358a0bcd872c17534846659";
+        var prev_tx = Kit.hexStringToByteArray(prev_tx_id);
+        // replace with your prev index
+        System.out.print("Insert the index of the UTXO to be spent:");
+        var prev_index = sc.nextInt();
+        // leave the script below empty
+        byte[] script_null = {};
+        var tx_in = new TxIn(prev_tx,prev_index,script_null);
+
+        System.out.print("Specify change amount (in BTC):");
+        double btc_change_amount;
+        while (!sc.hasNextDouble());
+        btc_change_amount = sc.nextDouble();
+        sc.nextLine();
+
+        //var btc_change_amount = 0.00069;
+
+        // must multiply to express it in sats
+        var change_amount = (int)(btc_change_amount*100000000);
+        //var change_address = "mnwUykq9XxccVMuXgwrA97gSxYxFs4vNRW";
+        System.out.print("Enter the change address:");
+        var change_address = sc.nextLine();
+        var change_h160 = Kit.decodeBase58(change_address);
+
+        // not modify, creating script from the address above
+        var change_script = Script.hash160ToP2pkh(change_h160);
+        var change_script_bytes = change_script.getBytes();
+        var change_output = new TxOut(change_amount,change_script_bytes);
+
+        System.out.print("Insert target address:");
+        var target_address = sc.nextLine();
+        // DEFAULT: send a tx to give back to faucet https://testnet-faucet.mempool.co/
+        //var target_address = "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt";
+        System.out.print("Insert BTC amount:");
+        var target_btc_amount = sc.nextDouble();
+        //var target_btc_amount = 0.0001;
+        var target_amount = (int)(target_btc_amount*100000000);
+
+        var target_h160 = Kit.decodeBase58(target_address);
+        var target_script = Script.hash160ToP2pkh(target_h160);
+        var target_output = new TxOut(target_amount,target_script.getBytes());
+
+        var tx_ins = new ArrayList<TxIn>();
+        var tx_outs = new ArrayList<TxOut>();
+        tx_outs.add(change_output);
+        tx_outs.add(target_output);
+        tx_ins.add(tx_in);
+        var tx_obj = new Tx(1,tx_ins,tx_outs,0,true);
+
+        // creating the scriptsig to unlock the previous output
+        var input_index = 0;
+        var z = tx_obj.getSigHash(input_index);
+        var der = mypk.signDeterminisk(z).DER();
+        // DER + SIGHASH_ALL
+        var sig = Kit.hexStringToByteArray(der+"01");
+        var sec = Kit.hexStringToByteArray(mypk.point.SEC33());
+        var cmds = new Stack<ScriptCmd>();
+        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sec));
+        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sig));
+        var scriptsig = new Script(cmds);
+        ////////////////// end script
+
+        var txins = tx_obj.getTxIns();
+        // a new txin must be created to adde the signature by replacing the empty script one (input_index)
+        var new_txin = new TxIn(txins.get(input_index).getPrevTxId(),txins.get(input_index).getPrevIndex(),scriptsig.getBytes());
+        txins.set(input_index,new_txin);
+        var newtx = new Tx(tx_obj.getVersion(),tx_ins,tx_obj.getTxOuts(),tx_obj.getLocktime(),tx_obj.isTestnet());
+
+        System.out.println("Created tx with content:");
+        System.out.println(newtx);
+        System.out.println("Fees:"+newtx.calculateFee());
+        System.out.println("Checking validity:" +newtx.verify());
+        System.out.println(">>>>>> PLEASE USE THE RAW TEXT BELOW TO BROADCAST TX: ");
+        System.out.println("-------------------------------------BEGIN-------------------------------------");
+        System.out.println(newtx.getSerialString());
+        System.out.println("-------------------------------------END-------------------------------------");
 
     }
 }
