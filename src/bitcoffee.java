@@ -14,21 +14,21 @@ public class bitcoffee {
         switch (args[0]) {
             case "sign":
                 if (args.length!=3) {
-                    System.out.println("Usage sign <message> <secret>");
+                    System.out.println("Usage: bitcoffee sign <message> <secret>");
                     System.exit(-1);
                 }
                 cmd_sign(args[1],args[2]);
                 break;
             case "parseblock":
                 if (args.length!=2) {
-                    System.out.println("Usage parseblock <serialhex>");
+                    System.out.println("Usage: bitcoffee parseblock <serialhex>");
                     System.exit(-1);
                 }
                 cmd_parsetx(args[1]);
                 break;
             case "getp2pkaddr":
                 if (args.length!=3) {
-                    System.out.println("Usage getp2pkaddr <secret> mainnet/testnet");
+                    System.out.println("Usage: bitcoffee getp2pkaddr <secret> [testnet]");
                     System.exit(-1);
                 }
                 if (args[2].equals("testnet"))
@@ -38,13 +38,29 @@ public class bitcoffee {
                 break;
             case "difficulty":
                 if (args.length!=3) {
-                    System.out.println("Usage difficulty <startingserialhex> <endingserialhex>");
+                    System.out.println("Usage: difficulty <starting_serial_block_rawhex> <ending_serial_block_rawhex>");
                     System.exit(-1);
                 }
                 cmd_difficulty(args[1],args[2]);
                 break;
             case "createtx":
-                cmd_createtx();
+                cmd_createTx();
+                break;
+
+            case "checktx":
+                if (args.length!=2) {
+                    System.out.println("Usage: checktx <rawtx>");
+                    System.exit(-1);
+                }
+                cmd_checkTx(args[1]);
+                break;
+            case "verify":
+                if (args.length!=4) {
+                    System.out.println("Usage: verify <SEC> <DER> <Z>");
+                    cmd_verifySignature(args[1],args[2],args[3]);
+                    System.exit(-1);
+                }
+                cmd_checkTx(args[1]);
                 break;
 
             case "help":
@@ -66,7 +82,9 @@ public class bitcoffee {
         System.out.println("difficulty");
             System.out.println("\tUsage difficulty <startingserialhex> <endingserialhex>");
         System.out.println("createtx");
-        System.out.println("\t Interactively create a TX for broadcasting");
+        System.out.println("\tInteractively create a TX for broadcasting");
+        System.out.println("checktx");
+        System.out.println("\tCheck the validity of a raw transaction encoding");
     }
 
     private static void cmd_sign(String secret,String message) {
@@ -141,7 +159,20 @@ public class bitcoffee {
         System.out.println("---------------------------------------------");
     }
 
-    private static void cmd_createtx() {
+    private static void cmd_checkTx(String raw_tx) {
+
+        System.out.println("--------------------------------------------------");
+        var tx = Tx.parse(Kit.hexStringToByteArray(raw_tx),false);
+        System.out.println(">> Checking fee for tx id:"+tx.getId());
+        var fee = tx.calculateFee();
+        if (fee>=0)
+            System.out.println("Valid transactions fees:"+fee);
+        else
+            System.out.println("ERROR: not valid transaction fees:"+fee);
+        System.out.println("--------------------------------------------------");
+    }
+
+    private static void cmd_createTx() {
         System.out.println("Tx creation - WARNING: experimental, testnet only!");
         System.out.println("------------------------------------------------------------------");
         System.out.print("Insert the source address:");
@@ -233,5 +264,13 @@ public class bitcoffee {
         System.out.println(newtx.getSerialString());
         System.out.println("-------------------------------------END-------------------------------------");
 
+    }
+
+    private static void cmd_verifySignature(String sec, String der, String z) {
+        var z_num = new BigInteger(z,16);
+        var point = S256Point.parseSEC(sec);
+        var signature = Signature.parse(Kit.hexStringToByteArray(der));
+        System.out.println(" >> Verify signature test: "+point.verify(z_num,signature));
+        System.out.println("--------------------------------------------------");
     }
 }
