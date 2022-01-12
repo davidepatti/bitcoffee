@@ -13,6 +13,12 @@ public class Block {
     final private byte[] bits;
     final private byte[] nonce;
 
+    final static String GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c";
+    final static String TESTNET_GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff001d1aa4ae18";
+    final static String LOWEST_BITS = "ffff001d";
+
+
+
     /********************************************************************************/
     public Block(int version, byte[] prev_block, byte[] merkle_root, int timestamp, byte[] bits, byte[] nonce) {
         this.version = version;

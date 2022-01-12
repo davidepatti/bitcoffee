@@ -2,7 +2,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.NoSuchElementException;
 
 
 // the message that is transmitted is inside a network envelope
@@ -82,7 +81,7 @@ public class NetworkEnvelope {
                 throw new IOException(" Wrong magic:"+Kit.bytesToHexString(this.magic));
             }
             bos.write(this.magic);
-            bos.write(Kit.stringToBytes(this.command));
+            bos.write(Kit.asciiStringToBytes(this.command));
 
             // pad with zeros at the end to reach 12 bytes
             for (int i =0;i<12-this.command.length();i++)

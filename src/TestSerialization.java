@@ -86,7 +86,7 @@ public class TestSerialization {
         System.out.println("----------------------------------------------------------");
         var name = "Satoshi Nakamoto";
         System.out.println("Testing address for brainwallet: "+name);
-        var name_sha256 = Kit.sha256(Kit.stringToBytes(name));
+        var name_sha256 = Kit.sha256(Kit.asciiStringToBytes(name));
         var name_hex = Kit.bytesToHexString(name_sha256);
         var some_key = new PrivateKey(name_sha256);
         var some_addr_compressed = some_key.point.getP2pkhAddress(true);

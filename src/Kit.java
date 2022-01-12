@@ -104,7 +104,7 @@ public class Kit {
     }
 
     /***************************************************************************/
-    public static byte[] stringToBytes(String s ) {
+    public static byte[] asciiStringToBytes(String s ) {
         return  s.getBytes(StandardCharsets.UTF_8);
     }
 

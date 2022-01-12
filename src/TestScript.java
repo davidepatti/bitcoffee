@@ -53,7 +53,7 @@ public class TestScript {
         System.out.println("------------------------------------------------------");
 
         var test_hash160 = new Stack<ScriptCmd>();
-        var hello = Kit.stringToBytes("hello world");
+        var hello = Kit.asciiStringToBytes("hello world");
         test_hash160.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
         test_hash160.push(new ScriptCmd(ScriptCmdType.DATA,hello));
         var test_script = new Script(test_hash160);

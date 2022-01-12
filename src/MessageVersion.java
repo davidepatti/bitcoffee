@@ -38,7 +38,7 @@ public class MessageVersion extends Message {
         this.sender_port = 8333;
         this.nonce = nonce;
         //this.user_agent = Kit.stringToBytes("/programmingbitcoin:0.1/");
-        this.user_agent = Kit.stringToBytes("/bitcoffee:0.1/");
+        this.user_agent = Kit.asciiStringToBytes("/bitcoffee:0.1/");
         this.latest_block = 0;
         this.relay = false;
 
@@ -56,7 +56,7 @@ public class MessageVersion extends Message {
         this.sender_ip = Kit.hexStringToByteArray("00000000");
         this.sender_port = 8333;
         this.nonce = nonce;
-        this.user_agent = Kit.stringToBytes("/programmingbitcoin:0.1/");
+        this.user_agent = Kit.asciiStringToBytes("/programmingbitcoin:0.1/");
         this.latest_block = 0;
         this.relay = false;
     }
