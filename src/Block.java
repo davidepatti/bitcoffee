@@ -2,6 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Block {
@@ -13,9 +14,12 @@ public class Block {
     final private byte[] bits;
     final private byte[] nonce;
 
+    private ArrayList<String> tx_hashes;
+
     final static String GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c";
     final static String TESTNET_GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff001d1aa4ae18";
     final static String LOWEST_BITS = "ffff001d";
+
 
 
 
@@ -27,6 +31,37 @@ public class Block {
         this.timestamp = timestamp;
         this.bits = bits;
         this.nonce = nonce;
+        tx_hashes = null;
+    }
+    public Block(int version, byte[] prev_block, byte[] merkle_root, int timestamp, byte[] bits, byte[] nonce,ArrayList<String> tx_hashes) {
+        this.version = version;
+        this.prev_block = prev_block;
+        this.merkle_root = merkle_root;
+        this.timestamp = timestamp;
+        this.bits = bits;
+        this.nonce = nonce;
+        this.tx_hashes = tx_hashes;
+    }
+
+
+    public void setTx_hashes(ArrayList<String> tx_hashes) {
+        this.tx_hashes = tx_hashes;
+    }
+
+    public boolean validateMerkleRoot() {
+        // must reverse each tx hash before doing root
+
+        var le_list  = new ArrayList<String>();
+
+        for (String hash:tx_hashes) {
+            var reversed_bytes  = Kit.reverseBytes(Kit.hexStringToByteArray(hash));
+            le_list.add(Kit.bytesToHexString(reversed_bytes));
+        }
+
+        var root = Kit.reverseBytes(Kit.hexStringToByteArray(Kit.merkleRoot(le_list)));
+
+        return (Arrays.equals(root,this.merkle_root));
+
     }
 
     /********************************************************************************/

@@ -1,5 +1,6 @@
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.image.AreaAveragingScaleFilter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Kit {
@@ -342,6 +344,53 @@ public class Kit {
         return encodeBase58Checksum(res_bytes);
     }
 
+    public static byte[] merkleParent(byte[] hash1, byte[] hash2) {
+        if (hash1.length !=32 || hash2.length!=32) {
+            try {
+                throw new Exception("Wrong hashes sizes");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        var merged = Kit.bytesToHexString(hash1)+Kit.bytesToHexString(hash2);
+        return hash256(Kit.hexStringToByteArray(merged));
+    }
+
+    public static String merkleParent(String hash1, String hash2) {
+        return Kit.bytesToHexString(hash256(Kit.hexStringToByteArray(hash1+hash2)));
+    }
+
+
+    public static ArrayList<String> merkleParentLevel(ArrayList<String> hashes) {
+
+        if (hashes.size()==1)
+            throw new RuntimeException("Cannot derive parent level, size 1");
+
+        if (hashes.size()%2==1)
+            hashes.add(hashes.get(hashes.size()-1));
+
+        var parent_level = new ArrayList<String>();
+
+        for (int i=0;i<hashes.size();i+=2) {
+
+            var parent = Kit.merkleParent(hashes.get(i),hashes.get(i+1));
+            parent_level.add(parent);
+        }
+
+        return parent_level;
+    }
+
+    public static String merkleRoot(ArrayList<String> hashes) {
+
+        var current_level = hashes;
+
+        while (current_level.size()>1) {
+            current_level = merkleParentLevel(current_level);
+        }
+
+        return current_level.get(0);
+    }
 }
 
 
