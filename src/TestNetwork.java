@@ -1,7 +1,5 @@
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class TestNetwork {
 
@@ -76,7 +74,6 @@ public class TestNetwork {
 
          */
 
-
         Test.__BEGIN_NOTES("Downloading headers and checking PoW");
 
         var genesis = Block.parseSerial(Kit.hexStringToByteArray(Block.GENESIS_BLOCK));
@@ -89,20 +86,21 @@ public class TestNetwork {
         var node2 = new SimpleNode("mainnet.programmingbitcoin.com",false);
         node2.Handshake();
 
-        for (int i=0;i<19;i++) {
+        for (int i=0;i<1;i++) {
             var get_header_msg = new MessageGetHeaders(previous.getHashHexString());
             node2.send(get_header_msg);
             MessageHeaders headers = (MessageHeaders) node2.waitFor("headers");
 
             for (Block h:headers.getBlocks()) {
 
-                System.out.println("Analysing block "+h.getHashHexString());
+                System.out.println("Checking block: "+h.getHashHexString());
 
                 if (!h.checkPoW()) {
-                    throw new RuntimeException("Bad PoW!");
+                    System.out.println(h);
+                    throw new RuntimeException("^^^^^^Bad PoW!");
                 }
 
-                if (!Arrays.equals(h.getPrev_block(),previous.hash256())) {
+                if (!Arrays.equals(h.getPrev_block(),previous.hash())) {
                     throw new RuntimeException("Discontinuoss");
                 }
 

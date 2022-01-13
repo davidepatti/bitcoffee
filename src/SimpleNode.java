@@ -1,9 +1,7 @@
 import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 
 public class SimpleNode {
@@ -13,9 +11,10 @@ public class SimpleNode {
     private final boolean testnet;
     private final boolean logging;
     private Socket socket;
-    private InputStream bis;
-    private OutputStream bos;
+    private InputStream is;
+    private OutputStream os;
     private DataInputStream dis;
+    private ByteArrayInputStream bis;
 
 
     public SimpleNode(String host, int port, boolean testnet, boolean logging) {
@@ -42,9 +41,9 @@ public class SimpleNode {
         try {
             System.out.println("Simple node, starting connecton to "+host);
             this.socket = new Socket(host,this.port);
-            bis = socket.getInputStream();
-            bos = socket.getOutputStream();
-            dis = new DataInputStream(bis);
+            is = socket.getInputStream();
+            os = socket.getOutputStream();
+            dis = new DataInputStream(new BufferedInputStream(is));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,10 +58,10 @@ public class SimpleNode {
             System.out.println("-----------------------------------------------------------");
             System.out.println("SENDING message: "+message);
             var bytes_to_send = envelope.serialize();
-            System.out.println("SENDING BYTES: "+Kit.bytesToHexString(bytes_to_send));
+            //System.out.println("SENDING BYTES: "+Kit.bytesToHexString(bytes_to_send));
             System.out.println("-----------------------------------------------------------");
-            bos.write(bytes_to_send);
-            bos.flush();
+            os.write(bytes_to_send);
+            os.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,34 +69,16 @@ public class SimpleNode {
 
     public NetworkEnvelope read() {
         try {
+            System.out.println("------------------------------------------------------");
             System.out.println("read(): waiting for data...");
-            /*
-            while (bis.available()==0) {
-                System.out.println("%");
-                Thread.sleep(1000);
-                Scanner sc = new Scanner(bis);
-                System.out.println("REMOVING "+sc.nextLine());
-            }
-            */
-            //var received_bytes = bis.readAllBytes();
 
-
-            var os = new ByteArrayOutputStream();
-
-            byte[] buffer = new byte[102400]; // the well known size
-            int nread = dis.read(buffer);
-            os.write(buffer,0,nread);
-            var received_bytes = os.toByteArray();
-
-            System.out.println("LENGTH: "+nread);
-            System.out.println("read(): data received "+Kit.bytesToHexString(received_bytes));
-            var envelope = NetworkEnvelope.parse(received_bytes,this.testnet);
-            System.out.println("Envelope :"+envelope);
+            var envelope = NetworkEnvelope.parse(dis,this.testnet);
+            System.out.println("Read Envelope with Command :"+envelope.getCommand());
+            System.out.println("------------------------------------------------------");
             return envelope;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //catch (IOException e) { e.printStackTrace(); }
         return null;
     }
 
@@ -115,32 +96,37 @@ public class SimpleNode {
 
 
     public Message waitFor(Set<String> messageSet) {
-        // TODO: support for message set
 
-        boolean stop = false;
+        boolean matching_message = false;
         System.out.println("Waiting for message(s): "+messageSet);
 
-        while (!stop) {
+        while (!matching_message) {
             var env = this.read();
             var command = env.getCommand();
 
-            System.out.println("Received command:"+command);
+            if (messageSet.contains(command)) {
+                System.out.println("Received Matching message: "+command);
+                matching_message = true;
+            }
+            else System.out.println("Received Not matching message: "+command);
 
             switch (command) {
                 case "version":
                     this.send(new MessageVerAck());
-                    stop = true;
-                    return new MessageVersion();
+                    if (matching_message) return new MessageVersion();
+                    break;
                 case "ping":
                     var nonce = new BigInteger(env.getPayload()).longValue();
                     this.send(new MessagePong(nonce));
-                    stop = true;
-                    return new MessagePing(nonce);
+                    if (matching_message) return new MessagePong(nonce);
+                    break;
                 case "headers":
                     var payload = env.getPayload();
                     MessageHeaders msg = new MessageHeaders(payload);
-                    stop = true;
-                    return msg;
+                    if (matching_message) return msg;
+                    break;
+                case "verack":
+                    break;
                 default:
                     System.out.println("UNMANAGED COMMAND: "+command);
             }

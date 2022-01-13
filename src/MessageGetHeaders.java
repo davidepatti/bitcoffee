@@ -1,8 +1,5 @@
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Random;
 
 public class MessageGetHeaders extends Message {
     final private int version;

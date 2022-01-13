@@ -30,20 +30,23 @@ public class Block {
     }
 
     /********************************************************************************/
+    public static Block parseSerial(ByteArrayInputStream bis) throws IOException {
+        var version = Kit.litteEndianBytesToInt(bis.readNBytes(4));
+        var prev_block = Kit.reverseBytes(bis.readNBytes(32));
+        var merkle_root = Kit.reverseBytes(bis.readNBytes(32));
+        var timestamp = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
+        var bits = bis.readNBytes(4);
+        var nonce = bis.readNBytes(4);
+
+        return new Block(version.intValue(),prev_block,merkle_root,timestamp,bits,nonce);
+    }
+    /********************************************************************************/
     public static Block parseSerial(byte[] serial)  {
         try (var bis = new ByteArrayInputStream(serial)) {
-            var version = Kit.litteEndianBytesToInt(bis.readNBytes(4));
-            var prev_block = Kit.reverseBytes(bis.readNBytes(32));
-            var merkle_root = Kit.reverseBytes(bis.readNBytes(32));
-            var timestamp = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
-            var bits = bis.readNBytes(4);
-            var nonce = bis.readNBytes(4);
-            return new Block(version.intValue(),prev_block,merkle_root,timestamp,bits,nonce);
-
+            return parseSerial(bis);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -78,7 +81,7 @@ public class Block {
     }
 
     /********************************************************************************/
-    public byte[] hash256() {
+    public byte[] hash() {
         var s = this.serialize();
         return Kit.reverseBytes(Kit.hash256(s));
     }
@@ -126,7 +129,7 @@ public class Block {
     }
     /********************************************************************************/
     public String getHashHexString() {
-        var ba = this.hash256();
+        var ba = this.hash();
         return Kit.bytesToHexString(ba);
     }
 
@@ -142,8 +145,15 @@ public class Block {
 
     public boolean checkPoW() {
 
-        var hash = this.hash256();
-        var proof = Kit.litteEndianBytesToInt(hash);
+        var h256 = Kit.hash256(this.serialize());
+        var proof = Kit.litteEndianBytesToInt(h256);
+
+        /*
+        System.out.println("Checking PoW:");
+        System.out.println("proof hex:"+Kit.bytesToHexString(h256));
+        System.out.println("proof:"+proof);
+        System.out.println("target:"+this.getTarget());
+         */
 
         return proof.compareTo(this.getTarget())<0;
     }
