@@ -14,7 +14,7 @@ public class TestFF {
         var desc = n1+" * " +n2;
         test.check("Finite Field multiplication:",desc,res_n,new FieldElement(15,19));
 
-        Test.__BEGIN_NOTES("some point printing");
+        Test.__BEGIN_FREE_TEST("some point printing");
 
         final long prime = 223;
         var a = new FieldElement(0,prime);
@@ -34,7 +34,7 @@ public class TestFF {
         y = new FieldElement(193,prime);
         p = new FieldElementPoint(x,y,a,b);
         System.out.println(p);
-        Test.__END_NOTES();
+        Test.__END_FREE_TEST();
 
         test.end();
 
@@ -59,13 +59,13 @@ public class TestFF {
         y = new FieldElement(71,prime);
         FieldElementPoint point = new FieldElementPoint(x,y,a,b);
 
-        Test.__BEGIN_NOTES("Scalar mult");
+        Test.__BEGIN_FREE_TEST("Scalar mult");
         System.out.println("TEST: Scalar multitplication in prime "+prime);
         for (int s=1;s<22;s++) {
             var temp2 = point.multiplyBin(BigInteger.valueOf(s));
             System.out.println("(47,71)*"+s+" = "+ temp2.getCoordString());
         }
-        Test.__END_NOTES();
+        Test.__END_FREE_TEST();
 
     }
 

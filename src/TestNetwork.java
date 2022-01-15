@@ -74,7 +74,7 @@ public class TestNetwork {
 
          */
 
-        Test.__BEGIN_NOTES("Downloading headers and checking PoW");
+        Test.__BEGIN_FREE_TEST("Downloading headers and checking PoW");
 
         var genesis = Block.parseSerial(Kit.hexStringToByteArray(Block.GENESIS_BLOCK));
         Block previous = genesis;

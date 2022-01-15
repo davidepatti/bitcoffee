@@ -17,7 +17,7 @@ public class TestSecp256k1 {
         var test = new Test<String>("Signing Message");
         test.begin();
 
-        Test.__BEGIN_NOTES("Message sign with prefixed K");
+        Test.__BEGIN_FREE_TEST("Message sign with prefixed K");
         System.out.println("Signing message: \"Programming Bitcoin!\" with string \"secret\"");
         String secret = Kit.bytesToHexString(e_bytes);
         String message = Kit.bytesToHexString(z_bytes);
@@ -27,7 +27,7 @@ public class TestSecp256k1 {
         var pk = new PrivateKey(e_bytes);
         var signature_prefixed = pk.sign(z_bytes,prefixed_k);
         System.out.println("signature prefixed k ="+signature_prefixed);
-        Test.__END_NOTES();
+        Test.__END_FREE_TEST();
 
         var sig_detk = pk.getDeterministicK(z_bytes);
         var target_k = "e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e";
@@ -39,7 +39,7 @@ public class TestSecp256k1 {
     public static void test_infinity() {
         var test = new Test<String>("sec256k1 computing G*N");
         test.begin();
-        Test.__BEGIN_NOTES("you should see points at infinity (null,null)");
+        Test.__BEGIN_FREE_TEST("you should see points at infinity (null,null)");
         // test 1: manually creating G with lower level classes
         var x = new FieldElement(Secp256k1.Gx,Secp256k1.p);
         var y = new FieldElement(Secp256k1.Gy,Secp256k1.p);
@@ -57,7 +57,7 @@ public class TestSecp256k1 {
         // test 3: using specialized subclass
         var G4 = new S256Point(Secp256k1.Gx,Secp256k1.Gy);
         System.out.println(G4.multiplyBin(Secp256k1.N));
-        Test.__END_NOTES();
+        Test.__END_FREE_TEST();
         test.end();
     }
 
@@ -86,10 +86,10 @@ public class TestSecp256k1 {
         var test = new Test<S256Point>("Message signature (S256Point)");
         test.begin();
 
-        Test.__BEGIN_NOTES("strings used (Song, page 69)");
+        Test.__BEGIN_FREE_TEST("strings used (Song, page 69)");
         String secret = "my secret";
         String message = "my message";
-        Test.__END_NOTES();
+        Test.__END_FREE_TEST();
 
         var e_bytes = Kit.hash256(secret);
         var e_num = new BigInteger(1,e_bytes);

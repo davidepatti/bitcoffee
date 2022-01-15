@@ -3,6 +3,8 @@ public class Test<T> {
     private boolean failed = false;
     private static int testn = 0;
 
+    private static String current_test;
+
     public Test(String name) {
         this.name = name;
     }
@@ -41,11 +43,12 @@ public class Test<T> {
         check(subtest_name,"-",target,result);
     }
 
-    public static void __BEGIN_NOTES(String zone_test) {
+    public static void __BEGIN_FREE_TEST(String zone_test) {
+        current_test = zone_test;
         System.out.println("---------------------------------------------------");
-        System.out.println(" ___________BEGIN_NOTES: "+zone_test);
+        System.out.println(" >>>>>>>>>>>>> BEGIN_TEST["+current_test+"]____________________________");
     }
-    public static void __END_NOTES() {
-        System.out.println("____________END NOTES__________________");
+    public static void __END_FREE_TEST() {
+        System.out.println(" <<<<<<<<<<<<< END_TEST["+current_test+"]__________________");
     }
 }

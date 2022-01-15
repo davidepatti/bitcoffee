@@ -391,6 +391,10 @@ public class Kit {
 
         return current_level.get(0);
     }
+
+    public static double log2(int x) {
+        return (double) (Math.log(x)) / Math.log(2);
+    }
 }
 
 
