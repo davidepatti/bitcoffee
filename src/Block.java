@@ -86,7 +86,7 @@ public class Block {
     }
 
     /********************************************************************************/
-    public byte[] serialize() {
+    public byte[] serializeHeader() {
         var bos = new ByteArrayOutputStream();
 
         var n = Kit.intToLittleEndianBytes(this.version);
@@ -111,13 +111,13 @@ public class Block {
         return bos.toByteArray();
     }
 
-    public String getSerialString() {
-        return Kit.bytesToHexString(this.serialize());
+    public String getSerialHeaderString() {
+        return Kit.bytesToHexString(this.serializeHeader());
     }
 
     /********************************************************************************/
     public byte[] hash() {
-        var s = this.serialize();
+        var s = this.serializeHeader();
         return Kit.reverseBytes(Kit.hash256(s));
     }
     /********************************************************************************/
@@ -180,7 +180,7 @@ public class Block {
 
     public boolean checkPoW() {
 
-        var h256 = Kit.hash256(this.serialize());
+        var h256 = Kit.hash256(this.serializeHeader());
         var proof = Kit.litteEndianBytesToInt(h256);
 
         /*

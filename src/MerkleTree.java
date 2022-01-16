@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.BitSet;
 
 public class MerkleTree {
     private final int total;
@@ -96,6 +97,55 @@ public class MerkleTree {
 
     public boolean rightExists()  {
         return nodes.get(current_depth+1).size() > current_index*2+1;
+    }
+
+    public void populateTree(byte[] flags, ArrayList<String> hashes) {
+
+        var flag_bits = BitSet.valueOf(flags);
+        int current_pos = 0;
+
+        while (getRoot().equals("-")) {
+            if (isLeaf()) {
+                current_pos++;
+                this.setCurrentNode(hashes.remove(hashes.size()-1));
+                this.goUp();
+            }
+            else {
+                var left_hash = this.getLeftNode();
+
+                if (left_hash.equals("-")) {
+                    if (!flag_bits.get(++current_pos)) {
+                        setCurrentNode(hashes.remove(hashes.size() - 1));
+                        this.goUp();
+                    } else
+                        this.goLeft();
+                }
+                else if (this.rightExists()) {
+                    var right_hash = this.getRightNode();
+
+                    if (right_hash.equals("-")) {
+                        this.goRight();
+                    } else {
+                        setCurrentNode(Kit.merkleParent(left_hash, right_hash));
+                        this.goUp();
+                    }
+                }
+                else
+                {
+                    setCurrentNode(Kit.merkleParent(left_hash,left_hash));
+                    goUp();
+                }
+
+            }
+        } // while
+
+        if (hashes.size()!=0) {
+            throw new RuntimeException("Not all hashes consumed");
+        }
+
+        if (current_pos!=flag_bits.size())
+                throw new RuntimeException("Not all flag bits consumed");
+
     }
 
 }

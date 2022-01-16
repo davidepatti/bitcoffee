@@ -10,6 +10,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 
 public class Kit {
 
@@ -394,6 +395,11 @@ public class Kit {
 
     public static double log2(int x) {
         return (double) (Math.log(x)) / Math.log(2);
+    }
+
+    public BitSet bytesToBitField(byte[] some_bytes) {
+        BitSet flag_bits = BitSet.valueOf(some_bytes);
+        return flag_bits;
     }
 }
 
