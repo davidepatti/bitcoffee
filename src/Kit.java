@@ -397,9 +397,14 @@ public class Kit {
         return (double) (Math.log(x)) / Math.log(2);
     }
 
-    public BitSet bytesToBitField(byte[] some_bytes) {
+    public static BitSet bytesToBitField(byte[] some_bytes) {
         BitSet flag_bits = BitSet.valueOf(some_bytes);
         return flag_bits;
+    }
+
+    public static String reverseByteString(String s) {
+        var bytes = Kit.hexStringToByteArray(s);
+        return Kit.bytesToHexString(Kit.reverseBytes(bytes));
     }
 }
 

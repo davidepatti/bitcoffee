@@ -4,8 +4,7 @@ public class TestMerkle {
 
     public static void main(String[] args) {
 
-        var test = new Test<String>("Merkle");
-        test.begin();
+        Test.__BEGIN_TEST("Merkle");
 
         var hash1 = "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5";
         var hash2 = "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5";
@@ -13,9 +12,9 @@ public class TestMerkle {
         var result = Kit.merkleParent(hash1,hash2);
         var target = "8b30c5ba100f6f2e5ad1e2a742e5020491240f8eb514fe97c713c31718ad7ecd";
 
-        test.check("merke parent","hash1,hash2"+hash1+","+hash2,target,result);
+        Test.check("merke parent","hash1,hash2"+hash1+","+hash2,target,result);
 
-        Test.__BEGIN_FREE_TEST("Parent Level (see page 192, J. Song)");
+        Test.__BEGIN_TEST("Parent Level (see page 192, J. Song)");
         var hashes = new ArrayList<String>();
 
         hashes.add("c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5");
@@ -28,7 +27,7 @@ public class TestMerkle {
         System.out.println(hashes);
         System.out.println("-----------------------------");
         System.out.println(Kit.merkleParentLevel(hashes));
-        Test.__END_FREE_TEST();
+        Test.__END_TEST();
 
         var hl = new ArrayList<String>();
 
@@ -56,11 +55,11 @@ public class TestMerkle {
         merk.setNodesLevel(1,Kit.merkleParentLevel(merk.getNodesLevel(2)));
         merk.setNodesLevel(0,Kit.merkleParentLevel(merk.getNodesLevel(1)));
 
-        test.check("Computig root",""+merk,merk.getRoot(),"597c4bafe3832b17cbbabe56f878f4fc2ad0f6a402cee7fa851a9cb205f87ed1");;
-        test.end();
+        Test.check("Computig root",""+merk,merk.getRoot(),"597c4bafe3832b17cbbabe56f878f4fc2ad0f6a402cee7fa851a9cb205f87ed1");;
+        Test.__END_TEST();
         //////////////////////////////////////////////////////////////////////////////////////7
 
-        Test.__BEGIN_FREE_TEST("depth-first traversal");
+        Test.__BEGIN_TEST("depth-first traversal");
         var tree2 = new MerkleTree(hl.size());
 
         tree2.setNodesLevel(4,hl);
@@ -87,11 +86,12 @@ public class TestMerkle {
         }
 
         tree2.print();
-        Test.__END_FREE_TEST();
+
+
+        Test.__END_TEST();
         //////////////////////////////////////////////////////////////////////////////////////7
 
-        var test2 = new Test<Boolean>("Merkled root");
-        test2.begin();
+        Test.__BEGIN_TEST("Merkle root");
 
         var hashes_list = new ArrayList<String>();
         hashes_list.add("f54cb69e5dc1bd38ee6901e4ec2007a5030e14bdd60afb4d2f3428c88eea17c1");
@@ -109,8 +109,42 @@ public class TestMerkle {
 
         var block = Block.parseSerial(Kit.hexStringToByteArray("00000020fcb19f7895db08cadc9573e7915e3919fb76d59868a51d995201000000000000acbcab8bcc1af95d8d563b77d24c3d19b18f1486383d75a5085c4e86c86beed691cfa85916ca061a00000000"));
         block.setTx_hashes(hashes_list);
-        test2.check("Merkle root validation","block:"+block+"\ntx_hashes:"+hashes_list,block.validateMerkleRoot(),true);
+        Test.check("Merkle root validation","block:"+block+"\ntx_hashes:"+hashes_list,block.validateMerkleRoot(),true);
+        Test.__END_TEST();
 
-        test2.end();
+        Test.__BEGIN_TEST("MerkleBlock");
+        var block_raw = "00000020df3b053dc46f162a9b00c7f0d5124e2676d47bbe7c5d0793a500000000000000ef445fef2ed495c275892206ca533e7411907971013ab83e3b47bd0d692d14d4dc7c835b67d8001ac157e670bf0d00000aba412a0d1480e370173072c9562becffe87aa661c1e4a6dbc305d38ec5dc088a7cf92e6458aca7b32edae818f9c2c98c37e06bf72ae0ce80649a38655ee1e27d34d9421d940b16732f24b94023e9d572a7f9ab8023434a4feb532d2adfc8c2c2158785d1bd04eb99df2e86c54bc13e139862897217400def5d72c280222c4cbaee7261831e1550dbb8fa82853e9fe506fc5fda3f7b919d8fe74b6282f92763cef8e625f977af7c8619c32a369b832bc2d051ecd9c73c51e76370ceabd4f25097c256597fa898d404ed53425de608ac6bfe426f6e2bb457f1c554866eb69dcb8d6bf6f880e9a59b3cd053e6c7060eeacaacf4dac6697dac20e4bd3f38a2ea2543d1ab7953e3430790a9f81e1c67f5b58c825acf46bd02848384eebe9af917274cdfbb1a28a5d58a23a17977def0de10d644258d9c54f886d47d293a411cb6226103b55635";
+
+        var mb = MerkleBlock.parseSerial(Kit.hexStringToByteArray(block_raw));
+
+        var root = "ef445fef2ed495c275892206ca533e7411907971013ab83e3b47bd0d692d14d4";
+        Test.check("root","",root,(Kit.reverseByteString(mb.getMerkle_root())));
+
+        hl = new ArrayList<String>();
+
+        hl.add(Kit.reverseByteString("ba412a0d1480e370173072c9562becffe87aa661c1e4a6dbc305d38ec5dc088a"));
+        hl.add(Kit.reverseByteString("7cf92e6458aca7b32edae818f9c2c98c37e06bf72ae0ce80649a38655ee1e27d"));
+        hl.add(Kit.reverseByteString("34d9421d940b16732f24b94023e9d572a7f9ab8023434a4feb532d2adfc8c2c2"));
+        hl.add(Kit.reverseByteString("158785d1bd04eb99df2e86c54bc13e139862897217400def5d72c280222c4cba"));
+        hl.add(Kit.reverseByteString("ee7261831e1550dbb8fa82853e9fe506fc5fda3f7b919d8fe74b6282f92763ce"));
+        hl.add(Kit.reverseByteString("f8e625f977af7c8619c32a369b832bc2d051ecd9c73c51e76370ceabd4f25097"));
+        hl.add(Kit.reverseByteString("c256597fa898d404ed53425de608ac6bfe426f6e2bb457f1c554866eb69dcb8d"));
+        hl.add(Kit.reverseByteString("6bf6f880e9a59b3cd053e6c7060eeacaacf4dac6697dac20e4bd3f38a2ea2543"));
+        hl.add(Kit.reverseByteString("d1ab7953e3430790a9f81e1c67f5b58c825acf46bd02848384eebe9af917274c"));
+        hl.add(Kit.reverseByteString("dfbb1a28a5d58a23a17977def0de10d644258d9c54f886d47d293a411cb62261"));
+
+        System.out.println(hl);
+        System.out.println(mb.getTx_hashes());
+
+        var flags = Kit.hexStringToByteArray("b55635");
+
+        Test.check("flags","",mb.getFlags(),"b55635");
+        Test.__END_TEST();
+
+        Test.__BEGIN_TEST("");
+        System.out.println(mb);
+        System.out.println("Merkle Block validity:"+mb.isValid());
+        Test.__END_TEST();
+
     }
 }

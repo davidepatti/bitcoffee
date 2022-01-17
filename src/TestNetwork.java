@@ -60,8 +60,7 @@ public class TestNetwork {
         Test.__END_NOTES();
          */
 
-        var testh = new Test<String>("Get Headers");
-        testh.begin();
+        Test.__BEGIN_TEST("Get Headers");
 
         /*
         String header = "0000000000000000001237f46acddf58578a37e213d2a6edc4884a2fcad05ba3";
@@ -70,11 +69,11 @@ public class TestNetwork {
 
         var result_serial = Kit.bytesToHexString(msg.serialize());
 
-        testh.check("getheaders serial","header:"+header,target_serial,result_serial);
+        Test.check("getheaders serial","header:"+header,target_serial,result_serial);
 
          */
 
-        Test.__BEGIN_FREE_TEST("Downloading headers and checking PoW");
+        Test.__BEGIN_TEST("Downloading headers and checking PoW");
 
         var genesis = Block.parseSerial(Kit.hexStringToByteArray(Block.GENESIS_BLOCK));
         Block previous = genesis;
@@ -120,6 +119,6 @@ public class TestNetwork {
             }
 
         }
-        testh.end();
+        Test.__END_TEST();
     }
 }
