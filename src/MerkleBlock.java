@@ -49,6 +49,8 @@ public class MerkleBlock {
     /********************************************************************************/
     public static MerkleBlock parseSerial(ByteArrayInputStream bis) throws IOException {
         var version = Kit.litteEndianBytesToInt(bis.readNBytes(4));
+        var version_str = version.toString(16);
+
         var prev_block = Kit.bytesToHexString(Kit.reverseBytes(bis.readNBytes(32)));
         var merkle_root = Kit.bytesToHexString(Kit.reverseBytes(bis.readNBytes(32)));
         var timestamp = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();

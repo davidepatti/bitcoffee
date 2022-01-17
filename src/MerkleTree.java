@@ -99,6 +99,32 @@ public class MerkleTree {
         return nodes.get(current_depth+1).size() > current_index*2+1;
     }
 
+    public void populateTree(ArrayList<String> hashes) {
+
+        this.setNodesLevel(max_depth, hashes);
+        while (this.getRoot().equals("-")) {
+
+            if (this.isLeaf()) goUp();
+            else {
+                var left_hash = getLeftNode();
+
+                if (left_hash.equals("-")) goLeft();
+                else if (rightExists()) {
+                    var right_hash = getRightNode();
+                    if (right_hash.equals("-"))
+                        goRight();
+                    else {
+                        setCurrentNode(Kit.merkleParent(left_hash, right_hash));
+                        goUp();
+                    }
+                } else {
+                    setCurrentNode(Kit.merkleParent(left_hash, left_hash));
+                    goUp();
+                }
+            }
+        }
+    }
+
     public void populateTree(byte[] flags, ArrayList<String> hashes) {
 
         var flag_bits = BitSet.valueOf(flags);
