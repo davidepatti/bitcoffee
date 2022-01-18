@@ -9,8 +9,8 @@ public class Test {
     public static void check(String subtest_name, String desc, Object target, Object result) {
         subtestn++;
         System.out.println("---------------------------------------------------");
-        System.out.println("-> Starting Subtest "+testn+"."+subtestn+": "+subtest_name);
-        System.out.println("---------------------------------------------------");
+        System.out.println("--> Starting Subtest "+testn+"."+subtestn+": "+subtest_name);
+        System.out.println("");
         System.out.println("[Description]\n "+desc);
         System.out.println("---------------------------------------------------");
         System.out.println("\tTarget: "+target);
@@ -35,6 +35,6 @@ public class Test {
         System.out.println("********************************************************");
     }
     public static void __END_TEST() {
-        System.out.println(" <<<<<<<<<<<<< END_TEST["+current_test+"]__________________");
+        //System.out.println("\n ***************** END_TEST["+current_test+"]**********");
     }
 }

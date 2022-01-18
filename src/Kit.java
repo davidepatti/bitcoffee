@@ -1,6 +1,5 @@
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 
 public class Kit {
 
@@ -397,15 +395,11 @@ public class Kit {
         return (double) (Math.log(x)) / Math.log(2);
     }
 
-    public static BitSet bytesToBitField(byte[] some_bytes) {
-        BitSet flag_bits = BitSet.valueOf(some_bytes);
-        return flag_bits;
-    }
-
     public static String reverseByteString(String s) {
         var bytes = Kit.hexStringToByteArray(s);
         return Kit.bytesToHexString(Kit.reverseBytes(bytes));
     }
+
 }
 
 

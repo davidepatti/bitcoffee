@@ -33,6 +33,9 @@ public class MerkleTree {
 
             this.nodes.add(level_hashes);
         }
+
+        current_index = 0;
+        current_depth = 0;
     }
 
     @Override
@@ -123,25 +126,24 @@ public class MerkleTree {
                 }
             }
         }
+        current_depth = 0;
+        current_index = 0;
     }
 
-    public void populateTree(byte[] flags, ArrayList<String> hashes) {
-
-        var flag_bits = BitSet.valueOf(flags);
-        int current_pos = 0;
+    public void populateTree(ArrayList<Boolean> flag_bits, ArrayList<String> hashes) {
 
         while (getRoot().equals("-")) {
             if (isLeaf()) {
-                current_pos++;
-                this.setCurrentNode(hashes.remove(hashes.size()-1));
+                flag_bits.remove(0);
+                this.setCurrentNode(hashes.remove(0));
                 this.goUp();
             }
             else {
                 var left_hash = this.getLeftNode();
 
                 if (left_hash.equals("-")) {
-                    if (!flag_bits.get(++current_pos)) {
-                        setCurrentNode(hashes.remove(hashes.size() - 1));
+                    if (!flag_bits.remove(0)) {
+                        setCurrentNode(hashes.remove(0));
                         this.goUp();
                     } else
                         this.goLeft();
@@ -161,7 +163,6 @@ public class MerkleTree {
                     setCurrentNode(Kit.merkleParent(left_hash,left_hash));
                     goUp();
                 }
-
             }
         } // while
 
@@ -169,9 +170,10 @@ public class MerkleTree {
             throw new RuntimeException("Not all hashes consumed");
         }
 
-        if (current_pos!=flag_bits.size())
+        for (boolean f:flag_bits)  {
+            if (f==true)
                 throw new RuntimeException("Not all flag bits consumed");
-
+        }
     }
 
 }
