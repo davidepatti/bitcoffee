@@ -1,9 +1,10 @@
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class TestNetwork {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         /*\
         Test.__BEGIN_NOTES("Testing NetworkEnvelope");
 
@@ -77,7 +78,7 @@ public class TestNetwork {
 
         var genesis = Block.parseSerial(Kit.hexStringToByteArray(Block.GENESIS_BLOCK));
         Block previous = genesis;
-        var first_epoch_timestamp = previous.getTimestamp();
+        var first_epoch_timestamp = Objects.requireNonNull(previous).getTimestamp();
         var expected_bits = Kit.hexStringToByteArray(Block.LOWEST_BITS);
         System.out.println("Starting from block "+genesis);
 

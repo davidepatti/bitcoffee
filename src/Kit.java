@@ -246,7 +246,7 @@ public class Kit {
     /***************************************************************************/
     public static long readVarint(ByteArrayInputStream bis) {
         byte[] buffer;
-        long n=0;
+        long n;
         long i = bis.read();
 
         try {

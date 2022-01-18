@@ -15,8 +15,7 @@ public class MessageVerAck extends Message {
     }
 
     public byte[] serialize() {
-        var b = new byte[0];
-        return b;
+        return new byte[0];
     }
 
     @Override

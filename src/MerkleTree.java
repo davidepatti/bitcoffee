@@ -1,10 +1,10 @@
 import java.util.ArrayList;
-import java.util.BitSet;
 
+@SuppressWarnings("UnusedAssignment")
 public class MerkleTree {
     private final int total;
     private final int max_depth;
-    private ArrayList<ArrayList<String>> nodes = new ArrayList<>();
+    private final ArrayList<ArrayList<String>> nodes = new ArrayList<>();
 
     private int current_depth = 0;
     private int current_index = 0;
@@ -171,7 +171,7 @@ public class MerkleTree {
         }
 
         for (boolean f:flag_bits)  {
-            if (f==true)
+            if (f)
                 throw new RuntimeException("Not all flag bits consumed");
         }
     }

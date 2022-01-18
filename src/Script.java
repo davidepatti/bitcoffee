@@ -4,16 +4,14 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Stack;
 
 public class Script {
     final Stack<ScriptCmd> commands;
 
     public Script(Stack<ScriptCmd> stack) {
-        if (stack==null)
-            commands = new Stack<ScriptCmd>();
-        else
-            this.commands = stack;
+        this.commands = Objects.requireNonNullElseGet(stack, Stack::new);
     }
     /*************************************************************************/
     public Script(byte[] commands_bytes) {
@@ -26,7 +24,7 @@ public class Script {
         }
 
         if (script==null)
-            this.commands = new Stack<ScriptCmd>();
+            this.commands = new Stack<>();
         else
             this.commands = script.commands;
 
@@ -106,7 +104,7 @@ public class Script {
     // used for encoding stack nums
     public static byte[] encodeNum(BigInteger n) {
         // TOOD: check if better empty or null
-        byte[] res = null;
+        byte[] res;
         var bos = new ByteArrayOutputStream();
 
         // empty byte if 0
@@ -345,7 +343,7 @@ public class Script {
 
                     var bos = new ByteArrayOutputStream();
                     try {
-                        bos.write(Kit.encodeVarint(cmd.value.length));
+                        bos.write(Objects.requireNonNull(Kit.encodeVarint(cmd.value.length)));
                         bos.write(cmd.value);
                         var redeem_script = Script.parseSerialisation(bos.toByteArray());
                         cmds.addAll(redeem_script.commands);
@@ -500,73 +498,56 @@ public class Script {
 
 
     /*************************************************************************/
-    public boolean OP_0(Stack<byte[]> stack) {
+    public void OP_0(Stack<byte[]> stack) {
         stack.push(encodeNum(0));
-        return true;
     }
-    public boolean OP_1(Stack<byte[]> stack) {
+    public void OP_1(Stack<byte[]> stack) {
         stack.push(encodeNum(1));
-        return true;
     }
-    public boolean OP_2(Stack<byte[]> stack) {
+    public void OP_2(Stack<byte[]> stack) {
         stack.push(encodeNum(2));
-        return true;
     }
-    public boolean OP_3(Stack<byte[]> stack) {
+    public void OP_3(Stack<byte[]> stack) {
         stack.push(encodeNum(3));
-        return true;
     }
-    public boolean OP_4(Stack<byte[]> stack) {
+    public void OP_4(Stack<byte[]> stack) {
         stack.push(encodeNum(4));
-        return true;
     }
-    public boolean OP_5(Stack<byte[]> stack) {
+    public void OP_5(Stack<byte[]> stack) {
         stack.push(encodeNum(5));
-        return true;
     }
-    public boolean OP_6(Stack<byte[]> stack) {
+    public void OP_6(Stack<byte[]> stack) {
         stack.push(encodeNum(6));
-        return true;
     }
-    public boolean OP_7(Stack<byte[]> stack) {
+    public void OP_7(Stack<byte[]> stack) {
         stack.push(encodeNum(7));
-        return true;
     }
-    public boolean OP_8(Stack<byte[]> stack) {
+    public void OP_8(Stack<byte[]> stack) {
         stack.push(encodeNum(8));
-        return true;
     }
-    public boolean OP_9(Stack<byte[]> stack) {
+    public void OP_9(Stack<byte[]> stack) {
         stack.push(encodeNum(9));
-        return true;
     }
-    public boolean OP_10(Stack<byte[]> stack) {
+    public void OP_10(Stack<byte[]> stack) {
         stack.push(encodeNum(10));
-        return true;
     }
-    public boolean OP_11(Stack<byte[]> stack) {
+    public void OP_11(Stack<byte[]> stack) {
         stack.push(encodeNum(11));
-        return true;
     }
-    public boolean OP_12(Stack<byte[]> stack) {
+    public void OP_12(Stack<byte[]> stack) {
         stack.push(encodeNum(12));
-        return true;
     }
-    public boolean OP_13(Stack<byte[]> stack) {
+    public void OP_13(Stack<byte[]> stack) {
         stack.push(encodeNum(13));
-        return true;
     }
-    public boolean OP_14(Stack<byte[]> stack) {
+    public void OP_14(Stack<byte[]> stack) {
         stack.push(encodeNum(14));
-        return true;
     }
-    public boolean OP_15(Stack<byte[]> stack) {
+    public void OP_15(Stack<byte[]> stack) {
         stack.push(encodeNum(15));
-        return true;
     }
-    public boolean OP_16(Stack<byte[]> stack) {
+    public void OP_16(Stack<byte[]> stack) {
         stack.push(encodeNum(16));
-        return true;
     }
     public boolean OP_1NEGATE(Stack<byte[]> stack) {
         stack.push(encodeNum(-1));
@@ -584,29 +565,25 @@ public class Script {
         var element = stack.pop();
         return (decodeNum(element).compareTo(BigInteger.ZERO)) != 0;
     }
-    public boolean OP_RETURN(Stack<byte[]> stack) {
-        return false;
+    public void OP_RETURN(Stack<byte[]> stack) {
     }
 
-    public boolean OP_TOALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
-        if (stack.size()<1) return false;
+    public void OP_TOALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
+        if (stack.size()<1) return;
         altstack.push(stack.pop());
-        return true;
     }
 
-    public boolean OP_FROMALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
-        if (stack.size()<1) return false;
+    public void OP_FROMALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
+        if (stack.size()<1) return;
         stack.push(altstack.pop());
-        return true;
     }
 
-    private boolean OP_2DUP(Stack<byte[]> stack) {
-        if (stack.size()<2) return false;
+    private void OP_2DUP(Stack<byte[]> stack) {
+        if (stack.size()<2) return;
         var top1 = stack.peek();
         var top2 = stack.elementAt(stack.size()-2);
         stack.push(top2);
         stack.push(top1);
-        return true;
     }
 
     public boolean OP_EQUAL(Stack<byte[]> stack) {
@@ -625,11 +602,13 @@ public class Script {
         return true;
     }
 
-    public boolean OP_EQUALVERIFY(Stack<byte[]> stack) {
-        return OP_EQUAL(stack) && OP_VERIFY(stack);
+    public void OP_EQUALVERIFY(Stack<byte[]> stack) {
+        if (OP_EQUAL(stack)) {
+            OP_VERIFY(stack);
+        }
     }
-    public boolean OP_NOT(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
+    public void OP_NOT(Stack<byte[]> stack) {
+        if (stack.size()<1) return;
 
         var element = decodeNum(stack.pop());
         if (element.equals(BigInteger.ZERO))
@@ -637,53 +616,47 @@ public class Script {
         else
             stack.push(encodeNum(0));
 
-        return true;
     }
 
-    public boolean OP_ADD(Stack<byte[]> stack) {
-        if (stack.size()<2) return false;
+    public void OP_ADD(Stack<byte[]> stack) {
+        if (stack.size()<2) return;
 
         var e1 = decodeNum(stack.pop());
         var e2 = decodeNum(stack.pop());
 
         stack.push(encodeNum(e1.add(e2)));
-        return true;
     }
 
-    public boolean OP_SUB(Stack<byte[]> stack) {
-        if (stack.size()<2) return false;
+    public void OP_SUB(Stack<byte[]> stack) {
+        if (stack.size()<2) return;
 
         var e1 = decodeNum(stack.pop());
         var e2 = decodeNum(stack.pop());
 
         stack.push(encodeNum(e2.subtract(e1)));
-        return true;
     }
 
-    public boolean OP_MUL(Stack<byte[]> stack) {
-        if (stack.size()<2) return false;
+    public void OP_MUL(Stack<byte[]> stack) {
+        if (stack.size()<2) return;
 
         var e1 = decodeNum(stack.pop());
         var e2 = decodeNum(stack.pop());
 
         stack.push(encodeNum(e2.multiply(e1)));
-        return true;
     }
 
-    public boolean OP_RIPEMD160(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
+    public void OP_RIPEMD160(Stack<byte[]> stack) {
+        if (stack.size()<1) return;
         var element = stack.pop();
 
         stack.push(Kit.RIPEMD160(element));
-        return true;
     }
 
-    public boolean OP_SHA256(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
+    public void OP_SHA256(Stack<byte[]> stack) {
+        if (stack.size()<1) return;
         var element = stack.pop();
 
         stack.push(Kit.sha256(element));
-        return true;
     }
 
     public boolean OP_HASH160(Stack<byte[]> stack) {
@@ -694,23 +667,21 @@ public class Script {
         return true;
     }
 
-    public boolean OP_DUP(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
+    public void OP_DUP(Stack<byte[]> stack) {
+        if (stack.size()<1) return;
         stack.push(stack.peek());
-        return true;
     }
 
-    public boolean OP_HASH256(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
+    public void OP_HASH256(Stack<byte[]> stack) {
+        if (stack.size()<1) return;
         var element = stack.pop();
         var hashed = Kit.hash256(element);
         stack.push(hashed);
-        return true;
     }
 
 
-    public boolean OP_CHECKSIG(Stack<byte[]> stack, byte[] z) {
-        if (stack.size()<2) return false;
+    public void OP_CHECKSIG(Stack<byte[]> stack, byte[] z) {
+        if (stack.size()<2) return;
 
         var sec_pubkey_cmd = stack.pop();
         var der_signature = stack.pop();
@@ -732,16 +703,15 @@ public class Script {
         // TODO: implement encode_num(0)
         else stack.push(encodeNum(0));
 
-        return false;
     }
     /*************************************************************************/
-    public boolean OP_CHECKMULTISIG(Stack<byte[]> stack,byte[] z) {
+    public void OP_CHECKMULTISIG(Stack<byte[]> stack, byte[] z) {
 
-        if (stack.size()<2) return false;
+        if (stack.size()<2) return;
 
         var n = decodeNum(stack.pop());
         if (stack.size() < n.longValue()+1)
-            return false;
+            return;
 
         var sec_pubkeys = new ArrayList<byte[]>();
 
@@ -751,13 +721,14 @@ public class Script {
 
         var m = decodeNum(stack.pop());
         if (stack.size() < m.longValue()+1)
-            return false;
+            return;
 
         var der_signatures = new ArrayList<byte[]>();
 
         for (int i=0;i<m.longValue();i++) {
             var sig_with_SIGHASH_ALL = stack.pop();
             var sig = Arrays.copyOfRange(sig_with_SIGHASH_ALL,0,sig_with_SIGHASH_ALL.length-1);
+            der_signatures.add(sig);
         }
 
         // due to the off-by-one OP_CHECKMULTISIG bug
@@ -776,7 +747,7 @@ public class Script {
         }
 
         for (Signature sig: sigs) {
-            if (points.size()==0) return false;
+            if (points.size()==0) return;
 
             for (S256Point p: points) {
 
@@ -788,7 +759,6 @@ public class Script {
         }
 
         stack.push(encodeNum(1));
-        return true;
     }
 
 

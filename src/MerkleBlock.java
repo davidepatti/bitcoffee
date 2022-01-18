@@ -84,9 +84,8 @@ public class MerkleBlock {
         mt.populateTree(flag_bits,rev_hash_list);
 
         var computed_root = Kit.reverseByteString(mt.getRoot());
-        var root_str = this.merkle_root;
 
-        return computed_root.equals(root_str);
+        return computed_root.equals(this.merkle_root);
     }
 
     public ArrayList<String> getTx_hashes() {

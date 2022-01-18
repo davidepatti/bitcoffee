@@ -78,7 +78,6 @@ public class PrivateKey {
         var z_num = new BigInteger(1,z_bytes);
 
         if (z_num.compareTo(Secp256k1.N)>0) {
-            z_num = z_num.subtract(Secp256k1.N);
             // TODO: check if we can safely remove this if statement
             System.out.println("ERROR: unused z_num if statement occurred, check for the code");
             System.exit(-1);

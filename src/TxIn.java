@@ -1,6 +1,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class TxIn {
     private final byte[] prev_tx_id;
@@ -72,7 +73,7 @@ public class TxIn {
             bos.write(buf,0,4);
 
             var len = this.script_sig.length;
-            bos.write(Kit.encodeVarint(len));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(len)));
             bos.write(this.script_sig);
             buf = Kit.reverseBytes(this.sequence);
             // we need only the first 4 bytes of buf

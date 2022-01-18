@@ -1,6 +1,7 @@
 import java.math.BigInteger;
 import java.util.Objects;
 
+@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
 public class FieldElement {
     private final BigInteger num;
     private final BigInteger prime;

@@ -1,5 +1,6 @@
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MessageGetHeaders extends Message {
     final private int version;
@@ -29,7 +30,7 @@ public class MessageGetHeaders extends Message {
 
         try {
             bos.write(Kit.intToLittleEndianBytes(this.version),0,4);
-            bos.write(Kit.encodeVarint(this.n_hashes));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(this.n_hashes)));
             bos.write(Kit.reverseBytes(Kit.hexStringToByteArray(this.start_header)));
             bos.write(Kit.reverseBytes(Kit.hexStringToByteArray(this.end_header)));
             bos.flush();

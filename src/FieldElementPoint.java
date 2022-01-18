@@ -2,7 +2,7 @@ import java.math.BigInteger;
 import java.util.Objects;
 
 // TODO: abstract to common element
-@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "EqualsWhichDoesntCheckParameterClass"})
 public class FieldElementPoint {
     private final FieldElement x,y,a,b;
     static final FieldElement BIGINF = null;

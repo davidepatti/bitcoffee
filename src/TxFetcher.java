@@ -31,7 +31,7 @@ public class TxFetcher {
                 con.setRequestMethod("GET");
                 var in = new BufferedReader(new InputStreamReader(con.getInputStream()));
                 String inputLine;
-                StringBuffer content = new StringBuffer();
+                StringBuilder content = new StringBuilder();
                 while ((inputLine = in.readLine()) != null) {
                     content.append(inputLine);
                 }
@@ -62,10 +62,7 @@ public class TxFetcher {
                 cache.put(tx_id,tx);
             }
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             System.out.println("Not corresponding tx_id");

@@ -110,6 +110,7 @@ public class bitcoffee {
         System.out.println(" details");
         System.out.println("------------------------------------------------");
         System.out.print("BIP: ");
+        assert block != null;
         if (block.checkBIP9()) System.out.println("BIP9");
         if (block.checkBIP91()) System.out.println("BIP91");
         if (block.checkBIP141()) System.out.println("BIP91");
@@ -131,6 +132,8 @@ public class bitcoffee {
         System.out.println("Last block:");
         System.out.println("------------------------------------------------");
         System.out.println(last_block);
+        assert last_block != null;
+        assert first_block != null;
         var time_diff = last_block.getTimestamp()-first_block.getTimestamp();
         System.out.println("Time differential: "+time_diff+", updating bits: "+Kit.bytesToHexString(first_block.getBits()));
 
@@ -141,15 +144,14 @@ public class bitcoffee {
 
     private static void cmd_getp2pkaddr(String secret, boolean testnet) {
         // brainwallet style, use text to derive private key (be careful to not share it!)
-        var secret_text = secret;
-        var secret_bytes = Kit.hash256(secret_text);
+        var secret_bytes = Kit.hash256(secret);
         var mypk = new PrivateKey(secret_bytes);
 
         var myaddress = mypk.point.getP2pkhTestnetAddress();
         if (testnet)
-            System.out.println("Testnet address for secret:" + secret_text);
+            System.out.println("Testnet address for secret:" + secret);
         else
-            System.out.println("Mainnet address for secret:" + secret_text);
+            System.out.println("Mainnet address for secret:" + secret);
 
         System.out.println("address: " + myaddress);
         var wif = mypk.getWIF(true, true);

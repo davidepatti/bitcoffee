@@ -1,6 +1,5 @@
 public class Test {
     String name;
-    private static boolean failed = false;
     private static int testn = 0;
     private static int subtestn = 0;
 
@@ -16,7 +15,7 @@ public class Test {
         System.out.println("\tTarget: "+target);
         System.out.println("\tResult: "+result);
 
-        failed = !(target.equals(result));
+        boolean failed = !(target.equals(result));
         if (failed) {
             System.out.println("\t-> TEST FAILED: "+current_test+"/"+subtest_name);
             System.exit(-1);

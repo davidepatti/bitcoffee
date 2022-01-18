@@ -2,6 +2,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 public class MessageVersion extends Message {
@@ -111,7 +112,7 @@ public class MessageVersion extends Message {
             }
 
             bos.write(nonce);
-            bos.write(Kit.encodeVarint(user_agent.length));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(user_agent.length)));
             bos.write(user_agent);
 
             bos.write(Kit.intToLittleEndianBytes(latest_block),0,4);

@@ -1,5 +1,3 @@
-import java.io.ByteArrayInputStream;
-
 public abstract class Message {
 
     public abstract String getCommand();

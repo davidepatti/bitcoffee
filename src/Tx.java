@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /*****************************************************************/
 public class Tx {
@@ -139,7 +140,7 @@ public class Tx {
             bos.write(buf,0,4);
 
             int num_ins = tx_ins.size();
-            bos.write(Kit.encodeVarint(num_ins));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(num_ins)));
             for (int i=0;i < num_ins; i++) {
 
                 var prev_tx = tx_ins.get(i).getPrevTxId();
@@ -169,7 +170,7 @@ public class Tx {
             }
 
             int num_outs = tx_outs.size();
-            bos.write(Kit.encodeVarint(num_outs));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(num_outs)));
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 
@@ -255,12 +256,12 @@ public class Tx {
             // TODO: check whether varint should be little endian (see the other)
 
             int num_ins = tx_ins.size();
-            bos.write(Kit.encodeVarint(num_ins));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(num_ins)));
             for (TxIn txin: tx_ins)
                 bos.write(txin.getSerialized());
 
             int num_outs = tx_outs.size();
-            bos.write(Kit.encodeVarint(num_outs));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(num_outs)));
             for (TxOut txout: tx_outs)
                 bos.write(txout.getSerialized());
 

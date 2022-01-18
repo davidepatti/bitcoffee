@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class MessagePing extends Message {
 
-    private long nonce;
+    private final long nonce;
     final static String command = "ping";
 
     public MessagePing(long nonce ) {

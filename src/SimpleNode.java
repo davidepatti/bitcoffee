@@ -2,6 +2,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class SimpleNode {
@@ -10,8 +11,6 @@ public class SimpleNode {
     private final int port;
     private final boolean testnet;
     private final boolean logging;
-    private Socket socket;
-    private InputStream is;
     private OutputStream os;
     private DataInputStream dis;
     private ByteArrayInputStream bis;
@@ -40,8 +39,8 @@ public class SimpleNode {
     private void initConnection() {
         try {
             System.out.println("Simple node, starting connecton to "+host);
-            this.socket = new Socket(host,this.port);
-            is = socket.getInputStream();
+            Socket socket = new Socket(host, this.port);
+            InputStream is = socket.getInputStream();
             os = socket.getOutputStream();
             dis = new DataInputStream(new BufferedInputStream(is));
 
@@ -73,7 +72,7 @@ public class SimpleNode {
             System.out.println("read(): waiting for data...");
 
             var envelope = NetworkEnvelope.parse(dis,this.testnet);
-            System.out.println("Read Envelope with Command :"+envelope.getCommand());
+            System.out.println("Read Envelope with Command :"+ Objects.requireNonNull(envelope).getCommand());
             System.out.println("------------------------------------------------------");
             return envelope;
         } catch (Exception e) {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class MessageHeaders extends Message {
 
-    private ArrayList<Block> blocks = new ArrayList<>();
+    private ArrayList<Block> blocks;
 
     final static String command = "headers";
 
@@ -31,16 +31,10 @@ public class MessageHeaders extends Message {
             try {
                 var ablock = Block.parseSerial(bis);
                 blocks.add(ablock);
-                /*
-                System.out.println("PARSED BLOCK HEADER(loop:"+i+")");
-                System.out.println(ablock);
-                 */
                 var num_txs = Kit.readVarint(bis);
                 if (num_txs!=0) {
-                   //throw new Exception("Number of tx not 0") ;
+                   throw new Exception("Number of tx not 0") ;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -67,7 +61,6 @@ public class MessageHeaders extends Message {
     @Override
     public Message parse(byte[] bytes) {
 
-        MessageHeaders msg = new MessageHeaders(bytes);
-        return msg;
+        return new MessageHeaders(bytes);
     }
 }

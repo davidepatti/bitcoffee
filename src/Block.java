@@ -183,13 +183,6 @@ public class Block {
         var h256 = Kit.hash256(this.serializeHeader());
         var proof = Kit.litteEndianBytesToInt(h256);
 
-        /*
-        System.out.println("Checking PoW:");
-        System.out.println("proof hex:"+Kit.bytesToHexString(h256));
-        System.out.println("proof:"+proof);
-        System.out.println("target:"+this.getTarget());
-         */
-
         return proof.compareTo(this.getTarget())<0;
     }
     /********************************************************************************/

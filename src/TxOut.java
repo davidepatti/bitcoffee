@@ -1,6 +1,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class TxOut {
     // TODO check in general for final private in other places
@@ -61,7 +62,7 @@ public class TxOut {
             // buf is 32 bytes little endian, we need only the first 8
             bos.write(buf,0,8);
             var len = script_pubkey.length;
-            bos.write(Kit.encodeVarint(len));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(len)));
             bos.write(this.script_pubkey);
 
         } catch (IOException e) {

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 public class MessagePong extends Message {
 
-    private long nonce;
+    private final long nonce;
     final static String command = "pong";
 
     public MessagePong(long nonce ) {

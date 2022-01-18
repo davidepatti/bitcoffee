@@ -1,6 +1,7 @@
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Objects;
 
 public class TestP2SH {
     public static void main(String[] args) {
@@ -36,7 +37,7 @@ public class TestP2SH {
             // Start composing the serialization of the modified tx
 
             bos.write(Kit.intToLittleEndianBytes(tx.getVersion()),0,4);
-            bos.write(Kit.encodeVarint(tx.getTxIns().size()));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(tx.getTxIns().size())));
 
             // modify the single TxIn to have the ScriptSig to be the RedeemScript
             var i = tx.getTxIns().get(0);
@@ -44,7 +45,7 @@ public class TestP2SH {
             //System.out.println(txin);
             bos.write(txin.getSerialized());
 
-            bos.write(Kit.encodeVarint(tx.getTxOuts().size()));
+            bos.write(Objects.requireNonNull(Kit.encodeVarint(tx.getTxOuts().size())));
 
             for (TxOut txout: tx.getTxOuts()) {
                 bos.write(txout.getSerialized());

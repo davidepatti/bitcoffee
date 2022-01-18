@@ -129,8 +129,7 @@ public class NetworkEnvelope {
 
             bos.write(Kit.intToLittleEndianBytes(this.payload.length),0,4);
             bos.write(Kit.hash256(this.payload),0,4);
-            if (this.payload!=null)
-                bos.write(this.payload);
+            bos.write(this.payload);
 
             serial = bos.toByteArray();
 
