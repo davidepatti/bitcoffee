@@ -33,7 +33,7 @@ public class TestBloomFilter {
 
         for (String phrase:items) {
             for (int i=0;i<num_functions;i++) {
-                var c = new BigInteger(1,Kit.hexStringToByteArray(BloomFilter.BIP37_CONSTANT)).longValue();
+                var c = BloomFilter.BIP37_CONSTANT;
                 var seed = i*c+tweak;
                 var data = Kit.asciiStringToBytes(phrase);
                 var h = Murmur3.hash_x86_32(data,data.length,seed);
@@ -53,6 +53,33 @@ public class TestBloomFilter {
 
         bloom.add("Goodbye!");
         Test.check("filterload()","",Kit.bytesToHexString(bloom.filterLoad().serialize()),"0a4000600a080000010940050000006300000001");
+
+
+        var hex_msg = "020300000030eb2540c41025690160a1014c577061596e32e426b712c7ca00000000000000030000001049847939585b0652fba793661c361223446b6fc41089b8be00000000000000";
+        var getdata = new MessageGetData();
+
+        var block1 = "00000000000000cac712b726e4326e596170574c01a16001692510c44025eb30";
+        getdata.addData(MessageGetData.FILTERED_BLOCK_DATA_TYPE,block1);
+
+        var block2 = "00000000000000beb88910c46f6b442312361c6693a7fb52065b583979844910";
+        getdata.addData(MessageGetData.FILTERED_BLOCK_DATA_TYPE,block2);
+
+        Test.check("messagegetdata serialize","",hex_msg,Kit.bytesToHexString(getdata.serialize()));
+
+        //////////////////////////////////////////////////////////////////////////////////////////////
+
+        var last_block_hex = "00000000000538d5c2246336644f9a4956551afb44ba47278759ec55ea912e19";
+        var address = "mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv";
+        var h160 = Kit.decodeBase58(address);
+
+        var node = new SimpleNode("testnet.programmingbitcoin.com",true);
+        var bf = new BloomFilter(30,5,90210);
+        bf.add(Kit.bytesToHexString(h160));
+
+
+
+
+
 
 
     }

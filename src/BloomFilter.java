@@ -4,7 +4,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class BloomFilter {
-    final static String BIP37_CONSTANT = "fba4c795";
+    final static String BIP37_CONSTANT_STRING = "fba4c795";
+    public final static long BIP37_CONSTANT = new BigInteger(1,Kit.hexStringToByteArray(BIP37_CONSTANT_STRING)).longValue();
 
     private final int size;
     private final int function_count;
@@ -24,12 +25,15 @@ public class BloomFilter {
     }
 
     public void add(String item) {
-        var c = new BigInteger(1,Kit.hexStringToByteArray(BloomFilter.BIP37_CONSTANT)).longValue();
-        var data = Kit.asciiStringToBytes(item);
+        var item_bytes = Kit.asciiStringToBytes(item);
+        this.add(item_bytes);
+    }
+
+    public void add(byte[] item) {
 
         for (int i=0;i<function_count;i++) {
-            long seed = i*c+tweak;
-            var h = Murmur3.hash_x86_32(data,data.length,seed);
+            long seed = i*BIP37_CONSTANT+tweak;
+            var h = Murmur3.hash_x86_32(item,item.length,seed);
             int bit = h.mod(BigInteger.valueOf(this.size*8)).intValue();
             bit_field.set(bit,true);
         }
