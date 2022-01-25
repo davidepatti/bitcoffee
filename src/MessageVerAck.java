@@ -1,11 +1,11 @@
 
 public class MessageVerAck extends Message {
 
-    final static String command = "verack";
-
+    public static final String COMMAND = "verack";
 
     public MessageVerAck() {
 
+        command = COMMAND;
     }
     // short constructor for testing purposes
 
@@ -18,18 +18,10 @@ public class MessageVerAck extends Message {
         return new byte[0];
     }
 
-    @Override
-    public Message parse(byte[] bytes) {
-        return null;
-    }
 
     @Override
     public String toString() {
         return "VersionMessage{" + '}';
     }
 
-    @Override
-    public String getCommand() {
-        return command;
-    }
 }

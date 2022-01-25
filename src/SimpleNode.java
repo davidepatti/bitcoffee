@@ -84,7 +84,7 @@ public class SimpleNode {
     public void Handshake() {
         var message = new MessageVersion();
         this.send(message);
-        this.waitFor(MessageVerAck.command);
+        this.waitFor(MessageVerAck.COMMAND);
     }
 
     public Message waitFor(String command) {

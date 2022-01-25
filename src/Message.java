@@ -1,9 +1,25 @@
-public abstract class Message {
+public class Message {
 
-    public abstract String getCommand();
+    protected String command;
+    protected byte[] payload;
 
-    public abstract byte[] serialize();
-    public abstract Message parse(byte[] bytes);
-    @Override
-    public abstract String toString();
+    public String getCommand() {
+        return command;
+    }
+
+    public byte[] serialize() {
+        return payload;
+    }
+    public Message parse(byte[] bytes) {
+        return new Message("UNSET_COMMAND",bytes);
+    }
+
+    public Message(String command, byte[] payload) {
+        this.command = command;
+        this.payload = payload;
+    }
+
+    public Message() {
+
+    }
 }

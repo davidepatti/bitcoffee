@@ -5,18 +5,22 @@ import java.util.ArrayList;
 public class MessageHeaders extends Message {
 
     private ArrayList<Block> blocks;
+    public static final String COMMAND = "headers";
 
-    final static String command = "headers";
 
     public MessageHeaders(ArrayList<Block> blocks){
+
+        this.command = COMMAND;
         this.blocks = blocks;
     }
+
 
     public ArrayList<Block> getBlocks() {
         return blocks;
     }
 
     public MessageHeaders(byte[] bytes) {
+        this.command = COMMAND;
         var bis = new ByteArrayInputStream(bytes);
 
         var num_headers = Kit.readVarint(bis);
@@ -51,11 +55,6 @@ public class MessageHeaders extends Message {
     @Override
     public String getCommand() {
         return command;
-    }
-
-    @Override
-    public byte[] serialize() {
-        return new byte[0];
     }
 
     @Override

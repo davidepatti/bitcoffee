@@ -400,6 +400,60 @@ public class Kit {
         return Kit.bytesToHexString(Kit.reverseBytes(bytes));
     }
 
+    static ArrayList<Boolean> bytesToBitField(byte[] some_bytes) {
+       var flag_bits = new ArrayList<Boolean>();
+
+       // notice: it's not a simple byte->binary conversion
+
+        // bytes:
+        // 10000010 11000001
+
+        // bitfield
+        // 01000001 10000011
+       for (byte b: some_bytes) {
+           for (int i=0;i<8;i++) {
+               flag_bits.add((b & 1) == 1);
+               b>>=1;
+           }
+       }
+
+       return flag_bits;
+   }
+    public static byte[] bitFieldToBytes(ArrayList<Boolean> bitfield) {
+        if (bitfield.size()%8!=0) {
+            throw new RuntimeException("Not multiple of 8");
+        }
+
+        var bytes = new byte[bitfield.size()/8];
+
+        for (int b=0;b<bytes.length;b++) {
+            for (int i=0;i<8;i++) {
+                if (bitfield.get(b*8+i)) {
+                    bytes[b] += (1<<i);
+                }
+            }
+        }
+
+        return bytes;
+    }
+
+    public static ArrayList<Boolean> bytesToBitField(String some_bytes) {
+       return bytesToBitField(hexStringToByteArray(some_bytes));
+   }
+
+    public static ArrayList<Boolean> bitStringToBitField(String some_bits) {
+
+       var bits = new ArrayList<Boolean>();
+
+       for (int i=0;i<some_bits.length();i++) {
+           if (some_bits.charAt(i)=='1')
+               bits.add(true);
+           else
+               bits.add(false);
+       }
+       return bits;
+   }
+
 }
 
 

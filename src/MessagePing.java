@@ -5,9 +5,10 @@ import java.math.BigInteger;
 public class MessagePing extends Message {
 
     private final long nonce;
-    final static String command = "ping";
+    public static final String COMMAND = "ping";
 
     public MessagePing(long nonce ) {
+        command = COMMAND;
         this.nonce = nonce;
     }
 

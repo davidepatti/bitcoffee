@@ -7,13 +7,15 @@ public class MessageGetHeaders extends Message {
     final private String start_header;
     final private String end_header;
     final int n_hashes;
-    final static String command = "getheaders";
+    public static final String COMMAND = "getheaders";
+
 
     public MessageGetHeaders(String start_block){
         this.version = 70015;
         this.n_hashes = 1;
         this.start_header = start_block;
         this.end_header = "0000000000000000000000000000000000000000000000000000000000000000";
+        this.command = COMMAND;
     }
 
 
@@ -22,6 +24,7 @@ public class MessageGetHeaders extends Message {
         this.n_hashes = n_hashes;
         this.start_header = start_header;
         this.end_header = end_block;
+        this.command = COMMAND;
     }
 
     @Override
@@ -50,11 +53,6 @@ public class MessageGetHeaders extends Message {
                 ", end_header='" + end_header + '\'' +
                 ", n_hashes=" + n_hashes +
                 '}';
-    }
-
-    @Override
-    public Message parse(byte[] bytes) {
-        return null;
     }
 
     @Override

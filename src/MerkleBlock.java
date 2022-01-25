@@ -80,7 +80,7 @@ public class MerkleBlock {
             rev_hash_list.add(Kit.reverseByteString(h));
 
         var mt = new MerkleTree(this.total_txs);
-        var flag_bits = bytesToBitField(this.flags);
+        var flag_bits = Kit.bytesToBitField(this.flags);
         mt.populateTree(flag_bits,rev_hash_list);
 
         var computed_root = Kit.reverseByteString(mt.getRoot());
@@ -117,33 +117,4 @@ public class MerkleBlock {
 
     /////// static utilities
 
-     static ArrayList<Boolean> bytesToBitField(byte[] some_bytes) {
-        var flag_bits = new ArrayList<Boolean>();
-
-        // notice: it's not a simple byte->binary conversion
-        for (byte b: some_bytes) {
-            for (int i=0;i<8;i++) {
-                flag_bits.add((b & 1) == 1);
-                b>>=1;
-            }
-        }
-        return flag_bits;
-    }
-
-    public static ArrayList<Boolean> bytesToBitField(String some_bytes) {
-        return bytesToBitField(Kit.hexStringToByteArray(some_bytes));
-    }
-
-    public static ArrayList<Boolean> bitStringToBitField(String some_bits) {
-
-        var bits = new ArrayList<Boolean>();
-
-        for (int i=0;i<some_bits.length();i++) {
-            if (some_bits.charAt(i)=='1')
-                bits.add(true);
-            else
-                bits.add(false);
-        }
-        return bits;
-    }
 }

@@ -19,11 +19,13 @@ public class MessageVersion extends Message {
     final private byte[] user_agent;
     final private int latest_block;
     final private boolean relay;
-    final static String command = "version";
+
+    public static final String COMMAND = "version";
 
 
     public MessageVersion() {
 
+        command = COMMAND;
         var timestamp = Instant.now().getEpochSecond();
         var rand = new Random();
         var nonce = Kit.intToLittleEndianBytes(rand.nextLong());
@@ -47,6 +49,7 @@ public class MessageVersion extends Message {
     // short constructor for testing purposes
     public MessageVersion(long timestamp, byte[] nonce) {
 
+        command = COMMAND;
         this.version = 70015;
         this.services = 0;
         this.timestamp = timestamp;
@@ -63,6 +66,7 @@ public class MessageVersion extends Message {
     }
 
     public MessageVersion(int version, long services, long timestamp, long receiver_services, byte[] receiver_ip, int receiver_port, long sender_services, byte[] sender_ip, int sender_port, byte[] nonce, byte[] user_agent, int latest_block, boolean relay) {
+        command = COMMAND;
         this.version = version;
         this.services = services;
 
