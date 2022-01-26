@@ -315,7 +315,7 @@ public class Kit {
         return null;
     }
 
-    public static String h160ToP2pkh(byte[] h160, boolean testnet) {
+    public static String h160ToP2pkhAddress(byte[] h160, boolean testnet) {
         byte prefix;
 
         if (testnet) prefix = 0x6f;
@@ -329,7 +329,7 @@ public class Kit {
         return encodeBase58Checksum(res_bytes);
     }
 
-    public static String h160ToP2sh(byte[] h160, boolean testnet) {
+    public static String h160ToP2shAddress(byte[] h160, boolean testnet) {
         byte prefix;
 
         if (testnet) prefix = (byte)0xc4;

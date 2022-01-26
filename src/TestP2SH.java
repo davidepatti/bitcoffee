@@ -27,7 +27,7 @@ public class TestP2SH {
         try {
             // Please notice: we need to parse the script anyway, because in the TxIn constructor we must
             // provide only the bytes encoding the ops, without the length prefix added when serialized
-            var redeem_script = Script.parseSerialisation(serial_redeem_script);
+            var redeem_script = Script.parseSerial(serial_redeem_script);
             System.out.println("Using redeem script:");
             System.out.println(redeem_script);
 

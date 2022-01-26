@@ -102,7 +102,7 @@ public class TxIn {
 
     public byte[] getPreviousTxScriptPubKey(boolean testnet) {
         var tx = fetchTx(testnet);
-        return tx.getTxOuts().get((int)this.prev_index).getScriptPubkey();
+        return tx.getTxOuts().get((int)this.prev_index).getScriptPubkeyBytes();
     }
 
     public byte[] getScriptSig() {

@@ -126,6 +126,14 @@ public class SimpleNode {
                     break;
                 case "verack":
                     break;
+                case "merkleblock":
+                    var payload2 = env.getPayload();
+                    var mb = MerkleBlock.parseSerial(payload2);
+                    return mb;
+                case "tx":
+                    var txp = env.getPayload();
+                    var tx = Tx.parse(txp,this.testnet);
+                    return tx;
                 default:
                     System.out.println("UNMANAGED COMMAND: "+command);
             }

@@ -15,10 +15,9 @@ public class Script {
     }
     /*************************************************************************/
     public Script(byte[] commands_bytes) {
-
         Script script = null;
         try {
-            script =  parseSerialisation(Kit.addLenPrefix(commands_bytes));
+            script =  parseSerial(Kit.addLenPrefix(commands_bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,7 +29,7 @@ public class Script {
 
     }
     /*************************************************************************/
-    public static Script parseSerialisation(byte[] serial) throws IOException {
+    public static Script parseSerial(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
         var bis = new ByteArrayInputStream(serial);
         var hex = Kit.bytesToHexString(serial);
@@ -175,7 +174,7 @@ public class Script {
 
     /***************************************************************************/
     // Convert the 20 bytes hash in a ScriptPubKey
-    public static Script hash160ToP2pkh(byte[] h160) {
+    public static Script h160ToP2pkh(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmdType.OP_CHECKSIG));
         cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUALVERIFY));
@@ -186,7 +185,7 @@ public class Script {
         return new Script(cmds);
     }
     /*************************************************************************/
-    public static Script hash160ToP2psh(byte[] h160) {
+    public static Script h160ToP2psh(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUAL));
         cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
@@ -196,7 +195,7 @@ public class Script {
     }
     /*************************************************************************/
     // check for the pattern: OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG
-    public boolean isP2pkh() {
+    public boolean isP2pkhScriptPubKey() {
         return (this.commands.size()==5
                 && commands.elementAt(0).type == ScriptCmdType.OP_CHECKSIG
                 && commands.elementAt(1).type == ScriptCmdType.OP_EQUALVERIFY
@@ -208,13 +207,30 @@ public class Script {
 
     /*************************************************************************/
     // check for the pattern: OP_HASH160 <20 byte hash> OP_EQUAL
-    public boolean isP2sh() {
+    public boolean isP2shScriptPubKey() {
         return (this.commands.size()==3
                 && commands.elementAt(0).type == ScriptCmdType.OP_EQUAL
                 && commands.elementAt(1).type == ScriptCmdType.DATA
                 && commands.elementAt(1).value.length == 20
                 && commands.elementAt(2).type == ScriptCmdType.OP_HASH160);
     }
+
+    /*************************************************************************/
+    // Returns the address
+
+    public String getAddress(boolean testnet) {
+        if (this.isP2pkhScriptPubKey()) {
+            var h160 = commands.elementAt(2).value;
+            return Kit.h160ToP2pkhAddress(h160,testnet);
+        }
+        else if (this.isP2shScriptPubKey())
+        {
+            var h160= commands.elementAt(1).value;
+            return Kit.h160ToP2shAddress(h160,testnet);
+        }
+        throw new RuntimeException("Wrong invokation of getAddress on non-scriptpubkey");
+    }
+
 
 
     /*************************************************************************/
@@ -345,7 +361,7 @@ public class Script {
                     try {
                         bos.write(Objects.requireNonNull(Kit.encodeVarint(cmd.value.length)));
                         bos.write(cmd.value);
-                        var redeem_script = Script.parseSerialisation(bos.toByteArray());
+                        var redeem_script = Script.parseSerial(bos.toByteArray());
                         cmds.addAll(redeem_script.commands);
                     } catch (IOException e) {
                         e.printStackTrace();

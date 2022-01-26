@@ -18,26 +18,11 @@ public class TxOut {
     @Override
     public String toString() {
         String res="INVALID";
+        var script = new Script(script_pubkey);
         String script_str = Kit.bytesToHexString(script_pubkey);
-        try {
-            res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+Script.parseSerialisation(Kit.addLenPrefix(script_pubkey))+"]";
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        res= "\nTxOut{" + "amount=" + amount + ", script_pubkey=" + script_str + "}["+script+"]";
         return res;
     }
-
-    public String printScript() {
-        try {
-            var script = Script.parseSerialisation(Kit.addLenPrefix(this.script_pubkey));
-            return script.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "Error printing script";
-    }
-
-
 
     public static TxOut parse(ByteArrayInputStream bis) {
         TxOut txout = null;
@@ -80,7 +65,11 @@ public class TxOut {
         return amount;
     }
 
-    public byte[] getScriptPubkey() {
+    public byte[] getScriptPubkeyBytes() {
         return script_pubkey;
+    }
+
+    public Script getScriptPubKey() {
+        return new Script(this.script_pubkey);
     }
 }

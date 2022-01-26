@@ -77,31 +77,21 @@ public class Tx implements Message {
         var prev_script_pubkey = tx_in.getPreviousTxScriptPubKey(this.isTestnet());
         byte[] redeem_script = null;
 
-        try {
-            var script_pubkey = Script.parseSerialisation(Kit.addLenPrefix(prev_script_pubkey));
-            if (script_pubkey.isP2sh()) {
-                // the commands of the redeem script are encoded as data at the bottom of the scriptsig
-                var script_sig = Script.parseSerialisation(Kit.addLenPrefix(tx_in.getScriptSig()));
-                var cmd = script_sig.commands.elementAt(0);
+        var script_pubkey = new Script(prev_script_pubkey);
+        if (script_pubkey.isP2shScriptPubKey()) {
+            // the commands of the redeem script are encoded as data at the bottom of the scriptsig
+            var script_sig = new Script(tx_in.getScriptSig());
+            var cmd = script_sig.commands.elementAt(0);
 
-                redeem_script = cmd.value;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            redeem_script = cmd.value;
         }
 
         var z = this.getSigHash(input_index,redeem_script);
 
-        try {
-            var script_sig = Script.parseSerialisation(Kit.addLenPrefix(tx_in.getScriptSig()));
-            var script_combined = Script.parseSerialisation(Kit.addLenPrefix(prev_script_pubkey));
-            script_combined.addTop(script_sig);
-            eval = script_combined.evaluate(z);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        var script_sig = new Script(tx_in.getScriptSig());
+        var script_combined = new Script(prev_script_pubkey);
+        script_combined.addTop(script_sig);
+        eval = script_combined.evaluate(z);
 
         return eval;
     }
@@ -324,12 +314,8 @@ public class Tx implements Message {
         if (!this.isCoinbase()) return -1;
         int height = -1;
 
-        try {
-            var scriptsig = Script.parseSerialisation(Kit.addLenPrefix(this.getTxIns().get(0).getScriptSig()));
-            height = Kit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        var scriptsig = new Script(this.getTxIns().get(0).getScriptSig());
+        height = Kit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
         return height;
     }
 }

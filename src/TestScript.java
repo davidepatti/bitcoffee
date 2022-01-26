@@ -41,15 +41,12 @@ public class TestScript {
         bos.write(0x54);
         bos.write(0);
         bos.write(79);
-        var simple = bos.toByteArray();
-        System.out.println("script serial hex: "+ Kit.bytesToHexString(simple));
+        var simple_serial = bos.toByteArray();
+        System.out.println("script serial hex: "+ Kit.bytesToHexString(simple_serial));
 
-        try {
-            Script script = Script.parseSerialisation(simple);
-            System.out.println(script);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // not using the constructor Script(), since the serial includes the length at the beginning
+        Script script = Script.parseSerial(simple_serial);
+        System.out.println(script);
         System.out.println("------------------------------------------------------");
 
         var test_hash160 = new Stack<ScriptCmd>();

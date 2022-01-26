@@ -120,22 +120,22 @@ public class S256Point extends FieldElementPoint{
 
     public String getP2pkhAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2pkh(h160,false);
+        return Kit.h160ToP2pkhAddress(h160,false);
     }
 
     public String getP2pkhTestnetAddress() {
         boolean compressed = true;
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2pkh(h160,true);
+        return Kit.h160ToP2pkhAddress(h160,true);
     }
 
     public String getP2shAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2sh(h160,false);
+        return Kit.h160ToP2shAddress(h160,false);
     }
     public String getP2shTestnetAddress(boolean compressed) {
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2sh(h160,true);
+        return Kit.h160ToP2shAddress(h160,true);
     }
 
 }
