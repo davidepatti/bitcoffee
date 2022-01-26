@@ -1,8 +1,7 @@
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
-public class MessageHeaders extends Message {
+public class MessageHeaders implements Message {
 
     private ArrayList<Block> blocks;
     public static final String COMMAND = "headers";
@@ -10,17 +9,25 @@ public class MessageHeaders extends Message {
 
     public MessageHeaders(ArrayList<Block> blocks){
 
-        this.command = COMMAND;
         this.blocks = blocks;
     }
 
+    @Override
+    public String getCommand() {
+        return MessageHeaders.COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        new RuntimeException("Not implemented");
+        return null;
+    }
 
     public ArrayList<Block> getBlocks() {
         return blocks;
     }
 
     public MessageHeaders(byte[] bytes) {
-        this.command = COMMAND;
         var bis = new ByteArrayInputStream(bytes);
 
         var num_headers = Kit.readVarint(bis);
@@ -52,14 +59,8 @@ public class MessageHeaders extends Message {
         return null;
     }
 
-    @Override
-    public String getCommand() {
-        return command;
-    }
 
-    @Override
-    public Message parse(byte[] bytes) {
-
+    public static MessageHeaders parse(byte[] bytes) {
         return new MessageHeaders(bytes);
     }
 }

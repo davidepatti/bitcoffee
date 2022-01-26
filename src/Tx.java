@@ -7,13 +7,14 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /*****************************************************************/
-public class Tx {
+public class Tx implements Message {
     private final int version;
     private final ArrayList<TxIn> tx_ins;
     private final ArrayList<TxOut> tx_outs;
     private long locktime;
     private final boolean testnet;
-    private byte [] serialized;
+
+    public final static String COMMAND = "tx";
 
     /*****************************************************************/
     public Tx(int version, ArrayList<TxIn> tx_ins, ArrayList<TxOut> tx_outs, long locktime, boolean testnet) {
@@ -22,13 +23,11 @@ public class Tx {
         this.tx_outs = tx_outs;
         this.locktime = locktime;
         this.testnet = testnet;
-        this.serialized = serialize();
     }
 
     /*****************************************************************/
     public void updateLockTime(long locktime) {
         this.locktime = locktime;
-        this.serialized = serialize();
     }
 
     /*****************************************************************/
@@ -44,10 +43,19 @@ public class Tx {
 
     /*****************************************************************/
     public byte[] hash() {
-        return Kit.hash256(this.serialized);
+        return Kit.hash256(this.serialize());
     }
 
 
+    @Override
+    public String getCommand() {
+        return Tx.COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        return this.serialize();
+    }
 
     /*****************************************************************/
     public boolean verify() {
@@ -242,7 +250,7 @@ public class Tx {
 
     /*****************************************************************/
     public String getSerialString() {
-        return Kit.bytesToHexString(this.serialized);
+        return Kit.bytesToHexString(this.serialize());
     }
 
     /*****************************************************************/

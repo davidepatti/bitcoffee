@@ -2,7 +2,37 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MessageGetData extends Message {
+public class MessageGetData implements Message {
+
+    public final static String COMMAND = "getdata";
+    public static final int TX_DATA_TYPE = 1;
+    public static final int BLOCK_DATA_TYPE = 2;
+    public static final int FILTERED_BLOCK_DATA_TYPE = 3;
+    public static final int COMPACT_BLOCK_DATA_TYPE = 4;
+
+    private ArrayList<DataEntry> data = new ArrayList<>();
+
+
+    public MessageGetData(String getdata, byte[] bytes) {
+    }
+
+    public MessageGetData() {
+    }
+
+    @Override
+    public String getCommand() {
+        return COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        return this.serialize();
+    }
+
+    public static MessageGetData parse(byte[] bytes) {
+        return new MessageGetData(COMMAND,bytes);
+
+    }
 
     private class DataEntry {
         final int type;
@@ -14,25 +44,12 @@ public class MessageGetData extends Message {
         }
     }
 
-    public static final String COMMAND = "getdata";
-
-    public static final int TX_DATA_TYPE = 1;
-    public static final int BLOCK_DATA_TYPE = 2;
-    public static final int FILTERED_BLOCK_DATA_TYPE = 3;
-    public static final int COMPACT_BLOCK_DATA_TYPE = 4;
-
-    private ArrayList<DataEntry> data = new ArrayList<>();
-
-
-    public MessageGetData() {
-        this.command= COMMAND;
-    }
 
     public void addData(int type, String identifier) {
        this.data.add(new DataEntry(type,identifier));
     }
 
-    public byte[] serialize() {
+    private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
         try {

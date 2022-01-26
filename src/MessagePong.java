@@ -2,23 +2,30 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 
-public class MessagePong extends Message {
+public class MessagePong implements Message {
 
     private final long nonce;
     public static final String COMMAND = "pong";
 
     public MessagePong(long nonce ) {
-        command = COMMAND;
         this.nonce = nonce;
     }
 
     @Override
-    public byte[] serialize() {
-        return BigInteger.valueOf(nonce).toByteArray();
+    public String getCommand() {
+        return MessagePong.COMMAND;
     }
 
     @Override
-    public Message parse(byte[] bytes) {
+    public byte[] getPayload() {
+        return this.serialize();
+    }
+
+    private byte[] serialize() {
+        return BigInteger.valueOf(nonce).toByteArray();
+    }
+
+    public static MessagePong parse(byte[] bytes) {
         var bis = new ByteArrayInputStream(bytes);
 
         try {
@@ -37,8 +44,4 @@ public class MessagePong extends Message {
         return null;
     }
 
-    @Override
-    public String getCommand() {
-        return command;
-    }
 }

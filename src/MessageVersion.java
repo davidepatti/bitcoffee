@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
-public class MessageVersion extends Message {
+public class MessageVersion implements Message {
     final private int version;
     final private long services;
     final private long timestamp;
@@ -23,9 +23,18 @@ public class MessageVersion extends Message {
     public static final String COMMAND = "version";
 
 
+    @Override
+    public String getCommand() {
+        return MessageVersion.COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        return this.serialize();
+    }
+
     public MessageVersion() {
 
-        command = COMMAND;
         var timestamp = Instant.now().getEpochSecond();
         var rand = new Random();
         var nonce = Kit.intToLittleEndianBytes(rand.nextLong());
@@ -49,7 +58,6 @@ public class MessageVersion extends Message {
     // short constructor for testing purposes
     public MessageVersion(long timestamp, byte[] nonce) {
 
-        command = COMMAND;
         this.version = 70015;
         this.services = 0;
         this.timestamp = timestamp;
@@ -66,7 +74,6 @@ public class MessageVersion extends Message {
     }
 
     public MessageVersion(int version, long services, long timestamp, long receiver_services, byte[] receiver_ip, int receiver_port, long sender_services, byte[] sender_ip, int sender_port, byte[] nonce, byte[] user_agent, int latest_block, boolean relay) {
-        command = COMMAND;
         this.version = version;
         this.services = services;
 
@@ -87,8 +94,7 @@ public class MessageVersion extends Message {
         this.relay = relay;
     }
 
-    @Override
-    public byte[] serialize() {
+    private byte[] serialize() {
         var bos = new ByteArrayOutputStream();
 
         try {
@@ -153,13 +159,4 @@ public class MessageVersion extends Message {
                 '}';
     }
 
-    @Override
-    public Message parse(byte[] bytes) {
-        return null;
-    }
-
-    @Override
-    public String getCommand() {
-        return command;
-    }
 }

@@ -50,7 +50,7 @@ public class SimpleNode {
     }
 
     public void send(Message message) {
-        var envelope = new NetworkEnvelope(message.getCommand(), message.serialize(), this.testnet);
+        var envelope = new NetworkEnvelope(message.getCommand(), message.getPayload(), this.testnet);
 
         //if (logging)
         try {

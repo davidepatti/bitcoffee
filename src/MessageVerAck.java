@@ -1,12 +1,22 @@
 
-public class MessageVerAck extends Message {
+public class MessageVerAck implements Message {
 
     public static final String COMMAND = "verack";
 
     public MessageVerAck() {
 
-        command = COMMAND;
     }
+
+    @Override
+    public String getCommand() {
+        return MessageVerAck.COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        return this.serialize();
+    }
+
     // short constructor for testing purposes
 
     public static MessageVerAck parse(MessageVerAck va) {

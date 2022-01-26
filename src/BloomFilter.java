@@ -51,7 +51,7 @@ public class BloomFilter {
             e.printStackTrace();
         }
 
-        return new Message("filterload",bos.toByteArray());
+        return new MessageGeneric("filterload",bos.toByteArray());
 
     }
 

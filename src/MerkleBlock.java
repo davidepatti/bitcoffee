@@ -2,7 +2,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MerkleBlock {
+public class MerkleBlock implements Message {
 
     final private int version;
     final private String prev_block;
@@ -17,6 +17,19 @@ public class MerkleBlock {
     final static String GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4a29ab5f49ffff001d1dac2b7c";
     final static String TESTNET_GENESIS_BLOCK = "0100000000000000000000000000000000000000000000000000000000000000000000003ba3edfd7a7b12b27ac72c3e67768f617fc81bc3888a51323a9fb8aa4b1e5e4adae5494dffff001d1aa4ae18";
     final static String LOWEST_BITS = "ffff001d";
+
+    public final static String COMMAND = "merkleblock";
+
+    @Override
+    public String getCommand() {
+        return MerkleBlock.COMMAND;
+    }
+
+    @Override
+    public byte[] getPayload() {
+        throw new RuntimeException("Not implemented");
+    }
+
 
     public MerkleBlock(int version, String prev_block, String merkle_root, int timestamp, String bits, String nonce,
                        int total_txs, ArrayList<String> tx_hashes, String flag_bits) {
