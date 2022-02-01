@@ -31,10 +31,7 @@ public class MessageHeaders implements Message {
         var bis = new ByteArrayInputStream(bytes);
 
         var num_headers = Kit.readVarint(bis);
-        System.out.println("********************************************************");
-        System.out.println("Parsing MessageHeader, size: "+bytes.length);
-        System.out.println("Num Headers:"+num_headers);
-        System.out.println("********************************************************");
+        System.out.println("-> Parsing MessageHeader, size: "+bytes.length+" num Headers:"+num_headers);
 
         ArrayList<Block> blocks = new ArrayList<>();
 
@@ -51,7 +48,6 @@ public class MessageHeaders implements Message {
             }
         }
         this.blocks = blocks;
-        System.out.println("********************************************************");
     }
 
     @Override

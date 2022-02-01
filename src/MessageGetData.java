@@ -42,6 +42,14 @@ public class MessageGetData implements Message {
             this.type = type;
             this.identifier = identifier;
         }
+
+        @Override
+        public String toString() {
+            return "DataEntry{" +
+                    "type=" + type +
+                    ", identifier='" + identifier + '\'' +
+                    '}';
+        }
     }
 
 
@@ -63,6 +71,11 @@ public class MessageGetData implements Message {
         }
 
         return bos.toByteArray();
+    }
+
+    @Override
+    public String toString() {
+        return "MessageGetData{" + "data size =" + data.size() + '}';
     }
 }
 

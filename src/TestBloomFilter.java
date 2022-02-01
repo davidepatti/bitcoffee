@@ -1,5 +1,7 @@
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TestBloomFilter {
 
@@ -52,7 +54,7 @@ public class TestBloomFilter {
         Test.check("bloomfilter add()","","0000000a080000000140",""+bloom.getBitField());
 
         bloom.add("Goodbye!");
-        Test.check("filterload()","",Kit.bytesToHexString(bloom.filterLoad().serialize()),"0a4000600a080000010940050000006300000001");
+        Test.check("filterload()","",Kit.bytesToHexString(bloom.filterLoad().getPayload()),"0a4000600a080000010940050000006300000001");
 
 
         var hex_msg = "020300000030eb2540c41025690160a1014c577061596e32e426b712c7ca00000000000000030000001049847939585b0652fba793661c361223446b6fc41089b8be00000000000000";
@@ -64,7 +66,7 @@ public class TestBloomFilter {
         var block2 = "00000000000000beb88910c46f6b442312361c6693a7fb52065b583979844910";
         getdata.addData(MessageGetData.FILTERED_BLOCK_DATA_TYPE,block2);
 
-        Test.check("messagegetdata serialize","",hex_msg,Kit.bytesToHexString(getdata.serialize()));
+        Test.check("messagegetdata serialize","",hex_msg,Kit.bytesToHexString(getdata.getPayload()));
 
         //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,13 +76,55 @@ public class TestBloomFilter {
 
         var node = new SimpleNode("testnet.programmingbitcoin.com",true);
         var bf = new BloomFilter(30,5,90210);
-        bf.add(Kit.bytesToHexString(h160));
+        // add the address above to the filter
+        bf.add(h160);
 
+        node.Handshake();
+        node.send(bf.filterLoad());
 
+        // ask for the block headers starting from the last block specified
+        var getheaders_msg = new MessageGetHeaders(last_block_hex);
+        node.send(getheaders_msg);
 
+        var headers_msg = (MessageHeaders)node.waitFor(MessageHeaders.COMMAND);
+        var getdata_msg = new MessageGetData();
 
+        for (Block b: headers_msg.getBlocks()) {
+            if (!b.checkPoW()) {
+                throw new RuntimeException("Not valid PoW");
+            }
+            getdata_msg.addData(MessageGetData.FILTERED_BLOCK_DATA_TYPE,b.getHashHexString());
+        }
 
+        node.send(getdata_msg);
 
+        boolean found = false;
 
+        var msg_to_wait = new HashSet<String>();
+        msg_to_wait.add(MerkleBlock.COMMAND);
+        msg_to_wait.add(Tx.COMMAND);
+
+        while (!found) {
+
+            var msg = node.waitFor(msg_to_wait);
+
+            if (msg.getCommand().equals("merkleblock")) {
+
+                if (!((MerkleBlock) msg).isValid())
+                    throw new RuntimeException("Not valid Merkle proof");
+                else System.out.println("Received valid Merkle block");
+            }
+
+            else {
+                var receveived_tx = (Tx)msg;
+                for (TxOut tout: receveived_tx.getTxOuts()) {
+                    if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                        System.out.println("Found address "+address+" in tx id: "+receveived_tx.getId());
+                        found = true;
+                    }
+
+                }
+            }
+        } // while
     }
 }

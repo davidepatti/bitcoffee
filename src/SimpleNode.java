@@ -38,7 +38,7 @@ public class SimpleNode {
 
     private void initConnection() {
         try {
-            System.out.println("Simple node, starting connecton to "+host);
+            System.out.println("<> Starting connection to host: "+host);
             Socket socket = new Socket(host, this.port);
             InputStream is = socket.getInputStream();
             os = socket.getOutputStream();
@@ -54,11 +54,9 @@ public class SimpleNode {
 
         //if (logging)
         try {
-            System.out.println("-----------------------------------------------------------");
-            System.out.println("SENDING message: "+message);
+            System.out.println(">> SENDING message: "+message);
             var bytes_to_send = envelope.serialize();
             //System.out.println("SENDING BYTES: "+Kit.bytesToHexString(bytes_to_send));
-            System.out.println("-----------------------------------------------------------");
             os.write(bytes_to_send);
             os.flush();
         } catch (IOException e) {
@@ -68,12 +66,8 @@ public class SimpleNode {
 
     public NetworkEnvelope read() {
         try {
-            System.out.println("------------------------------------------------------");
-            System.out.println("read(): waiting for data...");
-
             var envelope = NetworkEnvelope.parse(dis,this.testnet);
-            System.out.println("Read Envelope with Command :"+ Objects.requireNonNull(envelope).getCommand());
-            System.out.println("------------------------------------------------------");
+            System.out.println("<< RECEIVED Envelope with Command: "+ Objects.requireNonNull(envelope).getCommand());
             return envelope;
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,17 +91,17 @@ public class SimpleNode {
     public Message waitFor(Set<String> messageSet) {
 
         boolean matching_message = false;
-        System.out.println("Waiting for message(s): "+messageSet);
+        System.out.println("<> Waiting for message(s): "+messageSet);
 
         while (!matching_message) {
             var env = this.read();
             var command = env.getCommand();
 
             if (messageSet.contains(command)) {
-                System.out.println("Received Matching message: "+command);
+                System.out.println("<< Received matching message: "+command);
                 matching_message = true;
             }
-            else System.out.println("Received Not matching message: "+command);
+            else System.out.println("<< Received message: "+command);
 
             switch (command) {
                 case "version":
@@ -135,7 +129,7 @@ public class SimpleNode {
                     var tx = Tx.parse(txp,this.testnet);
                     return tx;
                 default:
-                    System.out.println("UNMANAGED COMMAND: "+command);
+                    System.out.println("- WARNING: unmanaged command "+command);
             }
         }
         return null;
