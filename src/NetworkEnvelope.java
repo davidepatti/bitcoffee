@@ -39,7 +39,7 @@ public class NetworkEnvelope {
             else
                 expected_magic = NETWORK_MAGIC;
             if (!Kit.bytesToHexString(magic).equals(expected_magic)) {
-                throw new IOException(" Wrong magic:"+Kit.bytesToHexString(magic));
+                throw new IOException(" Wrong magic:"+Kit.bytesToHexString(magic)+" Expected: "+expected_magic);
             }
 
             int count_end_zeros = 0;
@@ -65,47 +65,6 @@ public class NetworkEnvelope {
         }
         return null;
 
-    }
-
-    public static NetworkEnvelope parse(byte[] message_bytes,boolean testnet)  {
-        var bis = new ByteArrayInputStream(message_bytes);
-
-        var magic = new byte[4];
-        var command = new byte[12];
-
-        try {
-            magic = bis.readNBytes(4);
-            String expected_magic;
-
-            if (testnet) expected_magic = TESTNET_NETWORK_MAGIC;
-            else
-                expected_magic = NETWORK_MAGIC;
-            if (!Kit.bytesToHexString(magic).equals(expected_magic)) {
-                throw new IOException(" Wrong magic:"+Kit.bytesToHexString(magic));
-            }
-
-            int count_end_zeros = 0;
-            command = bis.readNBytes(12);
-            int i = 11;
-            while (command[i--]==0) count_end_zeros++;
-
-            if (count_end_zeros!=0)
-                command = Arrays.copyOfRange(command,0,12-count_end_zeros);
-
-            var payload_len = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
-            var checksum = bis.readNBytes(4);
-            var payload = bis.readNBytes(payload_len);
-            var calculated_checksum = Arrays.copyOfRange(Kit.hash256(payload),0,4);
-            if (!Arrays.equals(calculated_checksum,checksum)) {
-                System.out.println("ERROR: Wrong calculated CHECKSUM "+Kit.bytesToHexString(calculated_checksum)+" expected: "+Kit.bytesToHexString(checksum));
-                //throw new IOException("Wrong payload checksum");
-            }
-            return new NetworkEnvelope(Kit.bytesToAscii(command),payload,testnet);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     public byte[] serialize() {
