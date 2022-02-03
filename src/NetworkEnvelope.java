@@ -31,6 +31,13 @@ public class NetworkEnvelope {
         var magic = new byte[4];
         var command = new byte[12];
 
+        System.out.println("Parsing network envelope");
+        try {
+            if (bis.available()==0) return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         try {
             magic = bis.readNBytes(4);
             String expected_magic;
@@ -39,7 +46,12 @@ public class NetworkEnvelope {
             else
                 expected_magic = NETWORK_MAGIC;
             if (!Kit.bytesToHexString(magic).equals(expected_magic)) {
-                throw new IOException(" Wrong magic:"+Kit.bytesToHexString(magic)+" Expected: "+expected_magic);
+                System.out.println("WRONG MAGIC");
+                for (byte b: magic)  {
+                    System.out.println(b);
+                }
+                return null;
+                //throw new IOException(" Wrong magic:"+Kit.bytesToHexString(magic)+" Expected: "+expected_magic);
             }
 
             int count_end_zeros = 0;

@@ -41,7 +41,6 @@ public class MessagePong implements Message {
 
     @Override
     public String toString() {
-        return null;
+        return "MessagePong{" + "nonce=" + nonce + '}';
     }
-
 }

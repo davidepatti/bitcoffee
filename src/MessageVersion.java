@@ -151,8 +151,8 @@ public class MessageVersion implements Message {
                 ", sender_services=" + sender_services +
                 ", sender_ip=" + Arrays.toString(sender_ip) +
                 ", sender_port=" + sender_port +
-                ", nonce=" + Arrays.toString(nonce) +
-                ", user_agent=" + Arrays.toString(user_agent) +
+                ", nonce=" + Kit.bytesToHexString(nonce) +
+                ", user_agent=" + Kit.bytesToAscii(user_agent) +
                 ", latest_block=" + latest_block +
                 ", relay=" + relay +
                 '}';

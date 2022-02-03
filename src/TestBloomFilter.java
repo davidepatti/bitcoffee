@@ -70,13 +70,25 @@ public class TestBloomFilter {
 
         //////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+        // example for tesnet
         var last_block_hex = "00000000000538d5c2246336644f9a4956551afb44ba47278759ec55ea912e19";
         var address = "mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv";
+        var host = "testnet.programmingbitcoin.com";
+        var testnet = true;
+
+        // example for mainnet
+        //var last_block_hex = "0000000000000000000838497f627c016c2bb9097d6794c6aeac1a581bd26984";
+        //var address = "3Ffi6K7abWQsVMXUQuUNGviNAghXrY9Bni";
+        //var host = "mainnet.programmingbitcoin.com";
+        //var testnet = false;
+
+
         var h160 = Kit.decodeBase58(address);
 
-        var node = new SimpleNode("testnet.programmingbitcoin.com",true);
+        var node = new SimpleNode(host,testnet);
         var bf = new BloomFilter(30,5,90210);
-        // add the address above to the filter
         bf.add(h160);
 
         node.Handshake();

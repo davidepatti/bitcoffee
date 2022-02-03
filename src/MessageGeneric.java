@@ -1,11 +1,13 @@
+import java.util.Arrays;
+
 public class MessageGeneric implements Message {
 
     private byte[] payload;
-    public static String COMMAND;
+    private String COMMAND;
 
 
     public String getCommand() {
-        return MessageGeneric.COMMAND;
+        return COMMAND;
     }
 
     public byte[] getPayload() {
@@ -21,4 +23,8 @@ public class MessageGeneric implements Message {
         this.payload = payload;
     }
 
+    @Override
+    public String toString() {
+        return "MessageGeneric{" + "payload=" + Kit.bytesToHexString(payload) + ", COMMAND='" + COMMAND + '\'' + '}';
+    }
 }

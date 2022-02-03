@@ -318,19 +318,21 @@ public class bitcoffee {
 
             var msg = node.waitFor(msg_to_wait);
 
-            if (msg.getCommand().equals("merkleblock")) {
+            if (msg != null) {
 
-                if (!((MerkleBlock) msg).isValid())
-                    throw new RuntimeException("Not valid Merkle proof");
-                else System.out.println("Received valid Merkle block");
-            } else {
-                var receveived_tx = (Tx) msg;
-                for (TxOut tout : receveived_tx.getTxOuts()) {
-                    if (tout.getScriptPubKey().getAddress(true).equals(address)) {
-                        System.out.println("Found address " + address + " in tx id: " + receveived_tx.getId());
-                        found = true;
+                if (msg.getCommand().equals("merkleblock")) {
+
+                    if (!((MerkleBlock) msg).isValid())
+                        throw new RuntimeException("Not valid Merkle proof");
+                    else System.out.println("Received valid Merkle block");
+                } else {
+                    var receveived_tx = (Tx) msg;
+                    for (TxOut tout : receveived_tx.getTxOuts()) {
+                        if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                            System.out.println("Found address " + address + " in tx id: " + receveived_tx.getId());
+                            found = true;
+                        }
                     }
-
                 }
             }
         } // while
