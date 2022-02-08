@@ -1,6 +1,7 @@
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TxIn {
@@ -8,6 +9,8 @@ public class TxIn {
     private final long prev_index;
     private final byte[] script_sig;
     private final byte[] sequence;
+
+    private ArrayList<byte[]> witness_data;
 
     public TxIn(byte[] prev_tx_id, long prev_index, byte[] script_sig, byte[] sequence) {
         this.prev_tx_id = prev_tx_id;
@@ -21,6 +24,14 @@ public class TxIn {
         this.prev_index = prev_index;
         this.script_sig = script_sig;
         this.sequence = Kit.hexStringToByteArray("ffffffff");
+    }
+
+    public void setWitnessData(ArrayList<byte[]> witness_data) {
+        this.witness_data = witness_data;
+    }
+
+    public ArrayList<byte[]> getWitnessData() {
+        return witness_data;
     }
 
     @Override

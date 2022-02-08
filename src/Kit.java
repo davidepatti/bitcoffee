@@ -286,7 +286,8 @@ public class Kit {
         var bos = new ByteArrayOutputStream();
         if (i<0xfd) {
             // single byte, not need to reorder little endian
-            return BigInteger.valueOf(i).toByteArray();
+            //return BigInteger.valueOf(i).toByteArray();
+            return new byte[] {(byte)i};
         }
         else if (i<0x10000) {
             buffer = intToLittleEndianBytes(i);

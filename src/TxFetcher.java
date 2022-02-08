@@ -22,6 +22,7 @@ public class TxFetcher {
 
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
         Tx tx;
+        String computed_id;
 
         try {
             if (fresh || !(cache.containsKey(tx_id))) {
@@ -40,26 +41,27 @@ public class TxFetcher {
                 var content_string = content.toString();
 
                 byte[] raw = Kit.hexStringToByteArray(content_string);
-                // check if bytes 4,5 are 00 01 for segwit
-                if (raw[4] == 0) {
-                    System.out.println("Warning SEGWIT detected, removing flag 00 01 (bytes 4 and 5)");
-                    System.out.println("Original raw content:" + content_string);
-                    var bos = new ByteArrayOutputStream();
-                    bos.write(raw, 0, 4);
-                    bos.write(raw, 6, raw.length - 6);
-                    raw = bos.toByteArray();
-                    tx = Tx.parse(raw, testnet);
-                    byte[] lock_bytes = Arrays.copyOfRange(raw, raw.length - 4, raw.length);
-                    tx.updateLockTime(Kit.litteEndianBytesToInt(lock_bytes).longValue());
-                } else
-                    tx = Tx.parse(raw, testnet);
+                tx = Tx.parse(raw, testnet);
+
+                ///if (tx.isSegwit())
+                computed_id = tx.getId();
+
 
                 var serial = tx.getSerialString();
                 //System.out.println("DEBUG: fetched raw tx: " + serial);
 
-
-                // TODO: re-enable when properly dealing with witness data
-                cache.put(tx_id,tx);
+                // TODO: should be a warning when computation is confirmed correct
+                if (!computed_id.equals(tx_id)) {
+                    System.out.println("FATAL");
+                    System.out.println("computed tx id:"+computed_id);
+                    System.out.println("requested tx id:"+tx_id);
+                    throw new RuntimeException("Mismatching serials");
+                }
+                else{
+                    System.out.println("Ok, tx id matches requested id!");
+                    // TODO: re-enable when properly dealing with witness data
+                    cache.put(computed_id,tx);
+                }
             }
 
         } catch (IOException e) {

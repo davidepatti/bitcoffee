@@ -194,6 +194,14 @@ public class Script {
         return new Script(cmds);
     }
     /*************************************************************************/
+    public static Script h160ToP2wpkh(byte[] h160) {
+        var cmds = new Stack<ScriptCmd>();
+        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmdType.OP_0));
+
+        return new Script(cmds);
+    }
+    /*************************************************************************/
     // check for the pattern: OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG
     public boolean isP2pkhScriptPubKey() {
         return (this.commands.size()==5
@@ -213,6 +221,14 @@ public class Script {
                 && commands.elementAt(1).type == ScriptCmdType.DATA
                 && commands.elementAt(1).value.length == 20
                 && commands.elementAt(2).type == ScriptCmdType.OP_HASH160);
+    }
+    /*************************************************************************/
+    // check for the pattern: OP_0 <20 byte hash>
+    public boolean isP2wpkhScriptPubKey() {
+        return (this.commands.size()==2
+                && commands.elementAt(0).type == ScriptCmdType.DATA
+                && commands.elementAt(0).value.length == 20
+                && commands.elementAt(1).type == ScriptCmdType.OP_0);
     }
 
     /*************************************************************************/
@@ -313,11 +329,14 @@ public class Script {
     }
 
 
+    public boolean evaluate(byte[] z) {
+        return this.evaluate(z,null);
+    }
 
     /*************************************************************************/
-    public boolean evaluate(byte[] z) {
+    public boolean evaluate(byte[] z, ArrayList<byte[]> witness) {
         var cmds = new Stack<ScriptCmd>();
-        cmds.addAll(this.commands); // make a copy
+        cmds.addAll(this.commands); // make a copy for adding redeem script if required
 
         var stack = new Stack<byte[]>();
         var altstack = new Stack<byte[]>();
@@ -325,7 +344,6 @@ public class Script {
         System.out.println("*********************************************************************");
         System.out.println("SCRIPT-> Starting evalutation of script:");
         System.out.println(this);
-
 
         while (cmds.size()>0) {
             var cmd = cmds.pop();
@@ -335,8 +353,8 @@ public class Script {
             if (cmd.type== ScriptCmdType.DATA) {
                 stack.push(cmd.value);
 
-                //detect p2sh pattern
-
+                //detect p2sh pattern ////////////////////////////////////////////
+                // OP_HASH160 <20bytes hash> OP_EQUAL
                 if (cmds.size()==3
                         && cmds.elementAt(0).type==ScriptCmdType.OP_EQUAL
                         && cmds.elementAt(1).type==ScriptCmdType.DATA
@@ -355,8 +373,6 @@ public class Script {
                         return false;
                     }
 
-
-
                     var bos = new ByteArrayOutputStream();
                     try {
                         bos.write(Objects.requireNonNull(Kit.encodeVarint(cmd.value.length)));
@@ -366,9 +382,24 @@ public class Script {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                } // end p2sh /////////////////////////////////////////////////
 
+                // p2wpks
+                // nodes supporting segwit will detect this condition in the stack, as a consequence
+                // of the execution of this particular script:
+                // OP_0 <20bytes hash>
+                // Please notice that OP_0 places an empty element in the stack, NOT a byte 0
+                if (stack.size()==2 && stack.elementAt(1)==null && stack.elementAt(0).length==20) {
 
+                    stack.pop(); // the empty byte[]
+                    var h160 = stack.pop();
 
+                    var script = Script.h160ToP2pkh(h160);
+                    cmds.addAll(script.commands);
+                    for (byte[] item: witness) {
+                        if (item.length>0)
+                            cmds.add(new ScriptCmd(ScriptCmdType.DATA,item));
+                    }
                 }
 
             }

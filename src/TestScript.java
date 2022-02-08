@@ -57,6 +57,7 @@ public class TestScript {
         System.out.println("------------------------------------------------------");
         System.out.println(">> Testing hash160 on "+ Kit.bytesToHexString(hello));
         // when debugging, check that stack remains with DATA d7d5ee7824ff93f94c3055af9382c86c68b5ca92
+
         System.out.println(test_script.evaluate(null));
         System.out.println("------------------------------------------------------");
         System.out.println("Testing script p2pk");
