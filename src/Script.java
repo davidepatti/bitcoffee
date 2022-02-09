@@ -813,13 +813,10 @@ public class Script {
     @Override
     public String toString() {
         StringBuilder out = new StringBuilder("Script Stack:");
-        out.append("\n-----------------------------------------");
 
         for (int i=this.commands.size()-1; i>-1; i--) {
             out.append(this.commands.get(i));
         }
-        out.append("\n-----------------------------------------\n");
-
         return out.toString();
 
     }

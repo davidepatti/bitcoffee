@@ -26,7 +26,8 @@ public class ScriptCmd {
     @Override
     public String toString() {
         //return "\n{" + Hex.toHexString(value) + ", " + type + "}";
-        return "\n{" + Kit.bytesToHexString(value) + ", " + type + "}";
+        if (type==ScriptCmdType.DATA) return "\n{"+Kit.bytesToHexString(value)+"}";
+        else return "\n{"+type+"}";
     }
 
     @Override

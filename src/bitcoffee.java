@@ -3,7 +3,7 @@ import java.util.*;
 
 public class bitcoffee {
 
-    private static String[] CMDS = { "help","sign","parseblock","getp2pkaddr","difficulty","createtx","checktx","verify","gettx"};
+    private static String[] CMDS = { "help","sign","parseblock","getp2pkaddr","difficulty","createtx","checktx","verify","gettx","fetchtx"};
     public static final String VERSION = "v0.1";
 
     public static void main(String[] args) {
@@ -74,6 +74,18 @@ public class bitcoffee {
                     System.exit(-1);
                 }
                 cmd_gettx(args[1], args[2], args[3], args[4].equals("testnet"));
+                break;
+            case "fetchtx":
+                if (args.length != 2 && args.length!=3) {
+                    System.out.println("Wrong number of args:"+args.length);
+                    System.out.println("Usage: bitcoffee fetchtx <txid> <testnet>");
+                    System.exit(-1);
+                }
+
+                if (args.length==3)
+                    cmd_fetchtx(args[1], args[2].equals("testnet"));
+                else
+                    cmd_fetchtx(args[1],false);
                 break;
 
             case "help":
@@ -336,6 +348,18 @@ public class bitcoffee {
                 }
             }
         } // while
+    }
+
+    private static void cmd_fetchtx(String txid, boolean testnet) {
+        var tx = TxFetcher.fetch(txid,testnet,true);
+        System.out.println(tx);
+
+        System.out.println("--------------------------------------------");
+        System.out.println("Verifying transaction:");
+        System.out.println("--------------------------------------------");
+        if (tx.verify()) System.out.println("--> Transaction confirmed as valid");
+        else System.out.println("--> Transaction is NOT valid!");
+
     }
 }
 

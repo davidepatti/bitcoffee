@@ -534,13 +534,20 @@ public class Tx implements Message {
     /*****************************************************************/
     @Override
     public String toString() {
-        return "Tx (id:"+this.getId()+")"+
-                ",\n{ version='" + version + '\'' +
-                ",\n tx_ins=" + tx_ins +
-                ",\n tx_outs=" + tx_outs +
-                ",\n locktime=" + locktime +
-                ",\n testnet=" + testnet +
-                '}';
+        System.out.println("*******************************************************************");
+        String ret = "TX ID: "+this.getId()+ "\nversion: " + version;
+
+        ret+="\n-----------------------------------------------------";
+        for (TxIn txin: tx_ins)
+            ret += "\n"+txin;
+        ret+="\n-----------------------------------------------------";
+        for (TxOut txout: tx_outs)
+            ret += "\n"+txout;
+        ret+="\n-----------------------------------------------------";
+
+        ret+= "\nlocktime: " + locktime+ "\ntestnet: " + testnet;
+        System.out.println("*******************************************************************");
+        return ret;
     }
 
     /*****************************************************************/

@@ -40,7 +40,7 @@ public class TxIn {
         String script_sig_str = Kit.bytesToHexString(script_sig);
         String sequence = Kit.bytesToHexString(this.sequence);
 
-        return "\nTxIn{" + "prev_tx='" + prev_tx_str + '\'' + ", prev_index=" + prev_index + ", script_sig=" + script_sig_str + ", sequence=" + sequence + '}';
+        return "TxIn{" + "prev_tx: " + prev_tx_str + ", prev_index: " + prev_index + ", script_sig: " + script_sig_str + ", sequence: " + sequence + "}";
     }
 
 

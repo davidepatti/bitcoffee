@@ -7,6 +7,10 @@ public class TestSegwit {
         var tx = TxFetcher.fetch(tx_id,true,true);
         Test.check("p2wpk","tx id:"+tx_id,true,tx.verify());
 
+        tx_id = "c586389e5e4b3acb9d6c8be1c19ae8ab2795397633176f5a6442a261bbdefc3a";
+        tx = TxFetcher.fetch(tx_id,false,true);
+        Test.check("p2wpk (mainnet)","tx id:"+tx_id,true,tx.verify());
+
 
     }
 }
