@@ -3,7 +3,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -365,10 +364,10 @@ public class Script {
                     var h160 = cmds.pop(); // the hash value
                     cmds.pop(); // we already know it's op equal
 
-                    if (!this.OP_HASH160(stack)) return false;
+                    if (!Op.OP_HASH160(stack)) return false;
                     stack.push(h160.value);
-                    if (!this.OP_EQUAL(stack)) return false;
-                    if (!this.OP_VERIFY(stack)) {
+                    if (!Op.OP_EQUAL(stack)) return false;
+                    if (!Op.OP_VERIFY(stack)) {
                         System.out.println("******************* WARNING: bad p2sh h160");
                         return false;
                     }
@@ -416,10 +415,10 @@ public class Script {
                     // require signature (CHECKSIG etc..)
                     switch (cmd.type) {
                         case OP_CHECKSIG:
-                            this.OP_CHECKSIG(stack,z);
+                            Op.OP_CHECKSIG(stack,z);
                             break;
                         case OP_CHECKMULTISIG:
-                            this.OP_CHECKMULTISIG(stack,z);
+                            Op.OP_CHECKMULTISIG(stack,z);
                             break;
                         default:
                             assert false;
@@ -429,106 +428,106 @@ public class Script {
 
                     switch (cmd.type) {
                         case OP_0:
-                            this.OP_0(stack);
+                            Op.OP_0(stack);
                             break;
                         case OP_1:
-                            this.OP_1(stack);
+                            Op.OP_1(stack);
                             break;
                         case OP_2:
-                            this.OP_2(stack);
+                            Op.OP_2(stack);
                             break;
                         case OP_3:
-                            this.OP_3(stack);
+                            Op.OP_3(stack);
                             break;
                         case OP_4:
-                            this.OP_4(stack);
+                            Op.OP_4(stack);
                             break;
                         case OP_5:
-                            this.OP_5(stack);
+                            Op.OP_5(stack);
                             break;
                         case OP_6:
-                            this.OP_6(stack);
+                            Op.OP_6(stack);
                             break;
                         case OP_7:
-                            this.OP_7(stack);
+                            Op.OP_7(stack);
                             break;
                         case OP_8:
-                            this.OP_8(stack);
+                            Op.OP_8(stack);
                             break;
                         case OP_9:
-                            this.OP_9(stack);
+                            Op.OP_9(stack);
                             break;
                         case OP_10:
-                            this.OP_10(stack);
+                            Op.OP_10(stack);
                             break;
                         case OP_11:
-                            this.OP_11(stack);
+                            Op.OP_11(stack);
                             break;
                         case OP_12:
-                            this.OP_12(stack);
+                            Op.OP_12(stack);
                             break;
                         case OP_13:
-                            this.OP_13(stack);
+                            Op.OP_13(stack);
                             break;
                         case OP_14:
-                            this.OP_14(stack);
+                            Op.OP_14(stack);
                             break;
                         case OP_15:
-                            this.OP_15(stack);
+                            Op.OP_15(stack);
                             break;
                         case OP_16:
-                            this.OP_16(stack);
+                            Op.OP_16(stack);
                             break;
 
                         case OP_VERIFY:
-                            this.OP_VERIFY(stack);
+                            Op.OP_VERIFY(stack);
                             break;
 
                         case OP_RETURN:
-                            this.OP_RETURN(stack);
+                            Op.OP_RETURN(stack);
                             break;
                         case OP_TOALTSTACK:
-                            this.OP_TOALTSTACK(stack,altstack);
+                            Op.OP_TOALTSTACK(stack,altstack);
                             break;
                         case OP_FROMALTSTACK:
-                            this.OP_FROMALTSTACK(stack,altstack);
+                            Op.OP_FROMALTSTACK(stack,altstack);
                             break;
                         case OP_2DUP:
-                            this.OP_2DUP(stack);
+                            Op.OP_2DUP(stack);
                             break;
                         case OP_EQUAL:
-                            this.OP_EQUAL(stack);
+                            Op.OP_EQUAL(stack);
                             break;
                         case OP_EQUALVERIFY:
-                            this.OP_EQUALVERIFY(stack);
+                            Op.OP_EQUALVERIFY(stack);
                             break;
                         case OP_NOT:
-                            this.OP_NOT(stack);
+                            Op.OP_NOT(stack);
                             break;
                         case OP_ADD:
-                            this.OP_ADD(stack);
+                            Op.OP_ADD(stack);
                             break;
                         case OP_SUB:
-                            this.OP_SUB(stack);
+                            Op.OP_SUB(stack);
                             break;
                         case OP_MUL:
-                            this.OP_MUL(stack);
+                            Op.OP_MUL(stack);
                             break;
                         case OP_RIPEMD160:
-                            this.OP_RIPEMD160(stack);
+                            Op.OP_RIPEMD160(stack);
                             break;
                         case OP_SHA256:
-                            this.OP_SHA256(stack);
+                            Op.OP_SHA256(stack);
                             break;
                         case OP_DUP:
-                            this.OP_DUP(stack);
+                            Op.OP_DUP(stack);
                             break;
                         case OP_HASH256:
-                            this.OP_HASH256(stack);
+                            Op.OP_HASH256(stack);
                             break;
 
                         case OP_HASH160:
-                            this.OP_HASH160(stack);
+                            Op.OP_HASH160(stack);
                             break;
                         default:
                             System.out.println("FATAL: unsupported Script command "+cmd);
@@ -541,271 +540,6 @@ public class Script {
         }
         if (stack.size()==0) return false;
         return stack.pop() != null;
-    }
-
-
-    /*************************************************************************/
-    public void OP_0(Stack<byte[]> stack) {
-        stack.push(encodeNum(0));
-    }
-    public void OP_1(Stack<byte[]> stack) {
-        stack.push(encodeNum(1));
-    }
-    public void OP_2(Stack<byte[]> stack) {
-        stack.push(encodeNum(2));
-    }
-    public void OP_3(Stack<byte[]> stack) {
-        stack.push(encodeNum(3));
-    }
-    public void OP_4(Stack<byte[]> stack) {
-        stack.push(encodeNum(4));
-    }
-    public void OP_5(Stack<byte[]> stack) {
-        stack.push(encodeNum(5));
-    }
-    public void OP_6(Stack<byte[]> stack) {
-        stack.push(encodeNum(6));
-    }
-    public void OP_7(Stack<byte[]> stack) {
-        stack.push(encodeNum(7));
-    }
-    public void OP_8(Stack<byte[]> stack) {
-        stack.push(encodeNum(8));
-    }
-    public void OP_9(Stack<byte[]> stack) {
-        stack.push(encodeNum(9));
-    }
-    public void OP_10(Stack<byte[]> stack) {
-        stack.push(encodeNum(10));
-    }
-    public void OP_11(Stack<byte[]> stack) {
-        stack.push(encodeNum(11));
-    }
-    public void OP_12(Stack<byte[]> stack) {
-        stack.push(encodeNum(12));
-    }
-    public void OP_13(Stack<byte[]> stack) {
-        stack.push(encodeNum(13));
-    }
-    public void OP_14(Stack<byte[]> stack) {
-        stack.push(encodeNum(14));
-    }
-    public void OP_15(Stack<byte[]> stack) {
-        stack.push(encodeNum(15));
-    }
-    public void OP_16(Stack<byte[]> stack) {
-        stack.push(encodeNum(16));
-    }
-    public boolean OP_1NEGATE(Stack<byte[]> stack) {
-        stack.push(encodeNum(-1));
-        return true;
-    }
-    // TODO add the other OP_N *********************************
-
-    public boolean OP_IF(Stack<byte[]> stack) {
-        // TODO: implement
-        return stack.size() >= 1;
-    }
-
-    public boolean OP_VERIFY(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
-        var element = stack.pop();
-        return (decodeNum(element).compareTo(BigInteger.ZERO)) != 0;
-    }
-    public void OP_RETURN(Stack<byte[]> stack) {
-    }
-
-    public void OP_TOALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
-        if (stack.size()<1) return;
-        altstack.push(stack.pop());
-    }
-
-    public void OP_FROMALTSTACK(Stack<byte[]> stack, Stack<byte[]> altstack) {
-        if (stack.size()<1) return;
-        stack.push(altstack.pop());
-    }
-
-    private void OP_2DUP(Stack<byte[]> stack) {
-        if (stack.size()<2) return;
-        var top1 = stack.peek();
-        var top2 = stack.elementAt(stack.size()-2);
-        stack.push(top2);
-        stack.push(top1);
-    }
-
-    public boolean OP_EQUAL(Stack<byte[]> stack) {
-        if (stack.size()<2) return false;
-        var e1 = stack.pop();
-        var e2 = stack.pop();
-
-
-
-        if (Arrays.equals(e1,e2)) {
-            stack.push(encodeNum(1));
-        }
-            else {
-                stack.push(encodeNum(0));
-        }
-        return true;
-    }
-
-    public void OP_EQUALVERIFY(Stack<byte[]> stack) {
-        if (OP_EQUAL(stack)) {
-            OP_VERIFY(stack);
-        }
-    }
-    public void OP_NOT(Stack<byte[]> stack) {
-        if (stack.size()<1) return;
-
-        var element = decodeNum(stack.pop());
-        if (element.equals(BigInteger.ZERO))
-            stack.push(encodeNum(1));
-        else
-            stack.push(encodeNum(0));
-
-    }
-
-    public void OP_ADD(Stack<byte[]> stack) {
-        if (stack.size()<2) return;
-
-        var e1 = decodeNum(stack.pop());
-        var e2 = decodeNum(stack.pop());
-
-        stack.push(encodeNum(e1.add(e2)));
-    }
-
-    public void OP_SUB(Stack<byte[]> stack) {
-        if (stack.size()<2) return;
-
-        var e1 = decodeNum(stack.pop());
-        var e2 = decodeNum(stack.pop());
-
-        stack.push(encodeNum(e2.subtract(e1)));
-    }
-
-    public void OP_MUL(Stack<byte[]> stack) {
-        if (stack.size()<2) return;
-
-        var e1 = decodeNum(stack.pop());
-        var e2 = decodeNum(stack.pop());
-
-        stack.push(encodeNum(e2.multiply(e1)));
-    }
-
-    public void OP_RIPEMD160(Stack<byte[]> stack) {
-        if (stack.size()<1) return;
-        var element = stack.pop();
-
-        stack.push(Kit.RIPEMD160(element));
-    }
-
-    public void OP_SHA256(Stack<byte[]> stack) {
-        if (stack.size()<1) return;
-        var element = stack.pop();
-
-        stack.push(Kit.sha256(element));
-    }
-
-    public boolean OP_HASH160(Stack<byte[]> stack) {
-        if (stack.size()<1) return false;
-        var element = stack.pop();
-        var hashed = Kit.hash160(element);
-        stack.push(hashed);
-        return true;
-    }
-
-    public void OP_DUP(Stack<byte[]> stack) {
-        if (stack.size()<1) return;
-        stack.push(stack.peek());
-    }
-
-    public void OP_HASH256(Stack<byte[]> stack) {
-        if (stack.size()<1) return;
-        var element = stack.pop();
-        var hashed = Kit.hash256(element);
-        stack.push(hashed);
-    }
-
-
-    public void OP_CHECKSIG(Stack<byte[]> stack, byte[] z) {
-        if (stack.size()<2) return;
-
-        var sec_pubkey_cmd = stack.pop();
-        var der_signature = stack.pop();
-
-        // take off the last byte of the signature as that's the hash_type
-        // see: https://en.bitcoin.it/wiki/OP_CHECKSIG
-        var der_bytes = Arrays.copyOf(der_signature,der_signature.length-1);
-        var point = S256Point.parseSEC(sec_pubkey_cmd);
-        // 1) check parse der signature
-        // 2) check
-        var sig = Signature.parse(der_bytes);
-
-        var z_pos = new BigInteger(1,z);
-
-        if (point.verify(z_pos,sig)) {
-            stack.push(encodeNum(1));
-        }
-        //
-        // TODO: implement encode_num(0)
-        else stack.push(encodeNum(0));
-
-    }
-    /*************************************************************************/
-    public void OP_CHECKMULTISIG(Stack<byte[]> stack, byte[] z) {
-
-        if (stack.size()<2) return;
-
-        var n = decodeNum(stack.pop());
-        if (stack.size() < n.longValue()+1)
-            return;
-
-        var sec_pubkeys = new ArrayList<byte[]>();
-
-        for (int i =0;i<n.longValue();i++) {
-            sec_pubkeys.add(stack.pop());
-        }
-
-        var m = decodeNum(stack.pop());
-        if (stack.size() < m.longValue()+1)
-            return;
-
-        var der_signatures = new ArrayList<byte[]>();
-
-        for (int i=0;i<m.longValue();i++) {
-            var sig_with_SIGHASH_ALL = stack.pop();
-            var sig = Arrays.copyOfRange(sig_with_SIGHASH_ALL,0,sig_with_SIGHASH_ALL.length-1);
-            der_signatures.add(sig);
-        }
-
-        // due to the off-by-one OP_CHECKMULTISIG bug
-        stack.pop();
-
-        var points = new ArrayList<S256Point>();
-
-        for (byte[] sec: sec_pubkeys) {
-            points.add(S256Point.parseSEC(sec));
-        }
-
-        var sigs = new ArrayList<Signature>();
-
-        for (byte[] sig: der_signatures) {
-            sigs.add(Signature.parse(sig));
-        }
-
-        for (Signature sig: sigs) {
-            if (points.size()==0) return;
-
-            for (S256Point p: points) {
-
-                if (p.verify(new BigInteger(1,z),sig)) {
-                    points.remove(p);
-                    break;
-                }
-            }
-        }
-
-        stack.push(encodeNum(1));
     }
 
 
