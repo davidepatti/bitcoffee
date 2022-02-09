@@ -549,7 +549,7 @@ public class Tx implements Message {
         long total_in = 0;
         long total_out = 0;
         for (TxIn txin: tx_ins) {
-            total_in+= txin.getValue(false);
+            total_in+= txin.getValue(this.testnet);
         }
 
         for (TxOut txout: tx_outs) {
