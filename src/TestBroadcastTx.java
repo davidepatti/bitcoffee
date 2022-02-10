@@ -66,8 +66,8 @@ public class TestBroadcastTx {
         var sig = Kit.hexStringToByteArray(der+"01");
         var sec = Kit.hexStringToByteArray(mypk.point.SEC33());
         var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sec));
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sig));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,sec));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,sig));
         var scriptsig = new Script(cmds);
         ////////////////// end script
 

@@ -92,8 +92,8 @@ public class TestValidation {
         var sig2 = Kit.hexStringToByteArray(der2+"01");
         var sec2 = Kit.hexStringToByteArray(pk2.point.SEC33());
         var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sec2));
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,sig2));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,sec2));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,sig2));
         var scriptsig2 = new Script(cmds);
 
         var txins = tx_obj.getTxIns();

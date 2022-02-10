@@ -43,7 +43,7 @@ public class Script {
             // if byte is between 0x01 e 0x4b it indicates the number of bytes
             // to read the data element
             if (current_byte>=1 && current_byte <=75) {
-                var cmd = new ScriptCmd(ScriptCmdType.DATA,bis.readNBytes(current_byte));
+                var cmd = new ScriptCmd(ScriptCmd.Type.DATA,bis.readNBytes(current_byte));
                 ops_stack.push(cmd);
                 //System.out.println("DEBUG: Script parsing found element data: "+cmd);
                 count+= current_byte;
@@ -52,7 +52,7 @@ public class Script {
             else if (current_byte==76) {
                 // TODO: why little endian over a single byte?
                 var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA1, bis.readNBytes(data_len));
+                var cmd = new ScriptCmd(ScriptCmd.Type.OP_PUSHDATA1, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 //System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+1;
@@ -60,7 +60,7 @@ public class Script {
             // OP_PUSHDATA_2 - the next two bytes indicate how many bytes to read for the element
             else if (current_byte==77) {
                 var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(2)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA2, bis.readNBytes(data_len));
+                var cmd = new ScriptCmd(ScriptCmd.Type.OP_PUSHDATA2, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 // System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+2;
@@ -68,7 +68,7 @@ public class Script {
             // OP_PUSHDATA_4 - the next four bytes indicate how many bytes to read for the element
             else if (current_byte==78) {
                 var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(4)).intValue();
-                var cmd = new ScriptCmd(ScriptCmdType.OP_PUSHDATA4, bis.readNBytes(data_len));
+                var cmd = new ScriptCmd(ScriptCmd.Type.OP_PUSHDATA4, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
                 // System.out.println("DEBUG: Script parse operation: "+cmd);
                 count+=data_len+4;
@@ -77,7 +77,7 @@ public class Script {
             else {
                 byte[] bytes = new byte[1];
                 bytes[0] = (byte)current_byte;
-                var cmd = new ScriptCmd(ScriptCmdType.fromInt(current_byte), bytes);
+                var cmd = new ScriptCmd(ScriptCmd.Type.fromInt(current_byte), bytes);
                 //System.out.println("DEBUG: Script parse operation: "+cmd);
                 ops_stack.push(cmd);
             }
@@ -175,28 +175,36 @@ public class Script {
     // Convert the 20 bytes hash in a ScriptPubKey
     public static Script h160ToP2pkh(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_CHECKSIG));
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUALVERIFY));
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_DUP));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_CHECKSIG));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_EQUALVERIFY));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_HASH160));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_DUP));
 
         return new Script(cmds);
     }
     /*************************************************************************/
     public static Script h160ToP2psh(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_EQUAL));
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_EQUAL));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_HASH160));
 
         return new Script(cmds);
     }
     /*************************************************************************/
     public static Script h160ToP2wpkh(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmdType.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmdType.OP_0));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
+
+        return new Script(cmds);
+    }
+    /*************************************************************************/
+    public static Script h160ToP2wsh(byte[] h256) {
+        var cmds = new Stack<ScriptCmd>();
+        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h256));
+        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
 
         return new Script(cmds);
     }
@@ -204,30 +212,38 @@ public class Script {
     // check for the pattern: OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG
     public boolean isP2pkhScriptPubKey() {
         return (this.commands.size()==5
-                && commands.elementAt(0).type == ScriptCmdType.OP_CHECKSIG
-                && commands.elementAt(1).type == ScriptCmdType.OP_EQUALVERIFY
-                && commands.elementAt(2).type == ScriptCmdType.DATA
+                && commands.elementAt(0).type == ScriptCmd.Type.OP_CHECKSIG
+                && commands.elementAt(1).type == ScriptCmd.Type.OP_EQUALVERIFY
+                && commands.elementAt(2).type == ScriptCmd.Type.DATA
                 && commands.elementAt(2).value.length == 20
-                && commands.elementAt(3).type == ScriptCmdType.OP_HASH160
-                && commands.elementAt(4).type == ScriptCmdType.OP_DUP);
+                && commands.elementAt(3).type == ScriptCmd.Type.OP_HASH160
+                && commands.elementAt(4).type == ScriptCmd.Type.OP_DUP);
     }
 
     /*************************************************************************/
     // check for the pattern: OP_HASH160 <20 byte hash> OP_EQUAL
     public boolean isP2shScriptPubKey() {
         return (this.commands.size()==3
-                && commands.elementAt(0).type == ScriptCmdType.OP_EQUAL
-                && commands.elementAt(1).type == ScriptCmdType.DATA
+                && commands.elementAt(0).type == ScriptCmd.Type.OP_EQUAL
+                && commands.elementAt(1).type == ScriptCmd.Type.DATA
                 && commands.elementAt(1).value.length == 20
-                && commands.elementAt(2).type == ScriptCmdType.OP_HASH160);
+                && commands.elementAt(2).type == ScriptCmd.Type.OP_HASH160);
     }
     /*************************************************************************/
     // check for the pattern: OP_0 <20 byte hash>
     public boolean isP2wpkhScriptPubKey() {
         return (this.commands.size()==2
-                && commands.elementAt(0).type == ScriptCmdType.DATA
+                && commands.elementAt(0).type == ScriptCmd.Type.DATA
                 && commands.elementAt(0).value.length == 20
-                && commands.elementAt(1).type == ScriptCmdType.OP_0);
+                && commands.elementAt(1).type == ScriptCmd.Type.OP_0);
+    }
+
+    // check for the pattern: OP_0 <32 byte hash>
+    public boolean isP2wshScriptPubKey() {
+        return (this.commands.size()==2
+                && commands.elementAt(0).type == ScriptCmd.Type.DATA
+                && commands.elementAt(0).value.length == 32
+                && commands.elementAt(1).type == ScriptCmd.Type.OP_0);
     }
 
     /*************************************************************************/
@@ -285,17 +301,17 @@ public class Script {
             var cmd = copy_cmd.pop();
             var len = cmd.value.length;
 
-            if (cmd.type== ScriptCmdType.DATA) {
+            if (cmd.type== ScriptCmd.Type.DATA) {
                 bos.write((byte)len);
                 bos.write(cmd.value);
             }
-            else if (cmd.type== ScriptCmdType.OP_PUSHDATA1) {
-                bos.write((byte) ScriptCmdType.OP_PUSHDATA1.getValue());
+            else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA1) {
+                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA1.getValue());
                 bos.write((byte)len);
                 bos.write(cmd.value);
             }
-            else if (cmd.type== ScriptCmdType.OP_PUSHDATA2) {
-                bos.write((byte) ScriptCmdType.OP_PUSHDATA2.getValue());
+            else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA2) {
+                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA2.getValue());
                 var len_bytes = Kit.intToLittleEndianBytes(len);
                 bos.write(len_bytes,0,2);
                 bos.write(cmd.value);
@@ -349,25 +365,25 @@ public class Script {
 
             // if it is data, just move it to the stack
 
-            if (cmd.type== ScriptCmdType.DATA) {
+            if (cmd.type== ScriptCmd.Type.DATA) {
                 stack.push(cmd.value);
 
                 //detect p2sh pattern ////////////////////////////////////////////
                 // OP_HASH160 <20bytes hash> OP_EQUAL
                 if (cmds.size()==3
-                        && cmds.elementAt(0).type==ScriptCmdType.OP_EQUAL
-                        && cmds.elementAt(1).type==ScriptCmdType.DATA
+                        && cmds.elementAt(0).type== ScriptCmd.Type.OP_EQUAL
+                        && cmds.elementAt(1).type== ScriptCmd.Type.DATA
                         && cmds.elementAt(1).value.length==20
-                        && cmds.elementAt(2).type==ScriptCmdType.OP_HASH160)
+                        && cmds.elementAt(2).type== ScriptCmd.Type.OP_HASH160)
                 {
                     cmds.pop(); // we already know it's op_hash160
                     var h160 = cmds.pop(); // the hash value
                     cmds.pop(); // we already know it's op equal
 
-                    if (!Op.OP_HASH160(stack)) return false;
+                    if (!ScriptCmd.OP_HASH160(stack)) return false;
                     stack.push(h160.value);
-                    if (!Op.OP_EQUAL(stack)) return false;
-                    if (!Op.OP_VERIFY(stack)) {
+                    if (!ScriptCmd.OP_EQUAL(stack)) return false;
+                    if (!ScriptCmd.OP_VERIFY(stack)) {
                         System.out.println("******************* WARNING: bad p2sh h160");
                         return false;
                     }
@@ -397,14 +413,14 @@ public class Script {
                     cmds.addAll(script.commands);
                     for (byte[] item: witness) {
                         if (item.length>0)
-                            cmds.add(new ScriptCmd(ScriptCmdType.DATA,item));
+                            cmds.add(new ScriptCmd(ScriptCmd.Type.DATA,item));
                     }
                 }
 
             }
             else { // not a data element, we must execute the opcode logic
 
-                if (cmd.type == ScriptCmdType.OP_IF || cmd.type == ScriptCmdType.OP_NOTIF ) {
+                if (cmd.type == ScriptCmd.Type.OP_IF || cmd.type == ScriptCmd.Type.OP_NOTIF ) {
                     System.out.println("ERROR: OP_IF not implemented!");
                     System.exit(-1);
 
@@ -415,10 +431,10 @@ public class Script {
                     // require signature (CHECKSIG etc..)
                     switch (cmd.type) {
                         case OP_CHECKSIG:
-                            Op.OP_CHECKSIG(stack,z);
+                            ScriptCmd.OP_CHECKSIG(stack,z);
                             break;
                         case OP_CHECKMULTISIG:
-                            Op.OP_CHECKMULTISIG(stack,z);
+                            ScriptCmd.OP_CHECKMULTISIG(stack,z);
                             break;
                         default:
                             assert false;
@@ -428,106 +444,106 @@ public class Script {
 
                     switch (cmd.type) {
                         case OP_0:
-                            Op.OP_0(stack);
+                            ScriptCmd.OP_0(stack);
                             break;
                         case OP_1:
-                            Op.OP_1(stack);
+                            ScriptCmd.OP_1(stack);
                             break;
                         case OP_2:
-                            Op.OP_2(stack);
+                            ScriptCmd.OP_2(stack);
                             break;
                         case OP_3:
-                            Op.OP_3(stack);
+                            ScriptCmd.OP_3(stack);
                             break;
                         case OP_4:
-                            Op.OP_4(stack);
+                            ScriptCmd.OP_4(stack);
                             break;
                         case OP_5:
-                            Op.OP_5(stack);
+                            ScriptCmd.OP_5(stack);
                             break;
                         case OP_6:
-                            Op.OP_6(stack);
+                            ScriptCmd.OP_6(stack);
                             break;
                         case OP_7:
-                            Op.OP_7(stack);
+                            ScriptCmd.OP_7(stack);
                             break;
                         case OP_8:
-                            Op.OP_8(stack);
+                            ScriptCmd.OP_8(stack);
                             break;
                         case OP_9:
-                            Op.OP_9(stack);
+                            ScriptCmd.OP_9(stack);
                             break;
                         case OP_10:
-                            Op.OP_10(stack);
+                            ScriptCmd.OP_10(stack);
                             break;
                         case OP_11:
-                            Op.OP_11(stack);
+                            ScriptCmd.OP_11(stack);
                             break;
                         case OP_12:
-                            Op.OP_12(stack);
+                            ScriptCmd.OP_12(stack);
                             break;
                         case OP_13:
-                            Op.OP_13(stack);
+                            ScriptCmd.OP_13(stack);
                             break;
                         case OP_14:
-                            Op.OP_14(stack);
+                            ScriptCmd.OP_14(stack);
                             break;
                         case OP_15:
-                            Op.OP_15(stack);
+                            ScriptCmd.OP_15(stack);
                             break;
                         case OP_16:
-                            Op.OP_16(stack);
+                            ScriptCmd.OP_16(stack);
                             break;
 
                         case OP_VERIFY:
-                            Op.OP_VERIFY(stack);
+                            ScriptCmd.OP_VERIFY(stack);
                             break;
 
                         case OP_RETURN:
-                            Op.OP_RETURN(stack);
+                            ScriptCmd.OP_RETURN(stack);
                             break;
                         case OP_TOALTSTACK:
-                            Op.OP_TOALTSTACK(stack,altstack);
+                            ScriptCmd.OP_TOALTSTACK(stack,altstack);
                             break;
                         case OP_FROMALTSTACK:
-                            Op.OP_FROMALTSTACK(stack,altstack);
+                            ScriptCmd.OP_FROMALTSTACK(stack,altstack);
                             break;
                         case OP_2DUP:
-                            Op.OP_2DUP(stack);
+                            ScriptCmd.OP_2DUP(stack);
                             break;
                         case OP_EQUAL:
-                            Op.OP_EQUAL(stack);
+                            ScriptCmd.OP_EQUAL(stack);
                             break;
                         case OP_EQUALVERIFY:
-                            Op.OP_EQUALVERIFY(stack);
+                            ScriptCmd.OP_EQUALVERIFY(stack);
                             break;
                         case OP_NOT:
-                            Op.OP_NOT(stack);
+                            ScriptCmd.OP_NOT(stack);
                             break;
                         case OP_ADD:
-                            Op.OP_ADD(stack);
+                            ScriptCmd.OP_ADD(stack);
                             break;
                         case OP_SUB:
-                            Op.OP_SUB(stack);
+                            ScriptCmd.OP_SUB(stack);
                             break;
                         case OP_MUL:
-                            Op.OP_MUL(stack);
+                            ScriptCmd.OP_MUL(stack);
                             break;
                         case OP_RIPEMD160:
-                            Op.OP_RIPEMD160(stack);
+                            ScriptCmd.OP_RIPEMD160(stack);
                             break;
                         case OP_SHA256:
-                            Op.OP_SHA256(stack);
+                            ScriptCmd.OP_SHA256(stack);
                             break;
                         case OP_DUP:
-                            Op.OP_DUP(stack);
+                            ScriptCmd.OP_DUP(stack);
                             break;
                         case OP_HASH256:
-                            Op.OP_HASH256(stack);
+                            ScriptCmd.OP_HASH256(stack);
                             break;
 
                         case OP_HASH160:
-                            Op.OP_HASH160(stack);
+                            ScriptCmd.OP_HASH160(stack);
                             break;
                         default:
                             System.out.println("FATAL: unsupported Script command "+cmd);

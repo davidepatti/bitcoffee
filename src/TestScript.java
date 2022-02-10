@@ -51,8 +51,8 @@ public class TestScript {
 
         var test_hash160 = new Stack<ScriptCmd>();
         var hello = Kit.asciiStringToBytes("hello world");
-        test_hash160.push(new ScriptCmd(ScriptCmdType.OP_HASH160));
-        test_hash160.push(new ScriptCmd(ScriptCmdType.DATA,hello));
+        test_hash160.push(new ScriptCmd(ScriptCmd.Type.OP_HASH160));
+        test_hash160.push(new ScriptCmd(ScriptCmd.Type.DATA,hello));
         var test_script = new Script(test_hash160);
         System.out.println("------------------------------------------------------");
         System.out.println(">> Testing hash160 on "+ Kit.bytesToHexString(hello));
@@ -68,11 +68,11 @@ public class TestScript {
         var sig = Kit.hexStringToByteArray("3045022000eff69ef2b1bd93a66ed5219add4fb51e11a840f404876325a1e8ffe0529a2c022100c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab601");
                                                ///        3045022000eff69ef2b1bd93a66ed5219add4fb51e11a840f404876325a1e8ffe0529a2c022100c7207fee197d27c618aea621406f6bf5ef6fca38681d82b2f06fddbdce6feab601
         var script_pubkey_ops = new Stack<ScriptCmd>();
-        script_pubkey_ops.push(new ScriptCmd(ScriptCmdType.OP_CHECKSIG));
-        script_pubkey_ops.push(new ScriptCmd(ScriptCmdType.DATA,sec));
+        script_pubkey_ops.push(new ScriptCmd(ScriptCmd.Type.OP_CHECKSIG));
+        script_pubkey_ops.push(new ScriptCmd(ScriptCmd.Type.DATA,sec));
 
         var script_sig_ops = new Stack<ScriptCmd>();
-        script_sig_ops.push(new ScriptCmd(ScriptCmdType.DATA,sig));
+        script_sig_ops.push(new ScriptCmd(ScriptCmd.Type.DATA,sig));
 
         var combined_script = new Script(script_pubkey_ops);
         combined_script.addTop(script_sig_ops);
@@ -84,15 +84,15 @@ public class TestScript {
         System.out.println(" Testing exercise 3 - chapter 6");
 
         var script_pubkey3 = new Stack<ScriptCmd>();
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_EQUAL));
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_6));
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_ADD));
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_MUL));
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_DUP));
-        script_pubkey3.push(new ScriptCmd(ScriptCmdType.OP_DUP));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_EQUAL));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_6));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_ADD));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_MUL));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_DUP));
+        script_pubkey3.push(new ScriptCmd(ScriptCmd.Type.OP_DUP));
 
         var script_sig3 = new Stack<ScriptCmd>();
-        script_sig3.push(new ScriptCmd(ScriptCmdType.OP_2));
+        script_sig3.push(new ScriptCmd(ScriptCmd.Type.OP_2));
 
         var combined3 = new Script(script_pubkey3);
         combined3.addTop(script_sig3);
