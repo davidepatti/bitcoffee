@@ -4,10 +4,10 @@
  Currently implemented (updated on Dec 1st, 2021):
  
  * Finite field point math
- * Elliptic Curve Digital Signature Algorithm (secp256k1), SEC (compressed/uncompressed) , DER
+ * Elliptic Curve Digital bitcoffee.Signature Algorithm (secp256k1), SEC (compressed/uncompressed) , DER
  * Crypto primitives: SHA256, RIPEMD160, encode Base58, little/big endian and hex utilities, Varint econding
  * Bitcoin transactions serialization and parsing
- * Bitcoin Script language parsing and execution
+ * Bitcoin bitcoffee.Script language parsing and execution
  * Proof-of-work
  * Difficulty adjustment
  * Connection to external nodes

@@ -1,6 +1,8 @@
 import java.math.BigInteger;
 import java.util.*;
 
+import bitcoffee.*;
+
 public class bitcoffee {
 
     private static String[] CMDS = { "help","sign","parseblock","getp2pkaddr","difficulty","createtx","checktx","verify","gettx","fetchtx"};
@@ -191,7 +193,7 @@ public class bitcoffee {
     }
 
     private static void cmd_createTx() {
-        System.out.println("Tx creation - WARNING: experimental, testnet only!");
+        System.out.println("bitcoffee.Tx creation - WARNING: experimental, testnet only!");
         System.out.println("------------------------------------------------------------------");
         System.out.print("Insert the source address:");
         String myad;
