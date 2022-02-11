@@ -1,6 +1,7 @@
 
 package bitcoffee;
 
+import Tests.Test;
 import bitcoffee.*;
 
 import java.io.ByteArrayInputStream;
@@ -8,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Stack;
 
@@ -34,6 +36,8 @@ public class Script {
             this.commands = script.commands;
 
     }
+
+
     /*************************************************************************/
     public static Script parseSerial(byte[] serial) throws IOException {
         Stack<ScriptCmd> ops_stack = new Stack<>();
@@ -391,37 +395,59 @@ public class Script {
                     stack.push(h160.value);
                     if (!ScriptCmd.OP_EQUAL(stack)) return false;
                     if (!ScriptCmd.OP_VERIFY(stack)) {
-                        System.out.println("******************* WARNING: bad p2sh h160");
+                        System.out.println("**** WARNING: bad p2sh h160");
                         return false;
                     }
 
-                    var bos = new ByteArrayOutputStream();
-                    try {
-                        bos.write(Objects.requireNonNull(Kit.encodeVarint(cmd.value.length)));
-                        bos.write(cmd.value);
-                        var redeem_script = Script.parseSerial(bos.toByteArray());
-                        cmds.addAll(redeem_script.commands);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } // end p2sh /////////////////////////////////////////////////
+                    // since the h160 of the script is valid, we can add to commands
+                    var redeem_script = new Script(cmd.value);
+                    cmds.addAll(redeem_script.commands);
+                }
 
                 // p2wpks
                 // nodes supporting segwit will detect this condition in the stack, as a consequence
-                // of the execution of this particular script:
-                // OP_0 <20bytes hash>
+                // of the execution of this particular script:  OP_0 <20bytes hash>
                 // Please notice that OP_0 places an empty element in the stack, NOT a byte 0
-                if (stack.size()==2 && stack.elementAt(1)==null && stack.elementAt(0).length==20) {
+                if (stack.size()==2 && stack.elementAt(0)==null && stack.elementAt(1).length==20) {
 
-                    stack.pop(); // the empty byte[]
                     var h160 = stack.pop();
+                    stack.pop(); // the empty byte[], witness version 0
 
                     var script = Script.h160ToP2pkh(h160);
                     cmds.addAll(script.commands);
-                    for (byte[] item: witness) {
+
+                    for (int i= witness.size()-1;i>=0;i--) {
+                        var item = witness.get(i);
                         if (item.length>0)
                             cmds.add(new ScriptCmd(ScriptCmd.Type.DATA,item));
                     }
+                }
+                if (stack.size()==2 && stack.elementAt(0)==null && stack.elementAt(1).length==32) {
+
+                    // sha256 of the witness script
+                    var s256 = stack.pop();
+                    stack.pop(); // the empty byte[], witness version 0
+
+
+                    // the last element in the witness data contains the script
+                    var witness_script_raw = witness.get(witness.size()-1);
+
+                    var computed_sha256 =Kit.sha256(witness_script_raw);
+
+                    if (!Arrays.equals(computed_sha256,s256)) {
+                        System.out.println("**** WARNING: Not matching p2wsh sha256, \nexpected: "+s256+"\ncomputed: "+computed_sha256);
+                        return false;
+                    }
+
+                    var witness_script = new Script(witness_script_raw);
+
+                    cmds.addAll(witness_script.commands);
+
+                    // add all the witness data, except the last element already added as witness script
+                    for (int i =0;i< witness.size()-1; i++) {
+                        cmds.addAll(new Script(witness.get(i)).commands);
+                    }
+
                 }
 
             }

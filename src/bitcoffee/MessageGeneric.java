@@ -25,6 +25,6 @@ public class MessageGeneric implements Message {
 
     @Override
     public String toString() {
-        return "bitcoffee.MessageGeneric{" + "payload=" + Kit.bytesToHexString(payload) + ", COMMAND='" + COMMAND + '\'' + '}';
+        return "MessageGeneric{" + "payload=" + Kit.bytesToHexString(payload) + ", COMMAND='" + COMMAND + '\'' + '}';
     }
 }

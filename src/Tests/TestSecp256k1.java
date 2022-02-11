@@ -18,9 +18,9 @@ public class TestSecp256k1 {
         var e_bytes = Kit.hash256("secret");
         var z_bytes = Kit.hash256("Programming Bitcoin!");
 
-        Test.__BEGIN_TEST("Signing bitcoffee.Message");
+        Test.__BEGIN_TEST("Signing Message");
 
-        Test.__BEGIN_TEST("bitcoffee.Message sign with prefixed K");
+        Test.__BEGIN_TEST("Message sign with prefixed K");
         System.out.println("Signing message: \"Programming Bitcoin!\" with string \"secret\"");
         String secret = Kit.bytesToHexString(e_bytes);
         String message = Kit.bytesToHexString(z_bytes);
@@ -63,7 +63,7 @@ public class TestSecp256k1 {
     }
 
     public static void test_manual_signature() {
-        Test.__BEGIN_TEST("Manual bitcoffee.Signature");
+        Test.__BEGIN_TEST("Manual Signature");
         // testing manual signature
         var z = new BigInteger("bc62d4b80d9e36da29c16c5d4d9f11731f36052c72401a76c23c0fb5a9b74423",16);
         var r = new BigInteger("37206a0610995c58074999cb9767b87af4c4978db68c06e8e6e81d282047a7c6",16);
@@ -83,7 +83,7 @@ public class TestSecp256k1 {
     }
 
     public static void test_message_signature() {
-        Test.__BEGIN_TEST("bitcoffee.Message signature (bitcoffee.S256Point)");
+        Test.__BEGIN_TEST("Message signature (S256Point)");
 
         String secret = "my secret";
         String message = "my message";
@@ -109,7 +109,7 @@ public class TestSecp256k1 {
     }
 
     public static void test_verify_signature() {
-        Test.__BEGIN_TEST("Verify bitcoffee.Signature");
+        Test.__BEGIN_TEST("Verify Signature");
         // Exercise 6 page 67
         var p_x = new BigInteger("887387e452b8eacc4acfde10d9aaf7f6d9a0f975aabb10d006e4da568744d06c",16);
         var p_y = new BigInteger("61de6d95231cd89026e286df3b6ae4a894a3378e393e93a0f45b666329a0ae34",16);

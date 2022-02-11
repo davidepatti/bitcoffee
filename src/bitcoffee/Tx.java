@@ -97,7 +97,7 @@ public class Tx implements Message {
     public boolean verifyInput(int input_index) {
         byte[] z = null;
         byte[] raw_redeem = null;
-        ArrayList<byte[]> witness = null;
+        ArrayList<byte[]> witness_data = null;
 
         var tx_in = tx_ins.get(input_index);
         var prevtx_script_pubkey_raw = tx_in.getPreviousTxScriptPubKey(this.isTestnet());
@@ -114,23 +114,14 @@ public class Tx implements Message {
             // handle the p2sh-p2wpkh
             if (redeem_script.isP2wpkhScriptPubKey()) {
                 z = this.getSigHashBIP143(input_index,redeem_script,null);
-                witness = tx_in.getWitnessData();
+                witness_data = tx_in.getWitnessData();
             }
             else if (redeem_script.isP2wshScriptPubKey()) {
-                // TODO: or the last?
-                var command = tx_in.getWitnessData().get(0);
-                var raw_witness = new ByteArrayOutputStream();
-                try {
-                    raw_witness.write(Kit.encodeVarint(command.length));
-                    raw_witness.write(command);
-                    var witness_script = Script.parseSerial(raw_witness.toByteArray());
-                    z = getSigHashBIP143(input_index,null,witness_script);
-                    witness = tx_in.getWitnessData();
+                witness_data = tx_in.getWitnessData();
+                var command = witness_data.get(witness_data.size()-1);
+                var witness_script = new Script(command);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                z = getSigHashBIP143(input_index,null,witness_script);
             }
             else z = getSigHash(input_index,raw_redeem);
 
@@ -138,33 +129,24 @@ public class Tx implements Message {
         else {
             if (script_pubkey.isP2wpkhScriptPubKey()) {
                 z = getSigHashBIP143(input_index,null,null);
-                witness = tx_in.getWitnessData();
+                witness_data = tx_in.getWitnessData();
             }
             else if (script_pubkey.isP2wshScriptPubKey()) {
-                // TODO: or the last?
-                var command = tx_in.getWitnessData().get(0);
-                var raw_witness = new ByteArrayOutputStream();
-                try {
-                    raw_witness.write(Kit.encodeVarint(command.length));
-                    raw_witness.write(command);
-                    var witness_script = Script.parseSerial(raw_witness.toByteArray());
-                    z = getSigHashBIP143(input_index,null,witness_script);
-                    witness = tx_in.getWitnessData();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                witness_data = tx_in.getWitnessData();
+                var command = witness_data.get(witness_data.size()-1);
+                var witness_script = new Script(command);
+                z = getSigHashBIP143(input_index,null,witness_script);
             }
             else {
                 z = getSigHash(input_index);
-                witness = null;
+                witness_data = null;
             }
         }
 
         var script_sig = new Script(tx_in.getScriptSig());
         var script_combined = new Script(prevtx_script_pubkey_raw);
         script_combined.addTop(script_sig);
-        return  script_combined.evaluate(z,witness);
+        return  script_combined.evaluate(z,witness_data);
     }
 
     public ArrayList<TxIn> getTxIns() {

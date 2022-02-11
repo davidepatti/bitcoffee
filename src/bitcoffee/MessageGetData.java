@@ -77,7 +77,7 @@ public class MessageGetData implements Message {
 
     @Override
     public String toString() {
-        return "bitcoffee.MessageGetData{" + "data size =" + data.size() + '}';
+        return "MessageGetData{" + "data size =" + data.size() + '}';
     }
 }
 

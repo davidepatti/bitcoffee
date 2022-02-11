@@ -58,7 +58,7 @@ public class MessageGetHeaders implements Message {
 
     @Override
     public String toString() {
-        return "bitcoffee.MessageGetHeaders{" +
+        return "MessageGetHeaders{" +
                 "version=" + version +
                 ", start_header='" + start_header + '\'' +
                 ", end_header='" + end_header + '\'' +
