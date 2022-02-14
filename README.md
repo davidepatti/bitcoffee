@@ -1,5 +1,6 @@
 # bitcoffee
  Java-based Bitcoin internals implementation, based on the classic Jimmy Song's book https://programmingbitcoin.com/
+ 
  Please notice:
  * I wrote this project for fun,learning and reaserch purposes, feel free to use it as you like, but not in production, e.g. never use it to move your sats on the mainnet:)
  * Althought is not intended to be an exact replica of the python code presented in the book above, the majority of the tests and exercises have been implemented in the Tests package of the project.
