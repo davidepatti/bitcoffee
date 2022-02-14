@@ -19,6 +19,13 @@ public class TxFetcher {
             return "https://blockstream.info/api";
     }
 
+    public static Tx fetch(String tx_id) {
+        return fetch(tx_id,false,false);
+    }
+    public static Tx fetch(String tx_id, boolean testnet) {
+        return fetch(tx_id,testnet,false);
+    }
+
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
         Tx tx;
         String computed_id;
@@ -57,7 +64,7 @@ public class TxFetcher {
                     throw new RuntimeException("Mismatching serials");
                 }
                 else{
-                    System.out.println("Ok, tx id matches requested id!");
+                    //System.out.println("Ok, tx id matches requested id!");
                     // TODO: re-enable when properly dealing with witness data
                     cache.put(computed_id,tx);
                 }

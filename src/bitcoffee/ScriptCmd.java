@@ -348,8 +348,6 @@ public class ScriptCmd {
         if (point.verify(z_pos,sig)) {
             stack.push(Script.encodeNum(1));
         }
-        //
-        // TODO: implement encode_num(0)
         else stack.push(Script.encodeNum(0));
 
     }
@@ -427,8 +425,8 @@ public class ScriptCmd {
     @Override
     public String toString() {
         //return "\n{" + Hex.toHexString(value) + ", " + type + "}";
-        if (type== Type.DATA) return "\n{"+ Kit.bytesToHexString(value)+"}";
-        else return "\n{"+type+"}";
+        if (type== Type.DATA) return Kit.bytesToHexString(value);
+        else return type+"";
     }
 
     @Override

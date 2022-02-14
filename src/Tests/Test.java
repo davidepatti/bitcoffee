@@ -10,7 +10,7 @@ public class Test {
     public static void check(String subtest_name, String desc, Object target, Object result) {
         subtestn++;
         System.out.println("---------------------------------------------------");
-        System.out.println("--> Starting Subtest "+testn+"."+subtestn+": "+subtest_name);
+        System.out.println("--> [ Starting Subtest "+testn+"."+subtestn+": "+subtest_name +" ]");
         System.out.println("");
         System.out.println("[Description]\n "+desc);
         System.out.println("---------------------------------------------------");
@@ -19,12 +19,12 @@ public class Test {
 
         boolean failed = !(target.equals(result));
         if (failed) {
-            System.out.println("\t-> TEST FAILED: "+current_test+"/"+subtest_name);
+            System.out.println("\t-> TEST FAILED! "+current_test+"/"+subtest_name);
             System.exit(-1);
             System.out.println("---------------------------------------------------");
         }
         else
-            System.out.println("\t-> TEST OK: "+current_test+"/"+subtest_name);
+            System.out.println("\t-> [ TEST OK: "+current_test+"/"+subtest_name+" ]");
     }
 
     public static void __BEGIN_TEST(String test) {

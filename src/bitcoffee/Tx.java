@@ -548,19 +548,19 @@ public class Tx implements Message {
     /*****************************************************************/
     @Override
     public String toString() {
-        System.out.println("*******************************************************************");
-        String ret = "TX ID: "+this.getId()+ "\nversion: " + version;
+        String ret = ">>>>>>>>>>>>> TRANSACTION >>>>>>>>>>>>>>>>>>>>>>>>>>>>";
+        ret += "\nID: "+this.getId()+ "\nversion: " + version;
 
-        ret+="\n-----------------------------------------------------";
+        ret+="\n------------------ INPUTS ---------------------------------";
         for (TxIn txin: tx_ins)
             ret += "\n"+txin;
-        ret+="\n-----------------------------------------------------";
+        ret+="\n----------------- OUTPUTS ------------------------------";
         for (TxOut txout: tx_outs)
             ret += "\n"+txout;
         ret+="\n-----------------------------------------------------";
 
-        ret+= "\nlocktime: " + locktime+ "\ntestnet: " + testnet;
-        System.out.println("*******************************************************************");
+        ret+= "\nlocktime: " + locktime+ " testnet: " + testnet;
+        ret+= "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
         return ret;
     }
 

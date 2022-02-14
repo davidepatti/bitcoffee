@@ -444,8 +444,9 @@ public class Script {
                     cmds.addAll(witness_script.commands);
 
                     // add all the witness data, except the last element already added as witness script
-                    for (int i =0;i< witness.size()-1; i++) {
-                        cmds.addAll(new Script(witness.get(i)).commands);
+                    for (int i = witness.size()-2; i>=0; i--) {
+                        var witdata = new ScriptCmd(ScriptCmd.Type.DATA,witness.get(i));
+                        cmds.add(witdata);
                     }
 
                 }
@@ -598,7 +599,7 @@ public class Script {
         StringBuilder out = new StringBuilder("Script Stack:");
 
         for (int i=this.commands.size()-1; i>-1; i--) {
-            out.append(this.commands.get(i));
+            out.append(" "+this.commands.get(i));
         }
         return out.toString();
 
