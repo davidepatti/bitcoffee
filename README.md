@@ -26,5 +26,5 @@ In alternative, you can check the code in the Tests packages to see how the sing
 * Schnorr support
 * .... feel free to suggest at xedivad@gmail.com 
 
-Support the ligtning Network!
+Support the Lightning Network!
 03740f82191202480ace717fcdf00f71a8b1eb9bdc2bb5e2106cd0ab5cb4d7a54e@27fhfzho7ao3wdxhlzttsuqgld7uypvcimgvuwt3kyuxj53lhgnsauyd.onion:9735
