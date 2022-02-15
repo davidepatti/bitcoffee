@@ -1,7 +1,7 @@
 package bitcoffee;
 
 public interface Message {
-    public String getCommand();
-    public byte[] getPayload();
+    String getCommand();
+    byte[] getPayload();
 
 }

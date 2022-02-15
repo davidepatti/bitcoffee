@@ -261,8 +261,7 @@ public class Tx implements Message {
             e.printStackTrace();
         }
 
-        var hash = Kit.hash256(bos.toByteArray());
-        return hash;
+        return Kit.hash256(bos.toByteArray());
 
     }
 
@@ -548,20 +547,20 @@ public class Tx implements Message {
     /*****************************************************************/
     @Override
     public String toString() {
-        String ret = ">>>>>>>>>>>>> TRANSACTION >>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-        ret += "\nID: "+this.getId()+ "\nversion: " + version;
+        StringBuilder ret = new StringBuilder(">>>>>>>>>>>>> TRANSACTION >>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        ret.append("\nID: ").append(this.getId()).append("\nversion: ").append(version);
 
-        ret+="\n------------------ INPUTS ---------------------------------";
+        ret.append("\n------------------ INPUTS ---------------------------------");
         for (TxIn txin: tx_ins)
-            ret += "\n"+txin;
-        ret+="\n----------------- OUTPUTS ------------------------------";
+            ret.append("\n").append(txin);
+        ret.append("\n----------------- OUTPUTS ------------------------------");
         for (TxOut txout: tx_outs)
-            ret += "\n"+txout;
-        ret+="\n-----------------------------------------------------";
+            ret.append("\n").append(txout);
+        ret.append("\n-----------------------------------------------------");
 
-        ret+= "\nlocktime: " + locktime+ " testnet: " + testnet;
-        ret+= "\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
-        return ret;
+        ret.append("\nlocktime: ").append(locktime).append(" testnet: ").append(testnet);
+        ret.append("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        return ret.toString();
     }
 
     /*****************************************************************/

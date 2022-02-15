@@ -4,9 +4,9 @@ import java.math.BigInteger;
 
 public class Murmur3 {
 
-    static BigInteger C1 = new BigInteger(1, Kit.hexStringToByteArray("cc9e2d51"));
-    static BigInteger C2 = new BigInteger(1, Kit.hexStringToByteArray("1b873593"));
-    static BigInteger f8 = new BigInteger(1, Kit.hexStringToByteArray("ffffffff"));
+    static final BigInteger C1 = new BigInteger(1, Kit.hexStringToByteArray("cc9e2d51"));
+    static final BigInteger C2 = new BigInteger(1, Kit.hexStringToByteArray("1b873593"));
+    static final BigInteger f8 = new BigInteger(1, Kit.hexStringToByteArray("ffffffff"));
 
     public static final int UNSIGNED_MASK = 0xff;
 

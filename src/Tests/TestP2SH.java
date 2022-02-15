@@ -2,7 +2,6 @@ package Tests;
 
 import bitcoffee.*;
 
-import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -19,7 +18,7 @@ public class TestP2SH {
         var der = Kit.hexStringToByteArray("3045022100dc92655fe37036f47756db8102e0d7d5e28b3beb83a8fef4f5dc0559bddfb94e02205a36d4e4e6c7fcd16658c50783e00c341609977aed3ad00937bf4ee942a89937");
         var point = S256Point.parseSEC(sec);
         var sig = Signature.parse(der);
-        Test.check("Poit verify","sec:"+sec+"\nder:"+der+"z:"+hex_z,true,point.verify(new BigInteger(1,s256),sig));
+        Test.check("Poit verify","sec:"+Kit.bytesToHexString(sec)+"\nder:"+ Kit.bytesToHexString(der)+"z:"+hex_z,true,point.verify(new BigInteger(1,s256),sig));
         Test.__END_TEST();
 
         Test.__BEGIN_TEST("Signature with Redeem Script ");

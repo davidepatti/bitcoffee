@@ -395,7 +395,7 @@ public class Kit {
     }
 
     public static double log2(int x) {
-        return (double) (Math.log(x)) / Math.log(2);
+        return Math.log(x) / Math.log(2);
     }
 
     public static String reverseByteString(String s) {

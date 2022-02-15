@@ -2,8 +2,8 @@ package bitcoffee;
 
 public class MessageGeneric implements Message {
 
-    private byte[] payload;
-    private String COMMAND;
+    private final byte[] payload;
+    private final String COMMAND;
 
 
     public String getCommand() {

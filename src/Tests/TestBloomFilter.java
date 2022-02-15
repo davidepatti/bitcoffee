@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import bitcoffee.*;
 
+@SuppressWarnings("CommentedOutCode")
 public class TestBloomFilter {
 
     public static void main(String[] args) {

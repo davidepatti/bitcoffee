@@ -100,8 +100,6 @@ public class TestMerkle {
 
         Test.__END_TEST();
 
-        ///////////////////////////////////////////////////////////////////////////////////////
-        //Tests.Test.__BEGIN_TEST("bitcoffee.MerkleBlock Flags");
         hl = new ArrayList<>();
 
         hl.add(Kit.reverseByteString("ba412a0d1480e370173072c9562becffe87aa661c1e4a6dbc305d38ec5dc088a"));

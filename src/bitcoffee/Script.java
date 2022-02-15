@@ -1,7 +1,6 @@
 
 package bitcoffee;
 
-import Tests.Test;
 import bitcoffee.*;
 
 import java.io.ByteArrayInputStream;
@@ -435,7 +434,8 @@ public class Script {
                     var computed_sha256 =Kit.sha256(witness_script_raw);
 
                     if (!Arrays.equals(computed_sha256,s256)) {
-                        System.out.println("**** WARNING: Not matching p2wsh sha256, \nexpected: "+s256+"\ncomputed: "+computed_sha256);
+                        System.out.println("**** WARNING: Not matching p2wsh sha256, \nexpected: "+Kit.bytesToHexString(s256)+"\ncomputed: "+Kit.bytesToHexString(computed_sha256));
+
                         return false;
                     }
 
@@ -599,7 +599,7 @@ public class Script {
         StringBuilder out = new StringBuilder("Script Stack:");
 
         for (int i=this.commands.size()-1; i>-1; i--) {
-            out.append(" "+this.commands.get(i));
+            out.append(" ").append(this.commands.get(i));
         }
         return out.toString();
 

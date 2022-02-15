@@ -5,7 +5,7 @@ import bitcoffee.*;
 
 public class bitcoffee {
 
-    private static String[] CMDS = { "help","sign","parseblock","getp2pkaddr","difficulty","createtx","checktx","verify","gettx","fetchtx"};
+    private static final String[] CMDS = { "help","sign","parseblock","getp2pkaddr","difficulty","createtx","checktx","verify","gettx","fetchtx"};
     public static final String VERSION = "v0.1";
 
     public static void main(String[] args) {

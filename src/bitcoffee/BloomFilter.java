@@ -36,7 +36,7 @@ public class BloomFilter {
         for (int i=0;i<function_count;i++) {
             long seed = i*BIP37_CONSTANT+tweak;
             var h = Murmur3.hash_x86_32(item,item.length,seed);
-            int bit = h.mod(BigInteger.valueOf(this.size*8)).intValue();
+            int bit = h.mod(BigInteger.valueOf(this.size* 8L)).intValue();
             bit_field.set(bit,true);
         }
     }

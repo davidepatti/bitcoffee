@@ -67,8 +67,7 @@ public class SimpleNode {
 
     public NetworkEnvelope readFromNetwork() {
         try {
-            var envelope = NetworkEnvelope.parse(dis,this.testnet);
-            return envelope;
+            return NetworkEnvelope.parse(dis, this.testnet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,12 +132,10 @@ public class SimpleNode {
                     break;
                 case "merkleblock":
                     var payload2 = env.getPayload();
-                    var mb = MerkleBlock.parseSerial(payload2);
-                    return mb;
+                    return MerkleBlock.parseSerial(payload2);
                 case "tx":
                     var txp = env.getPayload();
-                    var tx = Tx.parse(txp,this.testnet);
-                    return tx;
+                    return Tx.parse(txp, this.testnet);
                 default:
                     System.out.println(" WARNING: unmanaged command "+command);
             }

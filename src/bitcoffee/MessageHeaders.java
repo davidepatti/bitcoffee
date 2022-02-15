@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class MessageHeaders implements Message {
 
-    private ArrayList<Block> blocks;
+    private final ArrayList<Block> blocks;
     public static final String COMMAND = "headers";
 
 
@@ -21,8 +21,7 @@ public class MessageHeaders implements Message {
 
     @Override
     public byte[] getPayload() {
-        new RuntimeException("Not implemented");
-        return null;
+        throw new RuntimeException("Not implemented");
     }
 
     public ArrayList<Block> getBlocks() {

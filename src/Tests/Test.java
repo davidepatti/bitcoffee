@@ -11,7 +11,7 @@ public class Test {
         subtestn++;
         System.out.println("---------------------------------------------------");
         System.out.println("--> [ Starting Subtest "+testn+"."+subtestn+": "+subtest_name +" ]");
-        System.out.println("");
+        System.out.println();
         System.out.println("[Description]\n "+desc);
         System.out.println("---------------------------------------------------");
         System.out.println("\tTarget: "+target);

@@ -12,7 +12,7 @@ public class MessageGetData implements Message {
     public static final int FILTERED_BLOCK_DATA_TYPE = 3;
     public static final int COMPACT_BLOCK_DATA_TYPE = 4;
 
-    private ArrayList<DataEntry> data = new ArrayList<>();
+    private final ArrayList<DataEntry> data = new ArrayList<>();
 
 
     public MessageGetData(String getdata, byte[] bytes) {
@@ -36,7 +36,7 @@ public class MessageGetData implements Message {
 
     }
 
-    private class DataEntry {
+    private static class DataEntry {
         final int type;
         final String identifier;
 
@@ -56,7 +56,7 @@ public class MessageGetData implements Message {
 
 
     public void addData(int type, String identifier) {
-       this.data.add(new DataEntry(type,identifier));
+       this.data.add(new DataEntry(type, identifier));
     }
 
     private byte[] serialize() {

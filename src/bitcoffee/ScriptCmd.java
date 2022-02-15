@@ -420,6 +420,7 @@ public class ScriptCmd {
     }
 
     public static void OP_RETURN(Stack<byte[]> stack) {
+        // TODO: manage
     }
 
     @Override
