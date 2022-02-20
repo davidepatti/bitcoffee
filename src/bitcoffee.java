@@ -35,7 +35,7 @@ public class bitcoffee {
                     System.out.println("Usage: bitcoffee parseblock <serialhex>");
                     System.exit(-1);
                 }
-                cmd_parsetx(args[1]);
+                cmd_parseblock(args[1]);
                 break;
             case "getp2pkaddr":
                 if (args.length != 3) {
@@ -49,7 +49,7 @@ public class bitcoffee {
                     System.out.println("Usage: bitcoffee difficulty <starting_serial_block_rawhex> <ending_serial_block_rawhex>");
                     System.exit(-1);
                 }
-                cmd_difficulty(args[1], args[2]);
+                cmd_diffadj(args[1], args[2]);
                 break;
             case "createtx":
                 cmd_createTx();
@@ -106,6 +106,7 @@ public class bitcoffee {
     }
 
     private static void cmd_sign(String secret, String message) {
+        // input: any two strings are valid
         var secret_bytes = Kit.hash256(secret);
         var secret_num = new BigInteger(1, secret_bytes);
         var msg_bytes = Kit.hash256(message);
@@ -119,7 +120,9 @@ public class bitcoffee {
         System.out.println("signature: " + signature.toString());
     }
 
-    private static void cmd_parsetx(String block_raw) {
+    private static void cmd_parseblock(String block_raw) {
+        // input: a string representing a block serialization in hex
+        //block_raw = "020000208ec39428b17323fa0ddec8e887b4a7c53b8c0a0a220cfd0000000000000000005b0750fce0a889502d40508d39576821155e9c9e3f5c3157f961db38fd8b25be1e77a759e93c0118a4ffd71d";
         System.out.println("Parsing raw block: " + block_raw);
 
         var block = Block.parseSerial(Kit.hexStringToByteArray(block_raw));
@@ -138,7 +141,11 @@ public class bitcoffee {
         System.out.println();
     }
 
-    private static void cmd_difficulty(String start_block, String end_block) {
+    private static void cmd_diffadj(String start_block, String end_block) {
+        // input: two string representing the hex serial of the initial and final block to
+        // calculate the difficulty adjustment
+        //end_block = "000000203471101bbda3fe307664b3283a9ef0e97d9a38a7eacd8800000000000000000010c8aba8479bbaa5e0848152fd3c2289ca50e1c3e58c9a4faaafbdf5803c5448ddb845597e8b0118e43a81d3";
+        //start_block = "02000020f1472d9db4b563c35f97c428ac903f23b7fc055d1cfc26000000000000000000b3f449fcbe1bc4cfbcb8283a0d2c037f961a3fdf2b8bedc144973735eea707e1264258597e8b0118e5f00474";
 
         var first_block = Block.parseSerial(Kit.hexStringToByteArray(start_block));
         var last_block = Block.parseSerial(Kit.hexStringToByteArray(end_block));
@@ -161,7 +168,8 @@ public class bitcoffee {
     }
 
     private static void cmd_getp2pkaddr(String secret, boolean testnet) {
-        // brainwallet style, use text to derive private key (be careful to not share it!)
+        // input: a secret string
+        // brainwallet style, use string text to derive private key (be careful to not share it!)
         var secret_bytes = Kit.hash256(secret);
         var mypk = new PrivateKey(secret_bytes);
 
@@ -180,6 +188,9 @@ public class bitcoffee {
     }
 
     private static void cmd_checkTx(String raw_tx) {
+        // input: a string representing the hex of a serialized tx
+        // for examples, fetch from online services e copy the resulting content:
+        // https://blockstream.info/api/tx/716373514d1442f6e7f71719965936fc8df12fe581f5d4fb3a3fd038cbbe4f4c/hex
 
         System.out.println("--------------------------------------------------");
         var tx = Tx.parse(Kit.hexStringToByteArray(raw_tx), false);
@@ -287,6 +298,11 @@ public class bitcoffee {
     }
 
     private static void cmd_verifySignature(String sec, String der, String z) {
+        // inputs: hex strings representing sec,der,z
+        //sec = "0349fc4e631e3624a545de3f89f5d8684c7b8138bd94bdd531d2e213bf016b278a";
+        //der = "3045022100ed81ff192e75a3fd2304004dcadb746fa5e24c5031ccfcf21320b0277457c98f02207a986d955c6e0cb35d446a89d3f56100f4d7f67801c31967743a9c8e10615bed";
+        //z = "27e0c5994dec7824e56dec6b2fcb342eb7cdb0d0957c2fce9882f715e85d81a6";
+
         var z_num = new BigInteger(z, 16);
         var point = S256Point.parseSEC(sec);
         var signature = Signature.parse(Kit.hexStringToByteArray(der));
@@ -353,6 +369,8 @@ public class bitcoffee {
     }
 
     private static void cmd_fetchtx(String txid, boolean testnet) {
+        // inputs: the transaction id and the whether is testnet or mainnet
+        // look at TestSegwit.java for example inputs
         var tx = TxFetcher.fetch(txid,testnet,true);
         System.out.println(tx);
 
