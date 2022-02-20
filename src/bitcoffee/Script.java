@@ -60,7 +60,6 @@ public class Script {
             }
             // OP_PUSHDATA_1 - the next byte indicate how many bytes to read
             else if (current_byte==76) {
-                // TODO: why little endian over a single byte?
                 var data_len = Kit.litteEndianBytesToInt(bis.readNBytes(1)).intValue();
                 var cmd = new ScriptCmd(ScriptCmd.Type.OP_PUSHDATA1, bis.readNBytes(data_len));
                 ops_stack.push(cmd);
@@ -316,19 +315,18 @@ public class Script {
                 bos.write(cmd.value);
             }
             else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA1) {
-                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA1.getValue());
+                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA1.value);
                 bos.write((byte)len);
                 bos.write(cmd.value);
             }
             else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA2) {
-                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA2.getValue());
+                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA2.value);
                 var len_bytes = Kit.intToLittleEndianBytes(len);
                 bos.write(len_bytes,0,2);
                 bos.write(cmd.value);
             } // operation, not data
             else {
-                bos.write((byte)cmd.type.getValue());
-                //bos.write(cmd.value);
+                bos.write((byte)cmd.type.value);
             }
 
         }
@@ -374,7 +372,6 @@ public class Script {
             var cmd = cmds.pop();
 
             // if it is data, just move it to the stack
-
             if (cmd.type== ScriptCmd.Type.DATA) {
                 stack.push(cmd.value);
 
@@ -454,28 +451,6 @@ public class Script {
             }
             else { // not a data element, we must execute the opcode logic
 
-                if (cmd.type == ScriptCmd.Type.OP_IF || cmd.type == ScriptCmd.Type.OP_NOTIF ) {
-                    System.out.println("ERROR: OP_IF not implemented!");
-                    System.exit(-1);
-
-                    // require manipulation of commands using the top of stack
-                    assert false;
-                }
-                else if (cmd.type.getValue() >= 172 && cmd.type.getValue() <= 175){
-                    // require signature (CHECKSIG etc..)
-                    switch (cmd.type) {
-                        case OP_CHECKSIG:
-                            ScriptCmd.OP_CHECKSIG(stack,z);
-                            break;
-                        case OP_CHECKMULTISIG:
-                            ScriptCmd.OP_CHECKMULTISIG(stack,z);
-                            break;
-                        default:
-                            assert false;
-                    }
-                }
-                else {
-
                     switch (cmd.type) {
                         case OP_0:
                             ScriptCmd.OP_0(stack);
@@ -528,11 +503,24 @@ public class Script {
                         case OP_16:
                             ScriptCmd.OP_16(stack);
                             break;
-
+                        case OP_NOP:
+                            ScriptCmd.OP_NOP(stack);
+                            break;
+                        case OP_IF:
+                            ScriptCmd.OP_IF(stack,cmds);
+                            break;
+                        case OP_NOTIF:
+                            ScriptCmd.OP_NOTIF(stack,cmds);
+                            break;
+                        case OP_CHECKSIG:
+                            ScriptCmd.OP_CHECKSIG(stack,z);
+                            break;
+                        case OP_CHECKMULTISIG:
+                            ScriptCmd.OP_CHECKMULTISIG(stack,z);
+                            break;
                         case OP_VERIFY:
                             ScriptCmd.OP_VERIFY(stack);
                             break;
-
                         case OP_RETURN:
                             ScriptCmd.OP_RETURN(stack);
                             break;
@@ -586,8 +574,6 @@ public class Script {
                     // require only stack
                 }
             }
-
-        }
         if (stack.size()==0) return false;
         return stack.pop() != null;
     }
