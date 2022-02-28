@@ -311,6 +311,17 @@ public class bitcoffee {
     }
 
     private static void cmd_gettx(String host, String last_block, String address, boolean testnet) {
+        // example for tesnet
+        //last_block = "00000000000538d5c2246336644f9a4956551afb44ba47278759ec55ea912e19";
+        //address = "mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv";
+        //host = "testnet.programmingbitcoin.com";
+        //testnet = true;
+
+        // example for mainnet
+        //last_block = "0000000000000000000838497f627c016c2bb9097d6794c6aeac1a581bd26984";
+        //address = "3Ffi6K7abWQsVMXUQuUNGviNAghXrY9Bni";
+        //host = "mainnet.programmingbitcoin.com";
+        //testnet = false;
 
         var h160 = Kit.decodeBase58(address);
 
@@ -358,7 +369,7 @@ public class bitcoffee {
                 } else {
                     var receveived_tx = (Tx) msg;
                     for (TxOut tout : receveived_tx.getTxOuts()) {
-                        if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                        if (tout.getScriptPubKey().getAddress(testnet).equals(address)) {
                             System.out.println("Found address " + address + " in tx id: " + receveived_tx.getId());
                             found = true;
                         }
