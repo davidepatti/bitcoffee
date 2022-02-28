@@ -173,14 +173,18 @@ public class bitcoffee {
         var secret_bytes = Kit.hash256(secret);
         var mypk = new PrivateKey(secret_bytes);
 
-        var myaddress = mypk.point.getP2pkhTestnetAddress();
-        if (testnet)
+        String myaddress;
+        if (testnet) {
             System.out.println("Testnet address for secret:" + secret);
-        else
+             myaddress = mypk.point.getP2pkhTestnetAddress();
+        }
+        else {
+            myaddress = mypk.point.getP2pkhAddress(true);
             System.out.println("Mainnet address for secret:" + secret);
+        }
 
         System.out.println("address: " + myaddress);
-        var wif = mypk.getWIF(true, true);
+        var wif = mypk.getWIF(true, testnet);
         System.out.println("Use this WIF to import the private key into a wallet: " + wif);
         System.out.println("---------------------------------------------");
 
