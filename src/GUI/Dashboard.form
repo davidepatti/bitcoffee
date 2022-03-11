@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.Dashboard">
+  <grid id="27dc6" binding="DashboardPanel" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="843" height="538"/>
+    </constraints>
+    <properties>
+      <background color="-7892238"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="376f" class="javax.swing.JButton" binding="derivatePrivateKeyButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Derivate private key"/>
+        </properties>
+      </component>
+      <component id="46b4d" class="javax.swing.JButton" binding="checkTransactionButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Check transaction"/>
+        </properties>
+      </component>
+      <component id="8d453" class="javax.swing.JButton" binding="createTransactionButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Create transaction"/>
+        </properties>
+      </component>
+      <component id="2635c" class="javax.swing.JButton" binding="getTransactionButton" default-binding="true">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Get transaction"/>
+        </properties>
+      </component>
+      <component id="3c0a3" class="javax.swing.JButton" binding="verifySignatureButton" default-binding="true">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Verify signature"/>
+        </properties>
+      </component>
+      <component id="ce3ec" class="javax.swing.JButton" binding="fetchTransactionButton" default-binding="true">
+        <constraints>
+          <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Fetch transaction"/>
+        </properties>
+      </component>
+      <component id="8a5ea" class="javax.swing.JButton" binding="signatureButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <foreground color="-16777216"/>
+          <horizontalAlignment value="0"/>
+          <text value="Signature"/>
+        </properties>
+      </component>
+      <component id="9636f" class="javax.swing.JButton" binding="difficultyAdjustmentButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Difficulty adjustment"/>
+        </properties>
+      </component>
+      <component id="27727" class="javax.swing.JButton" binding="parseBlockButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="14" style="0"/>
+          <text value="Parse block"/>
+        </properties>
+      </component>
+      <component id="4fd56" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="GUI/images/icons8-bitcoin-48 - Copia.png"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="3c002" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="28" style="1"/>
+          <foreground color="-1"/>
+          <text value="BITCOFFEE"/>
+        </properties>
+      </component>
+      <component id="57d26" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="GUI/images/icons8-coffee-50 - Copia.png"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="b5165" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="true"/>
+          <font name="Calibri" size="20" style="1"/>
+          <foreground color="-1"/>
+          <text value="A Java-based Bitcoin client created by Davide Patti (xedivad@gmail.com)"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.GetTransaction">
+  <grid id="27dc6" binding="panelGetTx" layout-manager="GridLayoutManager" row-count="8" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="856" height="542"/>
+    </constraints>
+    <properties>
+      <background color="-7892238"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="e7a89" class="javax.swing.JLabel" binding="btnHome">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="GUI/images/icons8-casa-24 - Copia.png"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="8e11a" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="26" style="1"/>
+          <foreground color="-1"/>
+          <text value="Get transaction"/>
+        </properties>
+      </component>
+      <component id="328f7" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="Host"/>
+        </properties>
+      </component>
+      <component id="3d486" class="javax.swing.JTextField" binding="textFieldHost">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="317d" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="Last block"/>
+        </properties>
+      </component>
+      <component id="fe99e" class="javax.swing.JTextField" binding="textFieldLastBlock">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="b1dec" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="Address"/>
+        </properties>
+      </component>
+      <component id="8679c" class="javax.swing.JTextField" binding="textFieldAddress">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="bbeeb" class="javax.swing.JCheckBox" binding="testnetCheckBox" default-binding="true">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="16" style="1"/>
+          <text value="Testnet"/>
+        </properties>
+      </component>
+      <component id="8784" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="TRANSCT. RESULT:"/>
+        </properties>
+      </component>
+      <scrollpane id="d4bed">
+        <constraints>
+          <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="135ca" class="javax.swing.JTextArea" binding="textAreaResult">
+            <constraints/>
+            <properties>
+              <background color="-4405262"/>
+              <editable value="false"/>
+              <font size="16" style="0"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <vspacer id="a6447">
+        <constraints>
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="89957">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <hspacer id="f0048">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <component id="94d1" class="javax.swing.JButton" binding="getButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="16" style="1"/>
+          <text value="Get"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
