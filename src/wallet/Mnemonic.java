@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -15,42 +14,36 @@ public class Mnemonic {
     private static final String WORDLIST_FILE = "bip39_words.txt";
     private ArrayList<String> seed_words = new ArrayList<>();
     private static final String[] BIP39_WORDS = new String[2048];
-    private static HashMap<String,Integer> BIP39_MAP;
+    private static HashMap<String,Integer> BIP39_MAP = new HashMap<>();
 
-    private static Mnemonic INSTANCE = new Mnemonic();
+    private final static Mnemonic INSTANCE = new Mnemonic();
+
+    private static boolean bip39_ready = false;
 
     private Mnemonic() {
-        INSTANCE.loadBIP39Words();
+        loadBIP39Words();
     }
 
     public static Mnemonic getInstance() {
         return INSTANCE;
     }
 
-    private boolean setBip39FirstWords(ArrayList<String> words) {
-        // TODO: add at least also 23
-        if (words.size()!=11) {
-            System.out.println("Wrong size in BIP39 words:"+words.size());
-            return false;
-        }
-
-        var list = Arrays.asList(BIP39_WORDS);
-
-        for (String w:words) {
-            if (!list.contains(w)) {
-                System.out.println("Invalid BIP39 word:"+w);
-                return false;
-            }
-        }
+    public void setSeedWords(ArrayList<String> words) {
         this.seed_words = words;
-        return true;
     }
+
+    public ArrayList<String> getSeedWords() {
+        return this.seed_words;
+    }
+
 
     public static String[] getBip39Words() {
         return BIP39_WORDS;
     }
 
-    private void loadBIP39Words() {
+    public static HashMap<String,Integer> getBip39Map() { return BIP39_MAP;}
+
+    private static void loadBIP39Words() {
         Scanner fs = null;
 
         try {
@@ -69,28 +62,34 @@ public class Mnemonic {
 
             System.out.println("Loading "+BIP39_WORDS[current-1]);
         }
+
+        bip39_ready = true;
     }
 
     public byte[] mnemonicToBytes() {
 
         var all_bits = BigInteger.ZERO;
+        var num_words = seed_words.size();
 
-        if (this.seed_words.size()!=12) {
+        if (num_words!=24) {
             System.out.println("Wrong mnemonic size:"+this.seed_words.size());
         }
 
-        for (String word: seed_words) {
-            all_bits = all_bits.shiftLeft(11).add(BigInteger.valueOf(BIP39_MAP.get(word)));
+        for (String word: this.seed_words) {
+            all_bits = all_bits.shiftLeft(11);
+            all_bits = all_bits.add(BigInteger.valueOf(BIP39_MAP.get(word)));
         }
 
         // TODO: support other sizes
-        var num_checksum_bits = BigInteger.valueOf(12/3);
+        var num_checksum_bits = BigInteger.valueOf(num_words/3);
         var checksum = all_bits.and(BigInteger.ONE.shiftLeft(num_checksum_bits.intValue()).subtract(BigInteger.ONE));
         all_bits = all_bits.shiftRight(num_checksum_bits.intValue());
 
-        var num_bytes = (12*11-num_checksum_bits.intValue())/8;
+        var num_bytes = (num_words*11-num_checksum_bits.intValue())/8;
 
         var all_bytes = all_bits.toByteArray();
+
+        var x = Kit.bytesToHexString(all_bytes);
 
         var s = new byte[num_bytes];
 
@@ -102,10 +101,18 @@ public class Mnemonic {
             s[i-1] = all_bytes[i-1];
         }
 
-        var computed_checksum = Kit.sha256(s)[0] >> (8-num_checksum_bits.intValue());
+        var t1 = Kit.sha256(s);
+        x = Kit.bytesToHexString(t1);
+        var t2 = t1[0];
+        var t3 = t2 >> (8-num_checksum_bits.intValue());
+
+        // remove sign of byte before shifting, otherwise sign 1 is extented
+        var computed_checksum = Kit.sha256(s) [0] & 0x00ff;
+        computed_checksum = computed_checksum >> (8-num_checksum_bits.intValue());
+
 
         if (computed_checksum!=checksum.intValue()) {
-            System.out.println("Invalid checksum! ");
+            return null;
         }
         return s;
 
@@ -137,4 +144,11 @@ public class Mnemonic {
         return mnemonic;
     }
 
+    public String getSeedString() {
+        String ret = this.seed_words.get(0);
+        for (int c=1;c<seed_words.size();c++)
+            ret+=" "+this.seed_words.get(c);
+
+        return ret;
+    }
 }

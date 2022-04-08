@@ -29,14 +29,19 @@ public class Hd {
     public static final String DEFAULT_P2WSH_PATH_regtest = "m/48h/1h/0h/2h";
 
 
-    public static String calcValidSeedPickerChecsums(ArrayList<String> first_words) {
+    // TODO: generator-like implementation
+    public static String nextValidChecksum(ArrayList<String> first_words) {
         // returns the first word that can be used as checksum if added to first words
-        int current_word = 0;
+        int start_word = 0;
         var words = Mnemonic.getBip39Words();
-        for (int i = current_word; i < 2048; i++) {
-            first_words.add(words[i]);
-            if (HDPrivateKey.fromMnemonic(first_words) != null)
+
+        for (int i = start_word; i < 2048; i++) {
+            //first_words.add(words[i]);
+            first_words.add("believe");
+            if (HDPrivateKey.fromMnemonic(first_words) != null) {
+                start_word = i+1;
                 return words[i];
+            }
             first_words.remove(first_words.size() - 1);
         }
         return null;
