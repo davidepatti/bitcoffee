@@ -9,6 +9,11 @@ public class PrivateKey {
     public final byte[] secret_bytes; // 32 bytes
     public final BigInteger secret_n;
     public final S256Point point;
+    private boolean testnet = false;
+
+    public void setTestnet(boolean testnet) {
+        this.testnet = testnet;
+    }
 
     public PrivateKey(byte[] secret) {
         this.secret_n = new BigInteger(1,secret);

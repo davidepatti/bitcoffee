@@ -87,12 +87,10 @@ public class Mnemonic {
 
         var num_bytes = (num_words*11-num_checksum_bits.intValue())/8;
 
+        /*
         var all_bytes = all_bits.toByteArray();
-
         var x = Kit.bytesToHexString(all_bytes);
-
         var s = new byte[num_bytes];
-
         // must create a big endian of num_bytes
         // so copy from right last elements (less significant)
         // possibly removing zeros at the first elements
@@ -100,9 +98,12 @@ public class Mnemonic {
 
             s[i-1] = all_bytes[i-1];
         }
+        */
+
+        var s = Kit.intToBigEndian(all_bits,num_bytes);
 
         var t1 = Kit.sha256(s);
-        x = Kit.bytesToHexString(t1);
+        var x = Kit.bytesToHexString(t1);
         var t2 = t1[0];
         var t3 = t2 >> (8-num_checksum_bits.intValue());
 

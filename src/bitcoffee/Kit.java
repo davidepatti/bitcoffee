@@ -245,6 +245,15 @@ public class Kit {
 
     }
 
+    public static byte[] concatBytes(byte[] data1, byte[] data2) {
+
+        var data = new byte[data1.length+data2.length];
+
+        for (int i=0;i<data1.length;i++) data[i]= data1[i];
+        for (int i=0;i<data2.length;i++) data[i+data1.length]= data2[i];
+        return data;
+    }
+
     /***************************************************************************/
     public static long readVarint(ByteArrayInputStream bis) {
         byte[] buffer;
@@ -456,6 +465,23 @@ public class Kit {
        }
        return bits;
    }
+
+   public static byte[] intToBigEndian(BigInteger n,int length) {
+
+       var all_bytes = n.toByteArray();
+       var x = Kit.bytesToHexString(all_bytes);
+       var s = new byte[length];
+       s = Kit.reverseBytes(s);
+       return s;
+   }
+
+
+
+
+
+    // must create a big endian of num_bytes
+    // so copy from right last elements (less significant)
+    // possibly removing zeros at the first elements
 
 }
 
