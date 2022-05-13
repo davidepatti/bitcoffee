@@ -36,8 +36,7 @@ public class Hd {
         var words = Mnemonic.getBip39Words();
 
         for (int i = start_word; i < 2048; i++) {
-            //first_words.add(words[i]);
-            first_words.add("believe");
+            first_words.add(words[i]);
             if (HDPrivateKey.fromMnemonic(first_words) != null) {
                 start_word = i+1;
                 return words[i];

@@ -161,6 +161,7 @@ public class HDPrivateKey {
         mnemonic.setSeedWords(words);
 
         var by = mnemonic.mnemonicToBytes();
+        //var by_hex = Kit.bytesToHexString(by);
 
         if (by != null) {
 

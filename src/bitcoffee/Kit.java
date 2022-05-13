@@ -469,19 +469,9 @@ public class Kit {
    public static byte[] intToBigEndian(BigInteger n,int length) {
 
        var all_bytes = n.toByteArray();
-       var x = Kit.bytesToHexString(all_bytes);
-       var s = new byte[length];
-       s = Kit.reverseBytes(s);
-       return s;
+       //var x = Kit.bytesToHexString(all_bytes);
+       return all_bytes;
    }
-
-
-
-
-
-    // must create a big endian of num_bytes
-    // so copy from right last elements (less significant)
-    // possibly removing zeros at the first elements
 
 }
 

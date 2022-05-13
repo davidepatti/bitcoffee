@@ -102,13 +102,17 @@ public class Mnemonic {
 
         var s = Kit.intToBigEndian(all_bits,num_bytes);
 
+        /* TODO: remove, for debug
+        var sx = Kit.bytesToHexString(s);
         var t1 = Kit.sha256(s);
         var x = Kit.bytesToHexString(t1);
         var t2 = t1[0];
         var t3 = t2 >> (8-num_checksum_bits.intValue());
+         */
 
         // remove sign of byte before shifting, otherwise sign 1 is extented
         var computed_checksum = Kit.sha256(s) [0] & 0x00ff;
+        //var ch = Kit.bytesToHexString(Kit.intToLittleEndianBytes(computed_checksum));
         computed_checksum = computed_checksum >> (8-num_checksum_bits.intValue());
 
 
@@ -116,7 +120,6 @@ public class Mnemonic {
             return null;
         }
         return s;
-
     }
 
 
