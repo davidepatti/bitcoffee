@@ -247,7 +247,7 @@ public class bitcoffee {
         var change_h160 = Kit.decodeBase58(change_address);
 
         // not modify, creating script from the address above
-        var change_script = Script.h160ToP2pkh(change_h160);
+        var change_script = new P2PKHScriptPubKey(change_h160);
         var change_script_bytes = change_script.getBytes();
         var change_output = new TxOut(change_amount, change_script_bytes);
 
@@ -261,7 +261,7 @@ public class bitcoffee {
         var target_amount = (int) (target_btc_amount * 100000000);
 
         var target_h160 = Kit.decodeBase58(target_address);
-        var target_script = Script.h160ToP2pkh(target_h160);
+        var target_script = new P2PKHScriptPubKey(target_h160);
         var target_output = new TxOut(target_amount, target_script.getBytes());
 
         var tx_ins = new ArrayList<TxIn>();

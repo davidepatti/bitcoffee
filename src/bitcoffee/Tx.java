@@ -242,12 +242,12 @@ public class Tx implements Message {
             else
             if (redeem_script!=null) {
                 var h160 = redeem_script.commands.elementAt(0).value;
-                script_code = Script.h160ToP2pkh(h160).serialize();
+                script_code = new P2PKHScriptPubKey(h160).serialize();
             }
             else {
                 var prev_script = new Script(tx_in.getPreviousTxScriptPubKey(this.testnet));
                 var h160 = prev_script.commands.elementAt(0).value;
-                script_code = Script.h160ToP2pkh(h160).serialize();
+                script_code = new P2PKHScriptPubKey(h160).serialize();
             }
 
             bos.write(script_code);

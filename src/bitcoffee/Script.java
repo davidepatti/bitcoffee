@@ -1,8 +1,6 @@
 
 package bitcoffee;
 
-import bitcoffee.*;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +31,11 @@ public class Script {
             this.commands = new Stack<>();
         else
             this.commands = script.commands;
+
+    }
+
+    public Script() {
+        this.commands = new Stack<>();
 
     }
 
@@ -181,19 +184,8 @@ public class Script {
     }
 
     /***************************************************************************/
-    // Convert the 20 bytes hash in a ScriptPubKey
-    public static Script h160ToP2pkh(byte[] h160) {
-        var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_CHECKSIG));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_EQUALVERIFY));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_HASH160));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_DUP));
-
-        return new Script(cmds);
-    }
     /*************************************************************************/
-    public static Script h160ToP2psh(byte[] h160) {
+    public static Script P2SHScriptPubKey(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmd.Type.OP_EQUAL));
         cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
@@ -202,7 +194,7 @@ public class Script {
         return new Script(cmds);
     }
     /*************************************************************************/
-    public static Script h160ToP2wpkh(byte[] h160) {
+    public static Script P2WPKHScriptPubKey(byte[] h160) {
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
         cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
@@ -210,11 +202,16 @@ public class Script {
         return new Script(cmds);
     }
     /*************************************************************************/
-    public static Script h160ToP2wsh(byte[] h256) {
+    public static Script P2WSHScriptPubKey(byte[] h256) {
         var cmds = new Stack<ScriptCmd>();
         cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h256));
         cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
 
+        return new Script(cmds);
+    }
+    public static Script P2TRSCriptPubKey(byte[] h256) {
+        var cmds = new Stack<ScriptCmd>();
+        // TODO
         return new Script(cmds);
     }
     /*************************************************************************/
@@ -409,7 +406,7 @@ public class Script {
                     var h160 = stack.pop();
                     stack.pop(); // the empty byte[], witness version 0
 
-                    var script = Script.h160ToP2pkh(h160);
+                    var script = new P2PKHScriptPubKey(h160);
                     cmds.addAll(script.commands);
 
                     for (int i= witness.size()-1;i>=0;i--) {

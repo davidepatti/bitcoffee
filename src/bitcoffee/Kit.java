@@ -355,6 +355,16 @@ public class Kit {
         return encodeBase58Checksum(res_bytes);
     }
 
+    public static String h160ToP2wpkhAddress(byte[] h160, boolean testnet) {
+
+    }
+    public static String h160ToP2shP2wpkhAddress(byte[] h160, boolean testnet) {
+
+    }
+    public static String h160ToP2trAddress(byte[] h160, boolean testnet) {
+
+    }
+
     public static byte[] merkleParent(byte[] hash1, byte[] hash2) {
         if (hash1.length !=32 || hash2.length!=32) {
             try {
@@ -471,6 +481,31 @@ public class Kit {
        var all_bytes = n.toByteArray();
        //var x = Kit.bytesToHexString(all_bytes);
        return all_bytes;
+   }
+
+   public static boolean isValidBIP32Path(String path ) {
+        path = path.toLowerCase().strip().replace("'","h").replace("//","/");
+
+        if (path.equals("m")) return true;
+        if (!path.startsWith("m/")) return false;
+
+        var sub_paths = path.substring(2,path.length()).split("/");
+
+       //https://bitcoin.stackexchange.com/a/92057
+        if (sub_paths.length>256) return false;
+
+
+        for (String subpath: sub_paths) {
+            if (subpath.endsWith("h"))
+                subpath = subpath.substring(0,subpath.length()-1);
+
+            BigInteger intpath = new BigInteger(subpath,10);
+
+            if (intpath.compareTo(BigInteger.ZERO)<0) return false;
+            if (intpath.compareTo(BigInteger.TWO.pow(31))>0) return false;
+        }
+
+        return true;
    }
 
 }

@@ -40,7 +40,8 @@ public class MultiWallet {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter first 23 words: ");
         //var first_words = sc.nextLine();
-        var first_words = "during now junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
+        //var first_words = "during now junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
+        var first_words = "during baby junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
 
         var seed_words = new ArrayList<>(Arrays.asList(first_words.split(" ")));
         // circle
@@ -58,23 +59,17 @@ public class MultiWallet {
             }
         }
 
+        // default checksum: use the first valid word
         String checksum_word = Hd.nextValidChecksum(seed_words);
 
-        System.out.println("Ok, valid first BIP39 words...");
-
         System.out.println("Computed checksum word: "+checksum_word);
-
         System.out.println("Complete seed: "+seed_words);
 
 
-        // TODO: add support
         var password = "";
         boolean testnet = false;
-        String path_to_use = "m";
-        String use_slip132_version_byte = null;
-
-
-        // default checksum: use the first valid word
+        String path_to_use = null;
+        boolean use_slip132_version_byte = true;
 
 
         seed_words.add(checksum_word);

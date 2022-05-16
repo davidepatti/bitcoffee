@@ -186,4 +186,44 @@ public class HDPrivateKey {
         return null;
     }
 
+    public void generateP2wshKeyRecord(String bip32_path, boolean use_slip132_version_byte) {
+        // Check that we're using the root HDPrivateKey
+        if (this.depth!=0) {
+            throw new RuntimeException("Key depth != 0. Please supply the root HDPrivateKey to use this method");
+        }
+
+        if (!this.parent_fingerprint.equals("00000000")) {
+            throw new RuntimeException("Parent fingerprint != the zero byte. Please supply the root HDPrivateKey to use this method.");
+        }
+
+        if (this.child_number!=0) {
+            throw new RuntimeException("Child_number != 0. Please supply the root HDPrivateKey to use this method.");
+        }
+
+        if ( (bip32_path!=null) && !(Kit.isValidBIP32Path(bip32_path))
+            throw new RuntimeException(bip32_path+ " is not valid bip32path");
+
+        String version_byte;
+
+        //https://github.com/satoshilabs/slips/blob/master/slip-0132.md
+        if (use_slip132_version_byte) {
+            if (this.testnet==false)
+                version_byte = "02aa7ed3";
+            else version_byte = "02575483";
+        }
+        else version_byte = null;
+
+
+        if (bip32_path==null) {
+            if (!this.testnet)
+                bip32_path = Hd.DEFAULT_P2WSH_PATH_mainnet;
+            else bip32_path = Hd.DEFAULT_P2WSH_PATH_testnet;
+        }
+        else bip32_path = bip32_path.replace("'","h");
+
+        //var xpub = this.traverse(bip32_path)
+
+
+    }
+
 }

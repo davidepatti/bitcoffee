@@ -64,7 +64,7 @@ public class TestValidation {
         System.out.println(">> RESULT:"+result_tdc.equals(target_decoded_change));
         System.out.println("---------------------------------------------------");
 
-        var change_script = Script.h160ToP2pkh(change_h160);
+        var change_script = new P2PKHScriptPubKey(change_h160);
         var change_script_bytes = change_script.getBytes();
         var change_script_serial_hex = Kit.bytesToHexString(change_script_bytes);
         var change_output = new TxOut(change_amount,change_script_bytes);
@@ -72,7 +72,7 @@ public class TestValidation {
         var target_amount = (int)(0.1*100000000);
         var target_address = "mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf";
         var target_h160 = Kit.decodeBase58(target_address);
-        var target_script = Script.h160ToP2pkh(target_h160);
+        var target_script = new P2PKHScriptPubKey(target_h160);
         var target_output = new TxOut(target_amount,target_script.getBytes());
 
         var tx_ins = new ArrayList<TxIn>();
