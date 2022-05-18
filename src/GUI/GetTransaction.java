@@ -129,7 +129,8 @@ public class GetTransaction extends JDialog{
                     } else {
                         var receveived_tx = (Tx) msg;
                         for (TxOut tout : receveived_tx.getTxOuts()) {
-                            if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                            //if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                            if (ScriptPubKey.parse(tout.getScriptPubkeyBytes()).getAddress(true).equals(address)) {
                                 textAreaResult.append("Found address " + address + " in tx id: " + receveived_tx.getId());
                                 found = true;
                             }

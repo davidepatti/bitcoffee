@@ -71,7 +71,4 @@ public class TxOut {
         return script_pubkey;
     }
 
-    public Script getScriptPubKey() {
-        return new Script(this.script_pubkey);
-    }
 }

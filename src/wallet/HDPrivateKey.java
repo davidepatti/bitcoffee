@@ -186,7 +186,7 @@ public class HDPrivateKey {
         return null;
     }
 
-    public void generateP2wshKeyRecord(String bip32_path, boolean use_slip132_version_byte) {
+    public void generateP2WSHKeyRecord(String bip32_path, boolean use_slip132_version_byte) {
         // Check that we're using the root HDPrivateKey
         if (this.depth!=0) {
             throw new RuntimeException("Key depth != 0. Please supply the root HDPrivateKey to use this method");
@@ -200,8 +200,10 @@ public class HDPrivateKey {
             throw new RuntimeException("Child_number != 0. Please supply the root HDPrivateKey to use this method.");
         }
 
-        if ( (bip32_path!=null) && !(Kit.isValidBIP32Path(bip32_path))
+        if  ( (bip32_path!=null) && !(Kit.isValidBIP32Path(bip32_path))) {
+
             throw new RuntimeException(bip32_path+ " is not valid bip32path");
+        }
 
         String version_byte;
 

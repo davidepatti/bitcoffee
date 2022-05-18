@@ -13,7 +13,7 @@ import java.util.Stack;
 
 
 public class Script {
-    public final Stack<ScriptCmd> commands;
+    protected Stack<ScriptCmd> commands;
 
     public Script(Stack<ScriptCmd> stack) {
         this.commands = Objects.requireNonNullElseGet(stack, Stack::new);
@@ -30,7 +30,7 @@ public class Script {
         if (script==null)
             this.commands = new Stack<>();
         else
-            this.commands = script.commands;
+            this.commands = script.getCommands();
 
     }
 
@@ -183,100 +183,60 @@ public class Script {
         return res;
     }
 
-    /***************************************************************************/
-    /*************************************************************************/
-    public static Script P2SHScriptPubKey(byte[] h160) {
-        var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_EQUAL));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_HASH160));
-
-        return new Script(cmds);
-    }
-    /*************************************************************************/
-    public static Script P2WPKHScriptPubKey(byte[] h160) {
-        var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h160));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
-
-        return new Script(cmds);
-    }
-    /*************************************************************************/
-    public static Script P2WSHScriptPubKey(byte[] h256) {
-        var cmds = new Stack<ScriptCmd>();
-        cmds.push(new ScriptCmd(ScriptCmd.Type.DATA,h256));
-        cmds.push(new ScriptCmd(ScriptCmd.Type.OP_0));
-
-        return new Script(cmds);
-    }
-    public static Script P2TRSCriptPubKey(byte[] h256) {
-        var cmds = new Stack<ScriptCmd>();
-        // TODO
-        return new Script(cmds);
-    }
     /*************************************************************************/
     // check for the pattern: OP_DUP OP_HASH160 <20 byte hash> OP_EQUALVERIFY OP_CHECKSIG
     public boolean isP2pkhScriptPubKey() {
-        return (this.commands.size()==5
-                && commands.elementAt(0).type == ScriptCmd.Type.OP_CHECKSIG
-                && commands.elementAt(1).type == ScriptCmd.Type.OP_EQUALVERIFY
-                && commands.elementAt(2).type == ScriptCmd.Type.DATA
-                && commands.elementAt(2).value.length == 20
-                && commands.elementAt(3).type == ScriptCmd.Type.OP_HASH160
-                && commands.elementAt(4).type == ScriptCmd.Type.OP_DUP);
+        return (this.getCommands().size()==5
+                && getCommands().elementAt(0).type == ScriptCmd.Type.OP_CHECKSIG
+                && getCommands().elementAt(1).type == ScriptCmd.Type.OP_EQUALVERIFY
+                && getCommands().elementAt(2).type == ScriptCmd.Type.DATA
+                && getCommands().elementAt(2).value.length == 20
+                && getCommands().elementAt(3).type == ScriptCmd.Type.OP_HASH160
+                && getCommands().elementAt(4).type == ScriptCmd.Type.OP_DUP);
     }
 
     /*************************************************************************/
     // check for the pattern: OP_HASH160 <20 byte hash> OP_EQUAL
     public boolean isP2shScriptPubKey() {
-        return (this.commands.size()==3
-                && commands.elementAt(0).type == ScriptCmd.Type.OP_EQUAL
-                && commands.elementAt(1).type == ScriptCmd.Type.DATA
-                && commands.elementAt(1).value.length == 20
-                && commands.elementAt(2).type == ScriptCmd.Type.OP_HASH160);
+        return (this.getCommands().size()==3
+                && getCommands().elementAt(0).type == ScriptCmd.Type.OP_EQUAL
+                && getCommands().elementAt(1).type == ScriptCmd.Type.DATA
+                && getCommands().elementAt(1).value.length == 20
+                && getCommands().elementAt(2).type == ScriptCmd.Type.OP_HASH160);
     }
     /*************************************************************************/
     // check for the pattern: OP_0 <20 byte hash>
     public boolean isP2wpkhScriptPubKey() {
-        return (this.commands.size()==2
-                && commands.elementAt(0).type == ScriptCmd.Type.DATA
-                && commands.elementAt(0).value.length == 20
-                && commands.elementAt(1).type == ScriptCmd.Type.OP_0);
+        return (this.getCommands().size()==2
+                && getCommands().elementAt(0).type == ScriptCmd.Type.DATA
+                && getCommands().elementAt(0).value.length == 20
+                && getCommands().elementAt(1).type == ScriptCmd.Type.OP_0);
     }
 
     // check for the pattern: OP_0 <32 byte hash>
     public boolean isP2wshScriptPubKey() {
-        return (this.commands.size()==2
-                && commands.elementAt(0).type == ScriptCmd.Type.DATA
-                && commands.elementAt(0).value.length == 32
-                && commands.elementAt(1).type == ScriptCmd.Type.OP_0);
+        return (this.getCommands().size()==2
+                && getCommands().elementAt(0).type == ScriptCmd.Type.DATA
+                && getCommands().elementAt(0).value.length == 32
+                && getCommands().elementAt(1).type == ScriptCmd.Type.OP_0);
     }
 
     /*************************************************************************/
     // Returns the address
 
     public String getAddress(boolean testnet) {
-        if (this.isP2pkhScriptPubKey()) {
-            var h160 = commands.elementAt(2).value;
-            return Kit.h160ToP2pkhAddress(h160,testnet);
-        }
-        else if (this.isP2shScriptPubKey())
-        {
-            var h160= commands.elementAt(1).value;
-            return Kit.h160ToP2shAddress(h160,testnet);
-        }
-        throw new RuntimeException("Wrong invokation of getAddress on non-scriptpubkey");
+        throw new RuntimeException(" Calling getAddress to unimplemented generic class");
     }
 
 
 
     /*************************************************************************/
     public void addTop(Stack<ScriptCmd> other) {
-        this.commands.addAll(other);
+        this.getCommands().addAll(other);
     }
 
     public void addTop(Script other_script) {
-        this.commands.addAll(other_script.commands);
+        this.getCommands().addAll(other_script.getCommands());
     }
     /*************************************************************************/
     // bytes encoding ops, without length prefix (required in serialization)
@@ -291,12 +251,12 @@ public class Script {
 
 
     /*************************************************************************/
-    private byte[] raw_serialize() throws IOException {
+    public byte[] raw_serialize() throws IOException {
         var bos = new ByteArrayOutputStream();
 
         var copy_cmd = new Stack<ScriptCmd>();
 
-        copy_cmd.addAll(commands);
+        copy_cmd.addAll(getCommands());
 
         if (copy_cmd.empty()) {
             return new byte[]{};
@@ -356,7 +316,7 @@ public class Script {
     /*************************************************************************/
     public boolean evaluate(byte[] z, ArrayList<byte[]> witness) {
         var cmds = new Stack<ScriptCmd>();
-        cmds.addAll(this.commands); // make a copy for adding redeem script if required
+        cmds.addAll(this.getCommands()); // make a copy for adding redeem script if required
 
         var stack = new Stack<byte[]>();
         var altstack = new Stack<byte[]>();
@@ -394,7 +354,7 @@ public class Script {
 
                     // since the h160 of the script is valid, we can add to commands
                     var redeem_script = new Script(cmd.value);
-                    cmds.addAll(redeem_script.commands);
+                    cmds.addAll(redeem_script.getCommands());
                 }
 
                 // p2wpks
@@ -407,7 +367,7 @@ public class Script {
                     stack.pop(); // the empty byte[], witness version 0
 
                     var script = new P2PKHScriptPubKey(h160);
-                    cmds.addAll(script.commands);
+                    cmds.addAll(script.getCommands());
 
                     for (int i= witness.size()-1;i>=0;i--) {
                         var item = witness.get(i);
@@ -435,7 +395,7 @@ public class Script {
 
                     var witness_script = new Script(witness_script_raw);
 
-                    cmds.addAll(witness_script.commands);
+                    cmds.addAll(witness_script.getCommands());
 
                     // add all the witness data, except the last element already added as witness script
                     for (int i = witness.size()-2; i>=0; i--) {
@@ -581,10 +541,14 @@ public class Script {
     public String toString() {
         StringBuilder out = new StringBuilder("Script Stack:");
 
-        for (int i=this.commands.size()-1; i>-1; i--) {
-            out.append(" ").append(this.commands.get(i));
+        for (int i = this.getCommands().size()-1; i>-1; i--) {
+            out.append(" ").append(this.getCommands().get(i));
         }
         return out.toString();
 
+    }
+
+    public Stack<ScriptCmd> getCommands() {
+        return commands;
     }
 }

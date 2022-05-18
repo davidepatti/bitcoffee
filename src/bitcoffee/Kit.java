@@ -14,6 +14,24 @@ import java.util.Arrays;
 
 public class Kit {
 
+
+    /***************************************************************************/
+    public static byte[] encodeVarStr(byte[] str) {
+        return Kit.addLenPrefix(str);
+    }
+
+    /***************************************************************************/
+    public static byte[] readVarStr(byte[] str) {
+        var bis = new ByteArrayInputStream(str);
+
+        long l = readVarint(bis);
+        try {
+            return bis.readNBytes((int) l);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /***************************************************************************/
     public static byte[] addLenPrefix(byte[] bytes) {
         long len = bytes.length;
         var varint = Kit.encodeVarint(len);
@@ -110,6 +128,10 @@ public class Kit {
     public static byte[] asciiStringToBytes(String s ) {
         return  s.getBytes(StandardCharsets.UTF_8);
     }
+
+    /***************************************************************************/
+
+
 
     /***************************************************************************/
     public static String encodeBase58(byte[] s) {
@@ -245,6 +267,7 @@ public class Kit {
 
     }
 
+    /***************************************************************************/
     public static byte[] concatBytes(byte[] data1, byte[] data2) {
 
         var data = new byte[data1.length+data2.length];
@@ -327,101 +350,19 @@ public class Kit {
         return null;
     }
 
-    public static String h160ToP2pkhAddress(byte[] h160, boolean testnet) {
-        byte prefix;
 
-        if (testnet) prefix = 0x6f;
-                else
-                    prefix = 0;
-
-        var bos = new ByteArrayOutputStream();
-        bos.write(prefix);
-        bos.writeBytes(h160);
-        var res_bytes = bos.toByteArray();
-        return encodeBase58Checksum(res_bytes);
-    }
-
-    public static String h160ToP2shAddress(byte[] h160, boolean testnet) {
-        byte prefix;
-
-        if (testnet) prefix = (byte)0xc4;
-        else
-            prefix = 0x05;
-
-        var bos = new ByteArrayOutputStream();
-        bos.write(prefix);
-        bos.writeBytes(h160);
-        var res_bytes = bos.toByteArray();
-        return encodeBase58Checksum(res_bytes);
-    }
-
-    public static String h160ToP2wpkhAddress(byte[] h160, boolean testnet) {
-
-    }
-    public static String h160ToP2shP2wpkhAddress(byte[] h160, boolean testnet) {
-
-    }
-    public static String h160ToP2trAddress(byte[] h160, boolean testnet) {
-
-    }
-
-    public static byte[] merkleParent(byte[] hash1, byte[] hash2) {
-        if (hash1.length !=32 || hash2.length!=32) {
-            try {
-                throw new Exception("Wrong hashes sizes");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        var merged = Kit.bytesToHexString(hash1)+Kit.bytesToHexString(hash2);
-        return hash256(Kit.hexStringToByteArray(merged));
-    }
-
-    public static String merkleParent(String hash1, String hash2) {
-        return Kit.bytesToHexString(hash256(Kit.hexStringToByteArray(hash1+hash2)));
-    }
-
-
-    public static ArrayList<String> merkleParentLevel(ArrayList<String> hashes) {
-
-        if (hashes.size()==1)
-            throw new RuntimeException("Cannot derive parent level, size 1");
-
-        if (hashes.size()%2==1)
-            hashes.add(hashes.get(hashes.size()-1));
-
-        var parent_level = new ArrayList<String>();
-
-        for (int i=0;i<hashes.size();i+=2) {
-
-            var parent = Kit.merkleParent(hashes.get(i),hashes.get(i+1));
-            parent_level.add(parent);
-        }
-
-        return parent_level;
-    }
-
-    public static String merkleRoot(ArrayList<String> hashes) {
-
-        var current_level = hashes;
-
-        while (current_level.size()>1) {
-            current_level = merkleParentLevel(current_level);
-        }
-
-        return current_level.get(0);
-    }
-
+    /***************************************************************************/
     public static double log2(int x) {
         return Math.log(x) / Math.log(2);
     }
 
+    /***************************************************************************/
     public static String reverseByteString(String s) {
         var bytes = Kit.hexStringToByteArray(s);
         return Kit.bytesToHexString(Kit.reverseBytes(bytes));
     }
 
+    /***************************************************************************/
     static ArrayList<Boolean> bytesToBitField(byte[] some_bytes) {
        var flag_bits = new ArrayList<Boolean>();
 
@@ -441,6 +382,7 @@ public class Kit {
 
        return flag_bits;
    }
+    /***************************************************************************/
     public static byte[] bitFieldToBytes(ArrayList<Boolean> bitfield) {
         if (bitfield.size()%8!=0) {
             throw new RuntimeException("Not multiple of 8");
@@ -459,10 +401,12 @@ public class Kit {
         return bytes;
     }
 
+    /***************************************************************************/
     public static ArrayList<Boolean> bytesToBitField(String some_bytes) {
        return bytesToBitField(hexStringToByteArray(some_bytes));
    }
 
+    /***************************************************************************/
     public static ArrayList<Boolean> bitStringToBitField(String some_bits) {
 
        var bits = new ArrayList<Boolean>();
@@ -476,6 +420,7 @@ public class Kit {
        return bits;
    }
 
+    /***************************************************************************/
    public static byte[] intToBigEndian(BigInteger n,int length) {
 
        var all_bytes = n.toByteArray();
@@ -483,6 +428,7 @@ public class Kit {
        return all_bytes;
    }
 
+    /***************************************************************************/
    public static boolean isValidBIP32Path(String path ) {
         path = path.toLowerCase().strip().replace("'","h").replace("//","/");
 

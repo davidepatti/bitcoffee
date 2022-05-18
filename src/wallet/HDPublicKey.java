@@ -1,8 +1,6 @@
 package wallet;
 
-import bitcoffee.P2PKHScriptPubKey;
-import bitcoffee.S256Point;
-import bitcoffee.Script;
+import bitcoffee.*;
 
 public class HDPublicKey {
 
@@ -48,10 +46,10 @@ public class HDPublicKey {
         return new P2PKHScriptPubKey(this.hash160());
     }
     public Script get_p2wpkh_script() {
-        return Script.P2WPKHScriptPubKey(this.hash160());
+        return new P2WPKHScriptPubKey(this.hash160());
     }
     public Script get_p2sh_wpkh_script() {
-        return Script.P2WSHScriptPubKey(this.hash160());
+        return new P2WSHScriptPubKey(this.hash160());
     }
 
     public String getAddress() {
