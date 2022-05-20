@@ -2,7 +2,7 @@ package bitcoffee;
 
 import java.util.Stack;
 
-public class P2WSHScriptPubKey extends ScriptPubKey{
+public class P2WSHScriptPubKey extends SegwitPubKey {
     // Convert the 20 bytes hash in a ScriptPubKey
 
     public P2WSHScriptPubKey(byte[] h160) {
@@ -13,12 +13,8 @@ public class P2WSHScriptPubKey extends ScriptPubKey{
         this.commands = cmds;
 
     }
-
     public byte[] getHash160() {
         return getCommands().get(1).value;
     }
 
-    public String getAddress(boolean testnet){
-        return P2SHScriptPubKey.h160ToAddress(this.getHash160(),testnet);
-    }
 }

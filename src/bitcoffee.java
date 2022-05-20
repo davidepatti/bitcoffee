@@ -176,10 +176,10 @@ public class bitcoffee {
         String myaddress;
         if (testnet) {
             System.out.println("Testnet address for secret:" + secret);
-             myaddress = mypk.point.getP2pkhTestnetAddress();
+             myaddress = mypk.point.getP2pkhAddress(true,true);
         }
         else {
-            myaddress = mypk.point.getP2pkhAddress(true);
+            myaddress = mypk.point.getP2pkhAddress(true,false);
             System.out.println("Mainnet address for secret:" + secret);
         }
 

@@ -71,11 +71,11 @@ public class P2Pkaddr extends JDialog{
         var mypk = new PrivateKey(secret_bytes);
         String myaddress;
         if (testnet) {
-            myaddress = mypk.point.getP2pkhTestnetAddress();
+            myaddress = mypk.point.getP2pkhAddress(true,true);
             textAreaResult.append("Testnet address for secret: " + secret + "\n");
         }
         else{
-            myaddress = mypk.point.getP2pkhAddress(true);
+            myaddress = mypk.point.getP2pkhAddress(true,false);
             textAreaResult.append("Mainnet address for secret: " + secret + "\n");
         }
         textAreaResult.append("address: " + myaddress + "\n");

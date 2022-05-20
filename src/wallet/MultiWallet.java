@@ -17,6 +17,7 @@ public class MultiWallet {
             System.out.println(" bitcofee toolkit");
             System.out.println("------------------------------------------------");
             System.out.println(" (g) generate seed from BIP39 ");
+            System.out.println(" (t) generate with test seed ");
             System.out.println("------------------------------------------------");
 
             System.out.print(" -> enter choice: ");
@@ -24,7 +25,10 @@ public class MultiWallet {
 
             switch (choice) {
                 case "g":
-                    generate_seed();
+                    generate_seed(false);
+                    break;
+                case "t":
+                    generate_seed(true);
                     break;
                 case "q":
                     System.exit(0);
@@ -32,30 +36,40 @@ public class MultiWallet {
         }
     }
 
-    private static void generate_seed() {
+    private static void generate_seed(boolean test) {
         // get first 23 words
         // during now junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill
 
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter first 23 words: ");
-        //var first_words = sc.nextLine();
         //var first_words = "during now junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
-        var first_words = "during baby junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
+        String first_words;
+        if (test)
+            first_words = "during baby junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill";
+        else
+            first_words = sc.nextLine();
 
-        var seed_words = new ArrayList<>(Arrays.asList(first_words.split(" ")));
+        var first_words_list = new ArrayList<>(Arrays.asList(first_words.split(" ")));
         // circle
-        if (seed_words.size()!=23) {
-            System.out.println("Wrong size in BIP39 words:"+seed_words.size());
+        if (first_words_list.size()!=23) {
+            System.out.println("Wrong size in the first 23 BIP39 words:"+first_words_list.size());
             System.exit(-1);
         }
 
         var map = Mnemonic.getBip39Map();
 
-        for (String w:seed_words) {
+        var seed_words = new String[24];
+        int n = 0;
+
+        for (String w:first_words_list) {
             if (!map.containsKey(w)) {
                 System.out.println("Invalid BIP39 word:"+w);
                 System.exit(-1);
+            }
+            else {
+                seed_words[n] = w;
+                n++;
             }
         }
 
@@ -72,9 +86,9 @@ public class MultiWallet {
         boolean use_slip132_version_byte = true;
 
 
-        seed_words.add(checksum_word);
+        seed_words[23] = checksum_word;
 
-        var hd_priv = HDPrivateKey.fromMnemonic(seed_words, password,path_to_use, false);
+        var hd_priv = HDPrivateKey.fromMnemonic(seed_words, password, false);
 
     }
 }

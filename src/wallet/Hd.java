@@ -31,17 +31,16 @@ public class Hd {
     private static int start_word = 0;
 
     // TODO: generator-like implementation
-    public static String nextValidChecksum(ArrayList<String> first_words) {
+    public static String nextValidChecksum(final String[] first_words) {
         // returns the first word that can be used as checksum if added to first words
         var words = Mnemonic.getBip39Words();
 
         for (int i = start_word; i < 2048; i++) {
-            first_words.add(words[i]);
+            first_words[23] = words[i];
             if (HDPrivateKey.fromMnemonic(first_words) != null) {
                 start_word = i+1;
                 return words[i];
             }
-            first_words.remove(first_words.size() - 1);
         }
         return null;
     }

@@ -104,7 +104,7 @@ public class TestSerialization {
         System.out.println("--> Testing Address for priv key :"+e2_n);
         var pk_addr2 = new PrivateKey(e2_n);
         var target_addr2 = "mopVkxp8UhXqRYbCYJsbeE1h1fiF64jcoH";
-        var res_addr2 = pk_addr2.point.getP2pkhTestnetAddress();
+        var res_addr2 = pk_addr2.point.getP2pkhAddress(true);
         System.out.println("address:" + res_addr2);
         System.out.println("--> Result:"+res_addr2.equals(target_addr2));
         System.out.println("----------------------------------------------------------");

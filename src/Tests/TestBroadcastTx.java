@@ -15,7 +15,7 @@ public class TestBroadcastTx {
         var secret_bytes = Kit.hash256(secret_text);
         var mypk = new PrivateKey(secret_bytes);
 
-        var myaddress = mypk.point.getP2pkhTestnetAddress();
+        var myaddress = mypk.point.getP2pkhAddress(true);
         System.out.println("Testnet address for secret:"+secret_text);
         System.out.println("address: "+myaddress);
         var wif = mypk.getWIF(true,true);

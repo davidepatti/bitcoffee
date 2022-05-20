@@ -53,9 +53,21 @@ public class HDPublicKey {
     }
 
     public String getAddress() {
-        if (testnet) return this.point.getP2pkhTestnetAddress();
-        else return this.point.getP2pkhAddress(true);
+        return this.point.getP2pkhAddress(true,this.testnet);
     }
+
+    public String getP2pkhAddress(boolean testnet) {
+        return this.point.getP2pkhAddress(testnet) ;
+    }
+    public String getP2wpkhAddress(boolean testnet) {
+        return this.point.getP2wpkhAddress(testnet) ;
+    }
+
+    public String getP2shAddress(boolean testnet) {
+        return this.point.getP2shAddress(testnet);
+    }
+
+
 
     // TODO: add p2wpkh, p2sh_p2wpkh, p2tr
 

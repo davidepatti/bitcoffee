@@ -24,6 +24,8 @@ public class HDPrivateKey {
     private String pub_version;
     private final int child_number;
 
+    private final HDPublicKey pub;
+
 
 
     /*-------------------------------------------------------------------------------------------*/
@@ -46,7 +48,7 @@ public class HDPrivateKey {
         }
         this.priv_version = priv_version;
 
-        // TODO: keep a copy of the corresponding pubkey (line 97 hd.py)
+        pub = new HDPublicKey(private_key.point,chain_code,depth,parent_fingeprint,child_number,testnet,pub_version);
     }
     /*-------------------------------------------------------------------------------------------*/
     public HDPrivateKey(PrivateKey pk, byte[] chain_code,  boolean testnet, String priv_version, String pub_version) {
@@ -144,13 +146,18 @@ public class HDPrivateKey {
 
 
     /*-------------------------------------------------------------------------------------------*/
-    public static HDPrivateKey fromMnemonic(ArrayList<String> words) {
+    public static HDPrivateKey fromMnemonic(String[] words) {
 
         return fromMnemonic(words,"","m",false);
     }
+    /*-------------------------------------------------------------------------------------------*/
+    public static HDPrivateKey fromMnemonic(String[] words, String password, boolean testnet) {
+
+        return fromMnemonic(words,"","m",testnet);
+    }
 
     /*-------------------------------------------------------------------------------------------*/
-    public static HDPrivateKey fromMnemonic(ArrayList<String> words, String password, String path, boolean testnet) {
+    public static HDPrivateKey fromMnemonic(String[] words, String password, String path, boolean testnet) {
 
         var mnemonic = Mnemonic.getInstance();
         mnemonic.setSeedWords(words);

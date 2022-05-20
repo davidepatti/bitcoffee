@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class Mnemonic {
 
     private static final String WORDLIST_FILE = "bip39_words.txt";
-    private ArrayList<String> seed_words = new ArrayList<>();
+    private String[] seed_words = new String[24];
     private static final String[] BIP39_WORDS = new String[2048];
     private static final HashMap<String,Integer> BIP39_MAP = new HashMap<>();
 
@@ -28,11 +28,8 @@ public class Mnemonic {
         return INSTANCE;
     }
 
-    public void setSeedWords(ArrayList<String> words) {
-        this.seed_words = words;
-    }
 
-    public ArrayList<String> getSeedWords() {
+    public String[] getSeedWords() {
         return this.seed_words;
     }
 
@@ -59,8 +56,6 @@ public class Mnemonic {
             BIP39_WORDS[current] =  new_word;
             BIP39_MAP.put(new_word,current);
             current++;
-
-            System.out.println("Loading "+BIP39_WORDS[current-1]);
         }
 
         bip39_ready = true;
@@ -69,10 +64,10 @@ public class Mnemonic {
     public byte[] mnemonicToBytes() {
 
         var all_bits = BigInteger.ZERO;
-        var num_words = seed_words.size();
+        var num_words = seed_words.length;
 
         if (num_words!=24) {
-            System.out.println("Wrong mnemonic size:"+this.seed_words.size());
+            System.out.println("Wrong mnemonic size:"+num_words);
         }
 
         for (String word: this.seed_words) {
@@ -136,10 +131,14 @@ public class Mnemonic {
     }
 
     public String getSeedString() {
-        String ret = this.seed_words.get(0);
-        for (int c=1;c<seed_words.size();c++)
-            ret+=" "+this.seed_words.get(c);
+        String ret = this.seed_words[0];
+        for (int c=1;c<seed_words.length;c++)
+            ret+=" "+this.seed_words[c];
 
         return ret;
+    }
+
+    public void setSeedWords(String[] words) {
+        this.seed_words = words;
     }
 }
