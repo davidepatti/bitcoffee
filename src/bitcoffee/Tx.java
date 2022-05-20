@@ -95,8 +95,8 @@ public class Tx implements Message {
 
     /*****************************************************************/
     public boolean verifyInput(int input_index) {
-        byte[] z = null;
-        byte[] raw_redeem = null;
+        byte[] z;
+        byte[] raw_redeem;
         ArrayList<byte[]> witness_data = null;
 
         var tx_in = tx_ins.get(input_index);
@@ -591,7 +591,7 @@ public class Tx implements Message {
 
     public int getCoinbaseHeight() {
         if (!this.isCoinbase()) return -1;
-        int height = -1;
+        int height;
 
         var scriptsig = new Script(this.getTxIns().get(0).getScriptSig());
         height = Kit.litteEndianBytesToInt(scriptsig.getCommands().pop().value).intValue();

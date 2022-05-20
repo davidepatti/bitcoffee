@@ -19,7 +19,7 @@ public class TxOut {
 
     @Override
     public String toString() {
-        String res="INVALID";
+        String res;
         var script = new Script(script_pubkey);
         String script_str = Kit.bytesToHexString(script_pubkey);
         res= "TxOut { amount: " + amount + ", script_pubkey: " + script_str + "}\n"+script;

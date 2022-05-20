@@ -28,11 +28,11 @@ public class Hd {
     public static final String DEFAULT_P2WSH_PATH_signet = "m/48h/1h/0h/2h";
     public static final String DEFAULT_P2WSH_PATH_regtest = "m/48h/1h/0h/2h";
 
+    private static int start_word = 0;
 
     // TODO: generator-like implementation
     public static String nextValidChecksum(ArrayList<String> first_words) {
         // returns the first word that can be used as checksum if added to first words
-        int start_word = 0;
         var words = Mnemonic.getBip39Words();
 
         for (int i = start_word; i < 2048; i++) {
