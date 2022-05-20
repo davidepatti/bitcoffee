@@ -18,7 +18,6 @@ public class Dashboard extends JDialog{
     private JButton signatureButton;
     private JButton difficultyAdjustmentButton;
     private JButton parseBlockButton;
-    private ImageIcon icon;
 
 
     public Dashboard(JFrame parent) {
@@ -89,7 +88,7 @@ public class Dashboard extends JDialog{
             }
         });
         setTitle("Bitcoffee");
-        icon= new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
+        ImageIcon icon = new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
         setIconImage(icon.getImage());
         setContentPane(DashboardPanel);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

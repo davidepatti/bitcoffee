@@ -20,7 +20,7 @@ public class VerifySignature extends JDialog{
     private JLabel btnHome;
     private JTextArea textAreaResult;
     private JButton verifyButton;
-    private ImageIcon icon;
+    private final ImageIcon icon;
 
 
     public VerifySignature(JFrame parent) {

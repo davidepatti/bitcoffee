@@ -1,7 +1,6 @@
 package GUI;
 
 import bitcoffee.TxFetcher;
-import bitcoffee.Tx;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 
 public class FetchTransaction extends JDialog{
@@ -20,8 +17,6 @@ public class FetchTransaction extends JDialog{
     private JLabel btnHome;
     private JButton verifyButton;
     private JTextArea textAreaResult;
-    private ImageIcon icon;
-
 
 
     public FetchTransaction(JFrame parent) {
@@ -46,15 +41,14 @@ public class FetchTransaction extends JDialog{
                             "The transaction ID field cannot be empty: please entry a value",
                             "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    if (testnetCheckBox.isSelected()) testnet= true;
-                    else testnet=false;
+                    testnet= testnetCheckBox.isSelected();
                     cmd_fetchtx(transactionId, testnet);
                 }
             }
         });
 
         setTitle("Bitcoffee");
-        icon= new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
+        ImageIcon icon = new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
         setIconImage(icon.getImage());
         setContentPane(panelFetchTx);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

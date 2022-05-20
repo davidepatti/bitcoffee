@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class MultiWallet {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         String choice = "";
         var sc = new Scanner(System.in);

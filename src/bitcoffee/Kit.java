@@ -271,8 +271,8 @@ public class Kit {
 
         var data = new byte[data1.length+data2.length];
 
-        for (int i=0;i<data1.length;i++) data[i]= data1[i];
-        for (int i=0;i<data2.length;i++) data[i+data1.length]= data2[i];
+        System.arraycopy(data1, 0, data, 0, data1.length);
+        System.arraycopy(data2, 0, data, 0 + data1.length, data2.length);
         return data;
     }
 
@@ -422,9 +422,8 @@ public class Kit {
     /***************************************************************************/
    public static byte[] intToBigEndian(BigInteger n,int length) {
 
-       var all_bytes = n.toByteArray();
        //var x = Kit.bytesToHexString(all_bytes);
-       return all_bytes;
+       return n.toByteArray();
    }
 
     /***************************************************************************/
@@ -434,7 +433,7 @@ public class Kit {
         if (path.equals("m")) return true;
         if (!path.startsWith("m/")) return false;
 
-        var sub_paths = path.substring(2,path.length()).split("/");
+        var sub_paths = path.substring(2).split("/");
 
        //https://bitcoin.stackexchange.com/a/92057
         if (sub_paths.length>256) return false;

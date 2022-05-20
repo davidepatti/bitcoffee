@@ -15,7 +15,7 @@ public class Signature extends JDialog{
     private JLabel btn_home;
     private JButton calculateButton;
     private JTextArea textAreaResult;
-    private ImageIcon icon;
+    private final ImageIcon icon;
 
 
     public Signature(JFrame parent) {

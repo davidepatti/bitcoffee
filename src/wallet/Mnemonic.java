@@ -14,7 +14,7 @@ public class Mnemonic {
     private static final String WORDLIST_FILE = "bip39_words.txt";
     private ArrayList<String> seed_words = new ArrayList<>();
     private static final String[] BIP39_WORDS = new String[2048];
-    private static HashMap<String,Integer> BIP39_MAP = new HashMap<>();
+    private static final HashMap<String,Integer> BIP39_MAP = new HashMap<>();
 
     private final static Mnemonic INSTANCE = new Mnemonic();
 
@@ -86,19 +86,6 @@ public class Mnemonic {
         all_bits = all_bits.shiftRight(num_checksum_bits.intValue());
 
         var num_bytes = (num_words*11-num_checksum_bits.intValue())/8;
-
-        /*
-        var all_bytes = all_bits.toByteArray();
-        var x = Kit.bytesToHexString(all_bytes);
-        var s = new byte[num_bytes];
-        // must create a big endian of num_bytes
-        // so copy from right last elements (less significant)
-        // possibly removing zeros at the first elements
-        for (int i=num_bytes;i>0;i--) {
-
-            s[i-1] = all_bytes[i-1];
-        }
-        */
 
         var s = Kit.intToBigEndian(all_bits,num_bytes);
 

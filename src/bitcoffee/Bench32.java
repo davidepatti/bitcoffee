@@ -31,8 +31,7 @@ public class Bench32 {
     public boolean usesOnlyBech32Chars(String s) {
         Pattern pattern = Pattern.compile(BECH32_CHARS_RE);
         Matcher matcher = pattern.matcher(s.toLowerCase());
-        boolean ok = matcher.find();
-        return ok;
+        return matcher.find();
     }
     ///from: https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
     public long bech32_polymod(final byte[] values) {
@@ -107,7 +106,7 @@ public class Bench32 {
         String ret = hrp+"1";
 
         for (byte c : combined) {
-            ret+=BECH32_ALPHABET.charAt((int)c);
+            ret+=BECH32_ALPHABET.charAt(c);
         }
         return ret;
     }
@@ -126,7 +125,7 @@ public class Bench32 {
         for (int i=0;i<str.length()-1-pos;++i) {
             char c = str.charAt(i+pos+1);
 
-            byte rev = CHARSET_REV[c];;
+            byte rev = CHARSET_REV[c];
             if (rev==-1) return null;
             values[i] = rev;
         }
@@ -137,8 +136,7 @@ public class Bench32 {
 
         if (!result) return null;
 
-        var ret = Arrays.copyOfRange(values,0,values.length-6);
-        return ret;
+        return Arrays.copyOfRange(values,0,values.length-6);
     }
 
     private ArrayList<Integer> group32(byte[] s ) {

@@ -18,7 +18,6 @@ public class CheckTransaction extends JDialog{
     private JButton checkButton;
     private JLabel btnHome;
     private JTextArea textAreaResult;
-    private ImageIcon icon;
 
 
     public CheckTransaction(JFrame parent) {
@@ -50,7 +49,7 @@ public class CheckTransaction extends JDialog{
         });
 
         setTitle("Bitcoffee");
-        icon= new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
+        ImageIcon icon = new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
         setIconImage(icon.getImage());
         setContentPane(panelCheckTx);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -76,7 +75,7 @@ public class CheckTransaction extends JDialog{
         try {
             var tx = Tx.parse(Kit.hexStringToByteArray(raw_tx), false);
             System.setOut(old);
-            textAreaResult.append(baos.toString() + "\n");
+            textAreaResult.append(baos + "\n");
             System.setOut(ps2);
             textAreaResult.append(">> Checking fee for tx id: " + tx.getId() + "\n");
             var fee = tx.calculateFee();

@@ -6,12 +6,12 @@ public class HDPublicKey {
 
 
     S256Point point;
-    private byte[] chain_code;
-    private int depth;
-    private String parent_fingerprint;
-    private int child_number;
-    private boolean testnet;
-    private String pub_version;
+    private final byte[] chain_code;
+    private final int depth;
+    private final String parent_fingerprint;
+    private final int child_number;
+    private final boolean testnet;
+    private final String pub_version;
 
 
 

@@ -15,14 +15,14 @@ import java.util.Arrays;
 
 public class HDPrivateKey {
 
-    private PrivateKey private_key;
-    private boolean testnet;
-    private byte[] chain_code;
-    private int depth;
-    private String parent_fingerprint;
-    private String priv_version;
+    private final PrivateKey private_key;
+    private final boolean testnet;
+    private final byte[] chain_code;
+    private final int depth;
+    private final String parent_fingerprint;
+    private final String priv_version;
     private String pub_version;
-    private int child_number;
+    private final int child_number;
 
 
 
@@ -63,9 +63,7 @@ public class HDPrivateKey {
         try {
             mac = Mac.getInstance(algo);
             mac.init(secretKeySpec);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             e.printStackTrace();
         }
         return mac.doFinal(msg);
@@ -101,7 +99,7 @@ public class HDPrivateKey {
 
         for (String child:components) {
             int index;
-            if (child.endsWith("\'")) {
+            if (child.endsWith("'")) {
                 var sub = child.substring(0,child.length()-1);
                 index = Integer.parseInt(sub)+0x80000000;
             }
@@ -118,18 +116,17 @@ public class HDPrivateKey {
     public HDPrivateKey child(int index) {
         byte[] data;
 
+        byte[] data1;
+        var data2 = Kit.intToBigEndian(BigInteger.valueOf(index),4);
         if (index>= 0x80000000) {
 
-            var data1 = Kit.intToBigEndian(this.private_key.secret_n,33);
-            var data2 = Kit.intToBigEndian(BigInteger.valueOf(index),4);
+            data1 = Kit.intToBigEndian(this.private_key.secret_n, 33);
 
-            data = Kit.concatBytes(data1,data2);
         }
         else {
-            var data1 = Kit.hexStringToByteArray(this.private_key.point.SEC33());
-            var data2 = Kit.intToBigEndian(BigInteger.valueOf(index),4);
-            data = Kit.concatBytes(data1,data2);
+            data1 = Kit.hexStringToByteArray(this.private_key.point.SEC33());
         }
+        data = Kit.concatBytes(data1,data2);
 
         var h = hmac_sha512(Kit.bytesToAscii(this.chain_code),data);
 
@@ -140,10 +137,8 @@ public class HDPrivateKey {
 
         var chain_code = Arrays.copyOfRange(h,32,h.length);
         var depth = this.depth+1;
-        var parent_fingeprint = this.parent_fingerprint;
-        var child_number = index;
 
-        return new HDPrivateKey(privatekey,chain_code,depth,parent_fingeprint,child_number,this.testnet,this.priv_version,this.pub_version);
+        return new HDPrivateKey(privatekey,chain_code,depth, this.parent_fingerprint, index,this.testnet,this.priv_version,this.pub_version);
 
     }
 
@@ -176,8 +171,6 @@ public class HDPrivateKey {
                 // TODO: CHECK traverse
                 return fromSeed(hash, testnet, null, null).traverse(path);
 
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -209,7 +202,7 @@ public class HDPrivateKey {
 
         //https://github.com/satoshilabs/slips/blob/master/slip-0132.md
         if (use_slip132_version_byte) {
-            if (this.testnet==false)
+            if (!this.testnet)
                 version_byte = "02aa7ed3";
             else version_byte = "02575483";
         }

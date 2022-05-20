@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 
 public class GetTransaction extends JDialog{
@@ -20,8 +19,6 @@ public class GetTransaction extends JDialog{
     private JCheckBox testnetCheckBox;
     private JTextArea textAreaResult;
     private JButton getButton;
-    private ImageIcon icon;
-
 
 
     public GetTransaction(JFrame parent) {
@@ -48,15 +45,14 @@ public class GetTransaction extends JDialog{
                             "Some fields are empty: please insert a value for any of them",
                             "ERROR", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    if (testnetCheckBox.isSelected()) testnet= true;
-                    else testnet=false;
+                    testnet= testnetCheckBox.isSelected();
                     cmd_gettx(host, lastBlock, address, testnet);
                 }
             }
         });
 
         setTitle("Bitcoffee");
-        icon= new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
+        ImageIcon icon = new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
         setIconImage(icon.getImage());
         setContentPane(panelGetTx);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

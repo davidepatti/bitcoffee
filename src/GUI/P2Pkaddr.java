@@ -17,7 +17,7 @@ public class P2Pkaddr extends JDialog{
     private JButton generateButton;
     private JLabel btnHome;
     private JTextArea textAreaResult;
-    private ImageIcon icon;
+    private final ImageIcon icon;
 
 
     public P2Pkaddr(JFrame parent) {
@@ -44,8 +44,7 @@ public class P2Pkaddr extends JDialog{
                             "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    if (testnetCheckBox.isSelected()) testnet= true;
-                    else testnet=false;
+                    testnet= testnetCheckBox.isSelected();
                     cmd_p2pkaddr(secret, testnet);
                 }
             }

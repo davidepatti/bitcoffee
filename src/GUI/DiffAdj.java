@@ -18,7 +18,6 @@ public class DiffAdj extends JDialog{
     private JTextArea textAreaInfoBlocks;
     private JLabel btnHome;
     private JTextArea textAreaResult;
-    private ImageIcon icon;
 
 
     public DiffAdj(JFrame parent) {
@@ -51,7 +50,7 @@ public class DiffAdj extends JDialog{
         });
 
         setTitle("Bitcoffee");
-        icon= new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
+        ImageIcon icon = new ImageIcon("src/GUI/images/icons8-blockchain-2.png");
         setIconImage(icon.getImage());
         setContentPane(panelDiffAdj);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);

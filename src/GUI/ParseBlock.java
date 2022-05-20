@@ -19,7 +19,7 @@ public class ParseBlock extends JDialog{
     private JTextArea textAreaOutput;
     private JLabel btnHome;
     private JTextArea textAreaInfo;
-    private ImageIcon icon;
+    private final ImageIcon icon;
 
 
     public ParseBlock(JFrame parent) {

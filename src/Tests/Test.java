@@ -35,6 +35,7 @@ public class Test {
         System.out.println("  STARTING TEST SET n."+testn+": "+current_test);
         System.out.println("********************************************************");
     }
+    @SuppressWarnings("EmptyMethod")
     public static void __END_TEST() {
         //System.out.println("\n ***************** END_TEST["+current_test+"]**********");
     }
