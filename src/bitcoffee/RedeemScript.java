@@ -1,21 +1,24 @@
 package bitcoffee;
 
 import java.io.IOException;
+import java.util.Stack;
 
 public class RedeemScript extends Script {
+
+    public RedeemScript(Stack<ScriptCmd> commands) {
+       super(commands);
+    }
 
     public boolean isP2SHMultiSig() {
         return this.getCommands().get(0).type== ScriptCmd.Type.OP_CHECKMULTISIG;
     }
 
     public byte[] getHash160() {
-        try {
-            return Kit.hash160(this.raw_serialize());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return Kit.hash160(this.rawSerialize());
 
     }
+
+
 
     public Script getScriptPubKey(){
         return new P2SHScriptPubKey(this.getHash160());

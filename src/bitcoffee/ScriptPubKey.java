@@ -59,4 +59,8 @@ public class ScriptPubKey extends Script {
          */
         return super.getAddress(testnet);
     }
+
+    public Script getRedeemScript() {
+        return new RedeemScript(this.commands);
+    }
 }

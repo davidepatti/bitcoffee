@@ -44,7 +44,7 @@ public class TestP2SH {
 
             // modify the single TxIn to have the ScriptSig to be the RedeemScript
             var i = tx.getTxIns().get(0);
-            var txin = new TxIn(i.getPrevTxId(),i.getPrevIndex(),redeem_script.getBytes(),i.getSequence());
+            var txin = new TxIn(i.getPrevTxId(),i.getPrevIndex(),redeem_script.rawSerialize(),i.getSequence());
             //System.out.println(txin);
             bos.write(txin.getSerialized());
 

@@ -6,12 +6,12 @@ public class SegwitPubKey extends ScriptPubKey {
 
     @Override
     public String getAddress(boolean testnet) {
-        try {
-            var witness_program = raw_serialize();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        var witness_program = rawSerialize();
 
-        return null;
+        return Bech32.encode_bech32_checksum(witness_program,testnet,false);
+    }
+
+    public String getP2SHAddress(boolean testnet) {
+        return this.getRedeemScript().getAddress(testnet);
     }
 }

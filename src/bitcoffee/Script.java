@@ -240,18 +240,8 @@ public class Script {
     }
     /*************************************************************************/
     // bytes encoding ops, without length prefix (required in serialization)
-    public byte[] getBytes() {
-        try {
-            return this.raw_serialize();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-
     /*************************************************************************/
-    public byte[] raw_serialize() throws IOException {
+    public byte[] rawSerialize()  {
         var bos = new ByteArrayOutputStream();
 
         var copy_cmd = new Stack<ScriptCmd>();
@@ -262,28 +252,30 @@ public class Script {
             return new byte[]{};
         }
 
-
         while (!copy_cmd.empty()) {
             var cmd = copy_cmd.pop();
             var len = cmd.value.length;
 
-            if (cmd.type== ScriptCmd.Type.DATA) {
-                bos.write((byte)len);
-                bos.write(cmd.value);
+            try {
+                if (cmd.type == ScriptCmd.Type.DATA) {
+                    bos.write((byte) len);
+                    bos.write(cmd.value);
+                } else if (cmd.type == ScriptCmd.Type.OP_PUSHDATA1) {
+                    bos.write((byte) ScriptCmd.Type.OP_PUSHDATA1.value);
+                    bos.write((byte) len);
+                    bos.write(cmd.value);
+                } else if (cmd.type == ScriptCmd.Type.OP_PUSHDATA2) {
+                    bos.write((byte) ScriptCmd.Type.OP_PUSHDATA2.value);
+                    var len_bytes = Kit.intToLittleEndianBytes(len);
+                    bos.write(len_bytes, 0, 2);
+                    bos.write(cmd.value);
+                } // operation, not data
+                else {
+                    bos.write((byte) cmd.type.value);
+                }
             }
-            else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA1) {
-                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA1.value);
-                bos.write((byte)len);
-                bos.write(cmd.value);
-            }
-            else if (cmd.type== ScriptCmd.Type.OP_PUSHDATA2) {
-                bos.write((byte) ScriptCmd.Type.OP_PUSHDATA2.value);
-                var len_bytes = Kit.intToLittleEndianBytes(len);
-                bos.write(len_bytes,0,2);
-                bos.write(cmd.value);
-            } // operation, not data
-            else {
-                bos.write((byte)cmd.type.value);
+            catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
         }
@@ -294,7 +286,7 @@ public class Script {
     public byte[] serialize() {
         var bos = new ByteArrayOutputStream();
         try {
-            var result = this.raw_serialize();
+            var result = this.rawSerialize();
             var len = result.length;
             var len_bytes = Kit.encodeVarint(len);
             // serialization starts with the number script bytes that follows

@@ -130,7 +130,7 @@ public class HDPrivateKey {
 
         var h = hmac_sha512(Kit.bytesToAscii(this.chain_code),data);
 
-        var data1 = Arrays.copyOfRange(h,0,32);
+        data1 = Arrays.copyOfRange(h,0,32);
         var secret = new BigInteger(1,data1).add(this.private_key.secret_n).mod(Secp256k1.N);
 
         var privatekey = new PrivateKey(secret);
