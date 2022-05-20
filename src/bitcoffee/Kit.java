@@ -132,7 +132,6 @@ public class Kit {
     /***************************************************************************/
 
 
-
     /***************************************************************************/
     public static String encodeBase58(byte[] s) {
         String BASE58_AlPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
