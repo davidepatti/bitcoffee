@@ -37,6 +37,9 @@ public class MultiWallet {
     }
 
     private static void generate_seed(boolean test) {
+        // TODO:
+        // - support for other seed sizes (e.g. 12 words)
+        // - support for all "advanced mode" choices from multiwallet.py
         // get first 23 words
         // during now junior phrase tilt vivid today journey lend scorpion brief marble carry glass group rubber loop venue shrimp top place green drill
 
@@ -76,9 +79,6 @@ public class MultiWallet {
         // default checksum: use the first valid word
         String checksum_word = Hd.nextValidChecksum(seed_words);
 
-        System.out.println("Computed checksum word: "+checksum_word);
-        System.out.println("Complete seed: "+seed_words);
-
 
         var password = "";
         boolean testnet = false;
@@ -89,6 +89,18 @@ public class MultiWallet {
         seed_words[23] = checksum_word;
 
         var hd_priv = HDPrivateKey.fromMnemonic(seed_words, password, false);
+
+        var key_record = hd_priv.generateP2WSHKeyRecord(path_to_use,use_slip132_version_byte);
+
+        System.out.println("Computed checksum word: "+checksum_word);
+        System.out.println("Complete seed: "+Arrays.toString(seed_words));
+
+        if (!password.equals(""))
+            System.out.println("Passphrase: ");
+
+        System.out.println("Network Testnet:"+testnet);
+        System.out.println("Copy to Specter-Desktop");
+        System.out.println(key_record);
 
     }
 }

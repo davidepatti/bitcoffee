@@ -186,7 +186,7 @@ public class HDPrivateKey {
         return null;
     }
 
-    public void generateP2WSHKeyRecord(String bip32_path, boolean use_slip132_version_byte) {
+    public String generateP2WSHKeyRecord(String bip32_path, boolean use_slip132_version_byte) {
         // Check that we're using the root HDPrivateKey
         if (this.depth!=0) {
             throw new RuntimeException("Key depth != 0. Please supply the root HDPrivateKey to use this method");
@@ -223,9 +223,19 @@ public class HDPrivateKey {
         }
         else bip32_path = bip32_path.replace("'","h");
 
-        //var xpub = this.traverse(bip32_path)
+        var xpub = this.traverse(bip32_path).xpub(version_byte);
+
+        var r = this.parent_fingerprint;
+        r = r+"/"+bip32_path.substring(2)+xpub;
+
+// [2de1328f/48h/0h/0h/2h]Zpub75KygAym9WZS29vPvMMiGCPydCtFHdYDqTrrecnff1gh2kGPxmVbGnV5sUbnasZgvpGETPByFfxKoERxVpojpfJ9mizkoEiBzc2syDrKQaZ
+
+        return r;
+    }
 
 
+    public String xpub(String version) {
+        return this.pub.xpub(version);
     }
 
 }

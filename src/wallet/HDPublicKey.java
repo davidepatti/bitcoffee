@@ -2,10 +2,12 @@ package wallet;
 
 import bitcoffee.*;
 
+import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
+
 public class HDPublicKey {
 
 
-    S256Point point;
     private final byte[] chain_code;
     private final int depth;
     private final String parent_fingerprint;
@@ -13,11 +15,16 @@ public class HDPublicKey {
     private final boolean testnet;
     private final String pub_version;
 
+    private byte[] raw = null;
+
+    private final S256Point point;
+
 
 
     /*-------------------------------------------------------------------------------------------*/
     public HDPublicKey(S256Point point, byte[] chain_code, int depth, String parent_fingeprint, int child_number, boolean testnet, String pub_version) {
 
+        this.point = point;
         this.testnet = testnet;
         this.chain_code = chain_code;
         this.depth = depth;
@@ -65,6 +72,43 @@ public class HDPublicKey {
 
     public String getP2shAddress(boolean testnet) {
         return this.point.getP2shAddress(testnet);
+    }
+
+
+    private byte[] raw_serialize() {
+
+        if (this.raw==null)
+            this.raw = serialize(pub_version);
+
+        return raw;
+
+    }
+    public byte[] serialize(String pub_version) {
+
+        var bos = new ByteArrayOutputStream();
+        bos.write(Kit.hexStringToByteArray(pub_version),0,4);
+        bos.write(this.depth);
+        bos.write(Kit.hexStringToByteArray(this.parent_fingerprint),0,4);
+
+        var childn = Kit.intToBigEndian(BigInteger.valueOf(this.child_number),4);
+        bos.writeBytes(childn);
+
+        bos.writeBytes(this.chain_code);
+
+        bos.writeBytes(Kit.hexStringToByteArray(this.point.SEC33()));
+
+        return bos.toByteArray();
+    }
+
+    public String xpub(String version) {
+        if (version==null) {
+            version = this.pub_version;
+        }
+
+        var raw = this.serialize(version);
+
+        var b58 = Kit.encodeBase58Checksum(raw);
+        return b58;
     }
 
 
