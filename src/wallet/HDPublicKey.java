@@ -4,6 +4,7 @@ import bitcoffee.*;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class HDPublicKey {
 
@@ -11,9 +12,9 @@ public class HDPublicKey {
     private final byte[] chain_code;
     private final int depth;
     private final String parent_fingerprint;
-    private final int child_number;
+    private final long child_number;
     private final boolean testnet;
-    private final String pub_version;
+    public final String pub_version;
 
     private byte[] raw = null;
 
@@ -22,7 +23,7 @@ public class HDPublicKey {
 
 
     /*-------------------------------------------------------------------------------------------*/
-    public HDPublicKey(S256Point point, byte[] chain_code, int depth, String parent_fingeprint, int child_number, boolean testnet, String pub_version) {
+    public HDPublicKey(S256Point point, byte[] chain_code, int depth, String parent_fingeprint, long child_number, boolean testnet, String pub_version) {
 
         this.point = point;
         this.testnet = testnet;
@@ -109,6 +110,11 @@ public class HDPublicKey {
 
         var b58 = Kit.encodeBase58Checksum(raw);
         return b58;
+    }
+
+    public byte[] fingerprint() {
+        var h160 = this.hash160();
+        return Arrays.copyOfRange(h160,0,4);
     }
 
 

@@ -10,7 +10,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class HDPrivateKey {
@@ -22,14 +21,14 @@ public class HDPrivateKey {
     private final String parent_fingerprint;
     private final String priv_version;
     private String pub_version;
-    private final int child_number;
+    private final long child_number;
 
     private final HDPublicKey pub;
 
 
 
     /*-------------------------------------------------------------------------------------------*/
-    public HDPrivateKey(PrivateKey pk, byte[] chain_code, int depth, String parent_fingeprint, int child_number, boolean testnet, String priv_version, String pub_version) {
+    public HDPrivateKey(PrivateKey pk, byte[] chain_code, int depth, String parent_fingeprint, long child_number, boolean testnet, String priv_version, String pub_version) {
 
         this.private_key = pk;
         this.private_key.setTestnet(testnet); // TODO: check if required...
@@ -57,6 +56,18 @@ public class HDPrivateKey {
 
     }
 
+    public static byte[] hmac_sha512(byte[] key, byte[] msg) {
+        String algo = "HmacSHA512";
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key, algo);
+        Mac mac = null;
+        try {
+            mac = Mac.getInstance(algo);
+            mac.init(secretKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return mac.doFinal(msg);
+    }
     /*-------------------------------------------------------------------------------------------*/
     public static byte[] hmac_sha512(String key, byte[] msg) {
         String algo = "HmacSHA512";
@@ -100,10 +111,10 @@ public class HDPrivateKey {
         components = Arrays.copyOfRange(components,1,components.length);
 
         for (String child:components) {
-            int index;
+            long index;
             if (child.endsWith("'")) {
                 var sub = child.substring(0,child.length()-1);
-                index = Integer.parseInt(sub)+0x80000000;
+                index = Long.parseLong(sub)+0x80000000L;
             }
             else index = Integer.parseInt(child);
 
@@ -115,7 +126,7 @@ public class HDPrivateKey {
 
     /*Returns the child HDPrivateKey at a particular index.
     Hardened children return for indices >= 0x8000000. */
-    public HDPrivateKey child(int index) {
+    public HDPrivateKey child(long index) {
         byte[] data;
 
         byte[] data1;
@@ -124,13 +135,15 @@ public class HDPrivateKey {
 
             data1 = Kit.intToBigEndian(this.private_key.secret_n, 33);
 
+            int i = 10;
+
         }
         else {
             data1 = Kit.hexStringToByteArray(this.private_key.point.SEC33());
         }
         data = Kit.concatBytes(data1,data2);
 
-        var h = hmac_sha512(Kit.bytesToAscii(this.chain_code),data);
+        var h = hmac_sha512(this.chain_code,data);
 
         data1 = Arrays.copyOfRange(h,0,32);
         var secret = new BigInteger(1,data1).add(this.private_key.secret_n).mod(Secp256k1.N);
@@ -140,8 +153,13 @@ public class HDPrivateKey {
         var chain_code = Arrays.copyOfRange(h,32,h.length);
         var depth = this.depth+1;
 
-        return new HDPrivateKey(privatekey,chain_code,depth, this.parent_fingerprint, index,this.testnet,this.priv_version,this.pub_version);
 
+        return new HDPrivateKey(privatekey,chain_code,depth, Kit.bytesToHexString(this.fingerprint()), index,this.testnet,this.priv_version,this.pub.pub_version);
+
+    }
+
+    public byte[] fingerprint() {
+        return this.pub.fingerprint();
     }
 
 

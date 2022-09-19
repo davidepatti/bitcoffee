@@ -422,8 +422,31 @@ public class Kit {
     /***************************************************************************/
    public static byte[] intToBigEndian(BigInteger n,int length) {
 
-       //var x = Kit.bytesToHexString(all_bytes);
-       return n.toByteArray();
+       var all_bytes = n.toByteArray();
+       var extra_bytes = all_bytes.length-length;
+
+       byte[] trimmed = null;
+
+       if (extra_bytes>0)  {
+           trimmed= Arrays.copyOfRange(all_bytes,extra_bytes,all_bytes.length);
+           return trimmed;
+
+       }
+       else if (extra_bytes<0) {
+           var bos = new ByteArrayOutputStream();
+           extra_bytes = -extra_bytes;
+
+           for (int i=0;i<extra_bytes;i++)
+               bos.write(0);
+           try {
+               bos.write(all_bytes);
+           } catch (IOException e) {
+               throw new RuntimeException(e);
+           }
+           return bos.toByteArray();
+       }
+
+       return all_bytes;
    }
 
     /***************************************************************************/
