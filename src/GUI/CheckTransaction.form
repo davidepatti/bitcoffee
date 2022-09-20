@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="GUI.CheckTransaction">
+  <grid id="27dc6" binding="panelCheckTx" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="850" height="534"/>
+    </constraints>
+    <properties>
+      <background color="-7892238"/>
+    </properties>
+    <border type="none"/>
+    <children>
+      <component id="2b1f4" class="javax.swing.JLabel" binding="btnHome">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="GUI/images/icons8-casa-24 - Copia.png"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="74c8e" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="26" style="1"/>
+          <foreground color="-1"/>
+          <text value="Check transaction"/>
+        </properties>
+      </component>
+      <component id="58e3c" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="Transaction hex"/>
+        </properties>
+      </component>
+      <component id="9bb2" class="javax.swing.JTextField" binding="textFieldRawTx">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="67475" class="javax.swing.JButton" binding="checkButton" default-binding="true">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-4405262"/>
+          <font name="Corbel" size="16" style="1"/>
+          <text value="Check"/>
+        </properties>
+      </component>
+      <hspacer id="efbc">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <component id="47715" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Corbel" size="16" style="1"/>
+          <foreground color="-1"/>
+          <text value="CHECK RESULT:"/>
+        </properties>
+      </component>
+      <scrollpane id="1ecd">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="2b88a" class="javax.swing.JTextArea" binding="textAreaResult">
+            <constraints/>
+            <properties>
+              <background color="-4405262"/>
+              <editable value="false"/>
+              <font size="16" style="0"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <vspacer id="abe8f">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="e4b0a">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+    </children>
+  </grid>
+</form>

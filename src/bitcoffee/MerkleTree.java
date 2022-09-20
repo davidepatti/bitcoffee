@@ -11,6 +11,57 @@ public class MerkleTree {
     private int current_depth = 0;
     private int current_index = 0;
 
+    /***************************************************************************/
+    public static byte[] merkleParent(byte[] hash1, byte[] hash2) {
+        if (hash1.length !=32 || hash2.length!=32) {
+            try {
+                throw new Exception("Wrong hashes sizes");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        var merged = Kit.bytesToHexString(hash1)+Kit.bytesToHexString(hash2);
+        return Kit.hash256(Kit.hexStringToByteArray(merged));
+    }
+
+    /***************************************************************************/
+    public static String merkleParent(String hash1, String hash2) {
+        return Kit.bytesToHexString(Kit.hash256(Kit.hexStringToByteArray(hash1+hash2)));
+    }
+
+    /***************************************************************************/
+    public static ArrayList<String> merkleParentLevel(ArrayList<String> hashes) {
+
+        if (hashes.size()==1)
+            throw new RuntimeException("Cannot derive parent level, size 1");
+
+        if (hashes.size()%2==1)
+            hashes.add(hashes.get(hashes.size()-1));
+
+        var parent_level = new ArrayList<String>();
+
+        for (int i=0;i<hashes.size();i+=2) {
+
+            var parent = merkleParent(hashes.get(i),hashes.get(i+1));
+            parent_level.add(parent);
+        }
+
+        return parent_level;
+    }
+
+    /***************************************************************************/
+    public static String merkleRoot(ArrayList<String> hashes) {
+
+        var current_level = hashes;
+
+        while (current_level.size()>1) {
+            current_level = merkleParentLevel(current_level);
+        }
+
+        return current_level.get(0);
+    }
+
 
     public String getRoot() {
         return nodes.get(0).get(0);
@@ -119,11 +170,11 @@ public class MerkleTree {
                     if (right_hash.equals("-"))
                         goRight();
                     else {
-                        setCurrentNode(Kit.merkleParent(left_hash, right_hash));
+                        setCurrentNode(merkleParent(left_hash, right_hash));
                         goUp();
                     }
                 } else {
-                    setCurrentNode(Kit.merkleParent(left_hash, left_hash));
+                    setCurrentNode(merkleParent(left_hash, left_hash));
                     goUp();
                 }
             }
@@ -156,13 +207,13 @@ public class MerkleTree {
                     if (right_hash.equals("-")) {
                         this.goRight();
                     } else {
-                        setCurrentNode(Kit.merkleParent(left_hash, right_hash));
+                        setCurrentNode(merkleParent(left_hash, right_hash));
                         this.goUp();
                     }
                 }
                 else
                 {
-                    setCurrentNode(Kit.merkleParent(left_hash,left_hash));
+                    setCurrentNode(merkleParent(left_hash,left_hash));
                     goUp();
                 }
             }

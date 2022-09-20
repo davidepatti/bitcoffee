@@ -64,16 +64,16 @@ public class TestValidation {
         System.out.println(">> RESULT:"+result_tdc.equals(target_decoded_change));
         System.out.println("---------------------------------------------------");
 
-        var change_script = Script.h160ToP2pkh(change_h160);
-        var change_script_bytes = change_script.getBytes();
+        var change_script = new P2PKHScriptPubKey(change_h160);
+        var change_script_bytes = change_script.rawSerialize();
         var change_script_serial_hex = Kit.bytesToHexString(change_script_bytes);
         var change_output = new TxOut(change_amount,change_script_bytes);
 
         var target_amount = (int)(0.1*100000000);
         var target_address = "mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf";
         var target_h160 = Kit.decodeBase58(target_address);
-        var target_script = Script.h160ToP2pkh(target_h160);
-        var target_output = new TxOut(target_amount,target_script.getBytes());
+        var target_script = new P2PKHScriptPubKey(target_h160);
+        var target_output = new TxOut(target_amount,target_script.rawSerialize());
 
         var tx_ins = new ArrayList<TxIn>();
         var tx_outs = new ArrayList<TxOut>();
@@ -102,7 +102,7 @@ public class TestValidation {
 
         var txins = tx_obj.getTxIns();
         // at the moment, we chose to make tx class immutable, so a new txin must be created
-        TxIn new_txin = new TxIn(txins.get(0).getPrevTxId(),txins.get(0).getPrevIndex(),scriptsig2.getBytes());
+        TxIn new_txin = new TxIn(txins.get(0).getPrevTxId(),txins.get(0).getPrevIndex(),scriptsig2.rawSerialize());
         txins.set(0,new_txin);
         var newtx = new Tx(tx_obj.getVersion(),tx_ins,tx_obj.getTxOuts(),tx_obj.getLocktime(),tx_obj.isTestnet());
         System.out.println("---------------------------------------------");

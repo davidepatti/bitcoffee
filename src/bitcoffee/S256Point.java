@@ -120,24 +120,30 @@ public class S256Point extends FieldElementPoint {
         return Kit.hash160(sec_bytes);
     }
 
-    public String getP2pkhAddress(boolean compressed) {
+    /********************************************************************/
+    public String getP2pkhAddress(boolean compressed, boolean testnet) {
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2pkhAddress(h160,false);
+        return P2PKHScriptPubKey.h160ToAddress(h160,testnet);
     }
+    public String getP2pkhAddress(boolean testnet) {
+       return getP2pkhAddress(true,testnet) ;
+    }
+    /********************************************************************/
+    public String getP2wpkhAddress(boolean compressed, boolean testnet) {
+        var h160 = this.getHash160(compressed);
+        return P2WPKHScriptPubKey.h160ToAddress(h160,testnet);
+    }
+    public String getP2wpkhAddress(boolean testnet) {
+        return getP2wpkhAddress(true,testnet) ;
+    }
+    /********************************************************************/
 
-    public String getP2pkhTestnetAddress() {
-        boolean compressed = true;
+    public String getP2SH_P2WPKAddress(boolean compressed,boolean testnet) {
         var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2pkhAddress(h160,true);
-    }
 
-    public String getP2shAddress(boolean compressed) {
-        var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2shAddress(h160,false);
+        return new P2WPKHScriptPubKey(h160).getP2SHAddress(testnet);
     }
-    public String getP2shTestnetAddress(boolean compressed) {
-        var h160 = this.getHash160(compressed);
-        return Kit.h160ToP2shAddress(h160,true);
+    public String getP2shAddress(boolean testnet) {
+        return getP2SH_P2WPKAddress(true,testnet);
     }
-
 }

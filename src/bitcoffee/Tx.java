@@ -95,8 +95,8 @@ public class Tx implements Message {
 
     /*****************************************************************/
     public boolean verifyInput(int input_index) {
-        byte[] z = null;
-        byte[] raw_redeem = null;
+        byte[] z;
+        byte[] raw_redeem;
         ArrayList<byte[]> witness_data = null;
 
         var tx_in = tx_ins.get(input_index);
@@ -107,7 +107,7 @@ public class Tx implements Message {
             // the commands of the redeem script are encoded as data at the bottom of the scriptsig
             var input_script_sig = new Script(tx_in.getScriptSig());
             // the hash160 is at the bottom of the commands stack
-            raw_redeem = input_script_sig.commands.elementAt(0).value;
+            raw_redeem = input_script_sig.getCommands().elementAt(0).value;
 
             var redeem_script = new Script(raw_redeem);
 
@@ -241,13 +241,13 @@ public class Tx implements Message {
             }
             else
             if (redeem_script!=null) {
-                var h160 = redeem_script.commands.elementAt(0).value;
-                script_code = Script.h160ToP2pkh(h160).serialize();
+                var h160 = redeem_script.getCommands().elementAt(0).value;
+                script_code = new P2PKHScriptPubKey(h160).serialize();
             }
             else {
                 var prev_script = new Script(tx_in.getPreviousTxScriptPubKey(this.testnet));
-                var h160 = prev_script.commands.elementAt(0).value;
-                script_code = Script.h160ToP2pkh(h160).serialize();
+                var h160 = prev_script.getCommands().elementAt(0).value;
+                script_code = new P2PKHScriptPubKey(h160).serialize();
             }
 
             bos.write(script_code);
@@ -591,10 +591,10 @@ public class Tx implements Message {
 
     public int getCoinbaseHeight() {
         if (!this.isCoinbase()) return -1;
-        int height = -1;
+        int height;
 
         var scriptsig = new Script(this.getTxIns().get(0).getScriptSig());
-        height = Kit.litteEndianBytesToInt(scriptsig.commands.pop().value).intValue();
+        height = Kit.litteEndianBytesToInt(scriptsig.getCommands().pop().value).intValue();
         return height;
     }
 }

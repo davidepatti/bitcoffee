@@ -60,7 +60,7 @@ public class Block {
             le_list.add(Kit.bytesToHexString(reversed_bytes));
         }
 
-        var root = Kit.reverseBytes(Kit.hexStringToByteArray(Kit.merkleRoot(le_list)));
+        var root = Kit.reverseBytes(Kit.hexStringToByteArray(MerkleTree.merkleRoot(le_list)));
 
         return (Arrays.equals(root,this.merkle_root));
 

@@ -135,7 +135,7 @@ public class TestBloomFilter {
             else {
                 var receveived_tx = (Tx)msg;
                 for (TxOut tout: receveived_tx.getTxOuts()) {
-                    if (tout.getScriptPubKey().getAddress(true).equals(address)) {
+                    if (ScriptPubKey.parse(tout.getScriptPubkeyBytes()).getAddress(true).equals(address)) {
                         System.out.println("Found address "+address+" in tx id: "+receveived_tx.getId());
                         found = true;
                     }

@@ -14,7 +14,7 @@ public class TestMerkle {
         var hash1 = "c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5";
         var hash2 = "c131474164b412e3406696da1ee20ab0fc9bf41c8f05fa8ceea7a08d672d7cc5";
 
-        var result = Kit.merkleParent(hash1,hash2);
+        var result = MerkleTree.merkleParent(hash1,hash2);
         var target = "8b30c5ba100f6f2e5ad1e2a742e5020491240f8eb514fe97c713c31718ad7ecd";
 
         Test.check("merke parent","hash1,hash2"+hash1+","+hash2,target,result);
@@ -30,7 +30,7 @@ public class TestMerkle {
         System.out.println("Parent level of :");
         System.out.println(hashes);
         System.out.println("-----------------------------");
-        System.out.println(Kit.merkleParentLevel(hashes));
+        System.out.println(MerkleTree.merkleParentLevel(hashes));
         Test.__END_TEST();
 
         var hl = new ArrayList<String>();
@@ -54,10 +54,10 @@ public class TestMerkle {
 
         var merk = new MerkleTree(hl.size());
         merk.setNodesLevel(4,hl);
-        merk.setNodesLevel(3, Kit.merkleParentLevel(merk.getNodesLevel(4)));
-        merk.setNodesLevel(2, Kit.merkleParentLevel(merk.getNodesLevel(3)));
-        merk.setNodesLevel(1, Kit.merkleParentLevel(merk.getNodesLevel(2)));
-        merk.setNodesLevel(0, Kit.merkleParentLevel(merk.getNodesLevel(1)));
+        merk.setNodesLevel(3, MerkleTree.merkleParentLevel(merk.getNodesLevel(4)));
+        merk.setNodesLevel(2, MerkleTree.merkleParentLevel(merk.getNodesLevel(3)));
+        merk.setNodesLevel(1, MerkleTree.merkleParentLevel(merk.getNodesLevel(2)));
+        merk.setNodesLevel(0, MerkleTree.merkleParentLevel(merk.getNodesLevel(1)));
 
         Test.check("merkleParentLevel",""+merk,merk.getRoot(),"597c4bafe3832b17cbbabe56f878f4fc2ad0f6a402cee7fa851a9cb205f87ed1");
         Test.__END_TEST();

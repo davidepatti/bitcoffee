@@ -15,7 +15,7 @@ public class TestBroadcastTx {
         var secret_bytes = Kit.hash256(secret_text);
         var mypk = new PrivateKey(secret_bytes);
 
-        var myaddress = mypk.point.getP2pkhTestnetAddress();
+        var myaddress = mypk.point.getP2pkhAddress(true);
         System.out.println("Testnet address for secret:"+secret_text);
         System.out.println("address: "+myaddress);
         var wif = mypk.getWIF(true,true);
@@ -42,8 +42,8 @@ public class TestBroadcastTx {
         var change_h160 = Kit.decodeBase58(change_address);
 
         // not modify, creating script from the address above
-        var change_script = Script.h160ToP2pkh(change_h160);
-        var change_script_bytes = change_script.getBytes();
+        var change_script = new P2PKHScriptPubKey(change_h160);
+        var change_script_bytes = change_script.rawSerialize();
         var change_output = new TxOut(change_amount,change_script_bytes);
 
 
@@ -52,8 +52,8 @@ public class TestBroadcastTx {
         var target_btc_amount = 0.0001;
         var target_amount = (int)(target_btc_amount*100000000);
         var target_h160 = Kit.decodeBase58(target_address);
-        var target_script = Script.h160ToP2pkh(target_h160);
-        var target_output = new TxOut(target_amount,target_script.getBytes());
+        var target_script = new P2PKHScriptPubKey(target_h160);
+        var target_output = new TxOut(target_amount,target_script.rawSerialize());
 
         var tx_ins = new ArrayList<TxIn>();
         var tx_outs = new ArrayList<TxOut>();
@@ -77,7 +77,7 @@ public class TestBroadcastTx {
 
         var txins = tx_obj.getTxIns();
         // a new txin must be created to adde the signature by replacing the empty script one (input_index)
-        var new_txin = new TxIn(txins.get(input_index).getPrevTxId(),txins.get(input_index).getPrevIndex(),scriptsig.getBytes());
+        var new_txin = new TxIn(txins.get(input_index).getPrevTxId(),txins.get(input_index).getPrevIndex(),scriptsig.rawSerialize());
         txins.set(input_index,new_txin);
         var newtx = new Tx(tx_obj.getVersion(),tx_ins,tx_obj.getTxOuts(),tx_obj.getLocktime(),tx_obj.isTestnet());
 

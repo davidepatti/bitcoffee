@@ -12,7 +12,7 @@ public class TestCoinbase {
         var genesis_scriptsig = "4d04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73";
         var genesis_script = Script.parseSerial(Kit.hexStringToByteArray(genesis_scriptsig));
         System.out.println(genesis_script);
-        System.out.println(Kit.bytesToAscii(genesis_script.commands.get(0).value));
+        System.out.println(Kit.bytesToAscii(genesis_script.getCommands().get(0).value));
         System.out.println("---------------------------------------------------");
 
         System.out.println(">> Testing BIP0034 (height as top element in coinbase scriptsig");
@@ -21,7 +21,7 @@ public class TestCoinbase {
 
         System.out.println(coinbase_scriptsig);
 
-        System.out.println("Height:"+ Kit.litteEndianBytesToInt(coinbase_scriptsig.commands.pop().value));
+        System.out.println("Height:"+ Kit.litteEndianBytesToInt(coinbase_scriptsig.getCommands().pop().value));
 
     }
 
