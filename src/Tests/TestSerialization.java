@@ -80,10 +80,10 @@ public class TestSerialization {
 
         var e_str = "12345deadbeef";
         System.out.println("----------------------------------------------------------");
-        System.out.println("--> Testing Address for priv key hex:"+e_str);
+        System.out.println("--> Testing Mainnet Address for priv key hex:"+e_str);
         var pk_addr = new PrivateKey(Kit.hexStringToByteArray(e_str));
         var target_addr1 = "1F1Pn2y6pDb68E5nYJJeba4TLg2U7B6KF1";
-        var res_addr1 = pk_addr.point.getP2pkhAddress(true);
+        var res_addr1 = pk_addr.point.getP2pkhAddress(false);
         System.out.println("address:" + res_addr1);
         System.out.println("--> Result:"+res_addr1.equals(target_addr1));
 
@@ -95,8 +95,8 @@ public class TestSerialization {
         var some_key = new PrivateKey(name_sha256);
         var some_addr_compressed = some_key.point.getP2pkhAddress(true);
         var some_addr_not_compresssed = some_key.point.getP2pkhAddress(false);
-        System.out.println("(sec33): "+ some_addr_compressed);
-        System.out.println("(sec65): "+ some_addr_not_compresssed);
+        System.out.println("(sec33 testnet): "+ some_addr_compressed);
+        System.out.println("(sec65 mainnet): "+ some_addr_not_compresssed);
 
         System.out.println("----------------------------------------------------------");
 
