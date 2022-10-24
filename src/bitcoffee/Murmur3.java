@@ -36,7 +36,7 @@ public class Murmur3 {
             long k1 = (data[i4] & UNSIGNED_MASK);
             k1 |= (data[i4 + 1] & UNSIGNED_MASK) << 8;
             k1 |= (data[i4 + 2] & UNSIGNED_MASK) << 16;
-            k1 |= (data[i4 + 3] & UNSIGNED_MASK) << 24;
+            k1 |= (long) (data[i4 + 3] & UNSIGNED_MASK) << 24;
 
             BigInteger K1 = BigInteger.valueOf(k1);
 
