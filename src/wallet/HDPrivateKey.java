@@ -243,8 +243,8 @@ public class HDPrivateKey {
 
         var xpub = this.traverse(bip32_path).xpub(version_byte);
 
-        var r = this.parent_fingerprint;
-        r = r+"/"+bip32_path.substring(2)+xpub;
+        var r = Kit.bytesToHexString(this.fingerprint());
+        r = "["+r+"/"+bip32_path.substring(2)+"]"+xpub;
 
 // [2de1328f/48h/0h/0h/2h]Zpub75KygAym9WZS29vPvMMiGCPydCtFHdYDqTrrecnff1gh2kGPxmVbGnV5sUbnasZgvpGETPByFfxKoERxVpojpfJ9mizkoEiBzc2syDrKQaZ
 

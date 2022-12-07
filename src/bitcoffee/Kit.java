@@ -272,7 +272,7 @@ public class Kit {
         var data = new byte[data1.length+data2.length];
 
         System.arraycopy(data1, 0, data, 0, data1.length);
-        System.arraycopy(data2, 0, data, 0 + data1.length, data2.length);
+        System.arraycopy(data2, 0, data, data1.length, data2.length);
         return data;
     }
 

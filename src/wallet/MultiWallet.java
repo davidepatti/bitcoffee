@@ -78,17 +78,29 @@ public class MultiWallet {
 
         // default checksum: use the first valid word
         String checksum_word = Hd.nextValidChecksum(seed_words);
-
+        seed_words[23] = checksum_word;
 
         var password = "";
-        boolean testnet = false;
+        boolean testnet;
+
+        System.out.println("Use Mainnet? (y/n)");
+        var answ = new Scanner(System.in).nextLine();
+
+        if (answ.equals("y")) {
+            testnet=false;
+            System.out.println("Using Mainnet");
+        }
+        else {
+
+            testnet=true;
+            System.out.println("Using testnet ");
+        }
+
         String path_to_use = null;
         boolean use_slip132_version_byte = true;
 
 
-        seed_words[23] = checksum_word;
-
-        var hd_priv = HDPrivateKey.fromMnemonic(seed_words, password, false);
+        var hd_priv = HDPrivateKey.fromMnemonic(seed_words, password, testnet);
 
         var key_record = hd_priv.generateP2WSHKeyRecord(path_to_use,use_slip132_version_byte);
 
