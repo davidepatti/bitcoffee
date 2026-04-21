@@ -7,8 +7,19 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class TestNetwork {
+    private static final String DEFAULT_HOST = "mainnet.programmingbitcoin.com";
+    private static final boolean DEFAULT_TESTNET = false;
+    private static final int DEFAULT_REQUEST_BATCHES = 1;
 
     public static void main(String[] args) {
+        var host = args.length > 0 ? args[0] : DEFAULT_HOST;
+        var testnet = args.length > 1 ? parseBoolean(args[1], DEFAULT_TESTNET) : DEFAULT_TESTNET;
+        var requestBatches = args.length > 2 ? Integer.parseInt(args[2]) : DEFAULT_REQUEST_BATCHES;
+
+        runHeaderDownload(host, testnet, requestBatches);
+    }
+
+    public static void runHeaderDownload(String host, boolean testnet, int requestBatches) {
         /*\
         Tests.Test.__BEGIN_NOTES("Testing bitcoffee.NetworkEnvelope");
 
@@ -80,17 +91,19 @@ public class TestNetwork {
 
         Test.__BEGIN_TEST("Downloading headers and checking PoW");
 
-        var genesis = Block.parseSerial(Kit.hexStringToByteArray(Block.GENESIS_BLOCK));
+        var genesisBlockHex = testnet ? Block.TESTNET_GENESIS_BLOCK : Block.GENESIS_BLOCK;
+        var genesis = Block.parseSerial(Kit.hexStringToByteArray(genesisBlockHex));
         Block previous = genesis;
         var first_epoch_timestamp = Objects.requireNonNull(previous).getTimestamp();
         var expected_bits = Kit.hexStringToByteArray(Block.LOWEST_BITS);
         System.out.println("Starting from block "+genesis);
+        System.out.println("Connecting to " + host + " (testnet=" + testnet + ")");
 
         int count = 1;
-        var node2 = new SimpleNode("mainnet.programmingbitcoin.com",false);
+        var node2 = new SimpleNode(host,testnet);
         node2.Handshake();
 
-        for (int i=0;i<1;i++) {
+        for (int i=0;i<requestBatches;i++) {
             var get_header_msg = new MessageGetHeaders(previous.getHashHexString());
             node2.send(get_header_msg);
             MessageHeaders headers = (MessageHeaders) node2.waitFor("headers");
@@ -125,5 +138,15 @@ public class TestNetwork {
 
         }
         Test.__END_TEST();
+    }
+
+    private static boolean parseBoolean(String value, boolean defaultValue) {
+        if (value == null || value.isBlank()) {
+            return defaultValue;
+        }
+        return value.equalsIgnoreCase("true")
+                || value.equalsIgnoreCase("yes")
+                || value.equalsIgnoreCase("y")
+                || value.equalsIgnoreCase("testnet");
     }
 }

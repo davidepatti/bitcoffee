@@ -9,14 +9,14 @@ public class TestBroadcastTx {
     private static final String SECRET_TEXT_PLACEHOLDER = "REPLACE_WITH_YOUR_TEXT";
     private static final String PREV_TX_ID_PLACEHOLDER = "YOUR_SPENDABLE_TX_ID";
     private static final String CHANGE_ADDRESS_PLACEHOLDER = "YOUR_CHANGE_ADDRESS";
-    private static final String TARGET_ADDRESS_PLACEHOLDER = "YOUR_TARGET_ADDRESS";
+    private static final String DEFAULT_TARGET_ADDRESS = "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt";
 
     public static void main(String[] args) {
 
         System.out.println("---------------------------------------------");
         System.out.println(">> Testing Transaction to be broadcasted in Testnet");
         // brainwallet style, use text to derive private key (be careful to not share it!)
-        var secret_text = System.getenv().getOrDefault("BITCOFFEE_SECRET_TEXT", SECRET_TEXT_PLACEHOLDER);
+        var secret_text = getArgOrEnv(args, 0, "BITCOFFEE_SECRET_TEXT", SECRET_TEXT_PLACEHOLDER);
         ensureConfigured(secret_text, SECRET_TEXT_PLACEHOLDER, "BITCOFFEE_SECRET_TEXT");
         var secret_bytes = Kit.hash256(secret_text);
         var mypk = new PrivateKey(secret_bytes);
@@ -31,21 +31,21 @@ public class TestBroadcastTx {
         System.out.println("---------------------------------------------");
         System.out.println("REPLACE THE ID BELOW WITH SOME TX ID WHERE YOUR RECEIVED BTC FOR ADDRESS: "+myaddress);
         //var prev_tx_id = "1818136d9d0ca83c369a70c41fd2b5d25e286895e358a0bcd872c17534846659";
-        var prev_tx_id = System.getenv().getOrDefault("BITCOFFEE_PREV_TX_ID", PREV_TX_ID_PLACEHOLDER);
+        var prev_tx_id = getArgOrEnv(args, 1, "BITCOFFEE_PREV_TX_ID", PREV_TX_ID_PLACEHOLDER);
         ensureConfigured(prev_tx_id, PREV_TX_ID_PLACEHOLDER, "BITCOFFEE_PREV_TX_ID");
         var prev_tx = Kit.hexStringToByteArray(prev_tx_id);
         // replace with your prev index
-        var prev_index = Integer.parseInt(System.getenv().getOrDefault("BITCOFFEE_PREV_INDEX", "1"));
+        var prev_index = Integer.parseInt(getArgOrEnv(args, 2, "BITCOFFEE_PREV_INDEX", "1"));
         // leave the script below empty
         byte[] script_null = {};
         var tx_in = new TxIn(prev_tx,prev_index,script_null);
 
-        var btc_change_amount = Double.parseDouble(System.getenv().getOrDefault("BITCOFFEE_CHANGE_BTC", "0.00069"));
+        var btc_change_amount = Double.parseDouble(getArgOrEnv(args, 3, "BITCOFFEE_CHANGE_BTC", "0.00069"));
 
         // must multiply to express it in sats
         var change_amount = (int)(btc_change_amount*100000000);
         //var change_address = "mnwUykq9XxccVMuXgwrA97gSxYxFs4vNRW";
-        var change_address = System.getenv().getOrDefault("BITCOFFEE_CHANGE_ADDRESS", CHANGE_ADDRESS_PLACEHOLDER);
+        var change_address = getArgOrEnv(args, 4, "BITCOFFEE_CHANGE_ADDRESS", CHANGE_ADDRESS_PLACEHOLDER);
         ensureConfigured(change_address, CHANGE_ADDRESS_PLACEHOLDER, "BITCOFFEE_CHANGE_ADDRESS");
         var change_script = ScriptPubKey.fromAddress(change_address);
         var change_script_bytes = change_script.rawSerialize();
@@ -53,9 +53,8 @@ public class TestBroadcastTx {
 
 
         // DEFAULT: send a tx to give back to faucet https://testnet-faucet.mempool.co/
-        var target_address = System.getenv().getOrDefault("BITCOFFEE_TARGET_ADDRESS", TARGET_ADDRESS_PLACEHOLDER);
-        ensureConfigured(target_address, TARGET_ADDRESS_PLACEHOLDER, "BITCOFFEE_TARGET_ADDRESS");
-        var target_btc_amount = Double.parseDouble(System.getenv().getOrDefault("BITCOFFEE_TARGET_BTC", "0.0001"));
+        var target_address = getArgOrEnv(args, 5, "BITCOFFEE_TARGET_ADDRESS", DEFAULT_TARGET_ADDRESS);
+        var target_btc_amount = Double.parseDouble(getArgOrEnv(args, 6, "BITCOFFEE_TARGET_BTC", "0.0001"));
         var target_amount = (int)(target_btc_amount*100000000);
         var target_script = ScriptPubKey.fromAddress(target_address);
         var target_output = new TxOut(target_amount,target_script.rawSerialize());
@@ -98,5 +97,12 @@ public class TestBroadcastTx {
         if (placeholder.equals(value)) {
             throw new IllegalStateException("Set " + envName + " before running this example");
         }
+    }
+
+    private static String getArgOrEnv(String[] args, int index, String envName, String defaultValue) {
+        if (args.length > index) {
+            return args[index];
+        }
+        return System.getenv().getOrDefault(envName, defaultValue);
     }
 }

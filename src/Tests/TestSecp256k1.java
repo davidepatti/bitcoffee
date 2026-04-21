@@ -5,8 +5,23 @@ import bitcoffee.*;
 import java.math.BigInteger;
 
 public class TestSecp256k1 {
+    private static final String DEFAULT_SECRET = "secret";
+    private static final String DEFAULT_MESSAGE = "Programming Bitcoin!";
+    private static final BigInteger DEFAULT_PREFIXED_K = BigInteger.valueOf(1234567890L);
 
     public static void main(String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("signing")) {
+            var secret = args.length > 1 ? args[1] : DEFAULT_SECRET;
+            var message = args.length > 2 ? args[2] : DEFAULT_MESSAGE;
+            var prefixedK = args.length > 3 ? parsePrefixedK(args[3]) : DEFAULT_PREFIXED_K;
+            test_signing(secret, message, prefixedK);
+            return;
+        }
+
+        runAll();
+    }
+
+    public static void runAll() {
         test_infinity();
         test_manual_signature();
         test_message_signature();
@@ -15,27 +30,36 @@ public class TestSecp256k1 {
     }
 
     public static void test_signing() {
-        var e_bytes = Kit.hash256("secret");
-        var z_bytes = Kit.hash256("Programming Bitcoin!");
+        test_signing(DEFAULT_SECRET, DEFAULT_MESSAGE, DEFAULT_PREFIXED_K);
+    }
+
+    public static void test_signing(String secretInput, String messageInput, BigInteger prefixedK) {
+        var e_bytes = Kit.hash256(secretInput);
+        var z_bytes = Kit.hash256(messageInput);
 
         Test.__BEGIN_TEST("Signing Message");
 
         Test.__BEGIN_TEST("Message sign with prefixed K");
-        System.out.println("Signing message: \"Programming Bitcoin!\" with string \"secret\"");
+        System.out.println("Signing message: \"" + messageInput + "\" with string \"" + secretInput + "\"");
         String secret = Kit.bytesToHexString(e_bytes);
         String message = Kit.bytesToHexString(z_bytes);
         System.out.println("secret = "+secret );
         System.out.println("message = "+message);
-        var prefixed_k = BigInteger.valueOf(1234567890);
         var pk = new PrivateKey(e_bytes);
-        var signature_prefixed = pk.sign(z_bytes,prefixed_k);
+        var signature_prefixed = pk.sign(z_bytes,prefixedK);
         System.out.println("signature prefixed k ="+signature_prefixed);
         Test.__END_TEST();
 
         var sig_detk = pk.getDeterministicK(z_bytes);
         var target_k = "e32a28db452c56f30dc5019d7989e20efcd991cc5edb5ffc3063e83f9f055f8e";
         var desc = "secret:"+secret+"\nmessage:"+message;
-        Test.check("determininistic K",desc,target_k,sig_detk.toString(16));
+        if (DEFAULT_SECRET.equals(secretInput) && DEFAULT_MESSAGE.equals(messageInput)) {
+            Test.check("determininistic K",desc,target_k,sig_detk.toString(16));
+        }
+        else {
+            System.out.println("deterministic k = " + sig_detk.toString(16));
+            System.out.println("Skipping fixed-vector assertion for custom inputs.");
+        }
         Test.__END_TEST();
 
     }
@@ -124,4 +148,10 @@ public class TestSecp256k1 {
         Test.__END_TEST();
     }
 
+    private static BigInteger parsePrefixedK(String value) {
+        if (value.startsWith("0x") || value.startsWith("0X")) {
+            return new BigInteger(value.substring(2), 16);
+        }
+        return new BigInteger(value);
+    }
 }

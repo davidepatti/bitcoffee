@@ -9,8 +9,18 @@ import bitcoffee.*;
 
 @SuppressWarnings("CommentedOutCode")
 public class TestBloomFilter {
+    private static final String TESTNET_LAST_BLOCK = "00000000000538d5c2246336644f9a4956551afb44ba47278759ec55ea912e19";
+    private static final String TESTNET_ADDRESS = "mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv";
+    private static final String TESTNET_HOST = "testnet.programmingbitcoin.com";
+    private static final String MAINNET_LAST_BLOCK = "0000000000000000000838497f627c016c2bb9097d6794c6aeac1a581bd26984";
+    private static final String MAINNET_ADDRESS = "3Ffi6K7abWQsVMXUQuUNGviNAghXrY9Bni";
+    private static final String MAINNET_HOST = "mainnet.programmingbitcoin.com";
 
     public static void main(String[] args) {
+        var testnet = args.length > 3 ? parseBoolean(args[3], true) : true;
+        var host = args.length > 0 ? args[0] : getDefaultHost(testnet);
+        var lastBlockHex = args.length > 1 ? args[1] : getDefaultLastBlock(testnet);
+        var address = args.length > 2 ? args[2] : getDefaultAddress(testnet);
 
         Test.__BEGIN_TEST("Bloom filter");
         var items = new ArrayList<String>();
@@ -77,20 +87,7 @@ public class TestBloomFilter {
 
 
 
-        // example for tesnet
-        var last_block_hex = "00000000000538d5c2246336644f9a4956551afb44ba47278759ec55ea912e19";
-        var address = "mwJn1YPMq7y5F8J3LkC5Hxg9PHyZ5K4cFv";
-        var host = "testnet.programmingbitcoin.com";
-        var testnet = true;
-
-        // example for mainnet
-        //var last_block_hex = "0000000000000000000838497f627c016c2bb9097d6794c6aeac1a581bd26984";
-        //var address = "3Ffi6K7abWQsVMXUQuUNGviNAghXrY9Bni";
-        //var host = "mainnet.programmingbitcoin.com";
-        //var testnet = false;
-
-
-        var h160 = Kit.decodeBase58(address);
+        var h160 = ScriptPubKey.addressPayload(address);
 
         var node = new SimpleNode(host,testnet);
         var bf = new BloomFilter(30,5,90210);
@@ -100,7 +97,7 @@ public class TestBloomFilter {
         node.send(bf.filterLoad());
 
         // ask for the block headers starting from the last block specified
-        var getheaders_msg = new MessageGetHeaders(last_block_hex);
+        var getheaders_msg = new MessageGetHeaders(lastBlockHex);
         node.send(getheaders_msg);
 
         var headers_msg = (MessageHeaders)node.waitFor(MessageHeaders.COMMAND);
@@ -143,5 +140,27 @@ public class TestBloomFilter {
                 }
             }
         } // while
+    }
+
+    private static boolean parseBoolean(String value, boolean defaultValue) {
+        if (value == null || value.isBlank()) {
+            return defaultValue;
+        }
+        return value.equalsIgnoreCase("true")
+                || value.equalsIgnoreCase("yes")
+                || value.equalsIgnoreCase("y")
+                || value.equalsIgnoreCase("testnet");
+    }
+
+    private static String getDefaultHost(boolean testnet) {
+        return testnet ? TESTNET_HOST : MAINNET_HOST;
+    }
+
+    private static String getDefaultLastBlock(boolean testnet) {
+        return testnet ? TESTNET_LAST_BLOCK : MAINNET_LAST_BLOCK;
+    }
+
+    private static String getDefaultAddress(boolean testnet) {
+        return testnet ? TESTNET_ADDRESS : MAINNET_ADDRESS;
     }
 }
