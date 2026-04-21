@@ -25,7 +25,11 @@ The repository now includes a terminal text-based test launcher that works on st
 - Network-dependent tests are clearly marked in the menu
 - ANSI colors are used when supported and automatically fall back to plain text on simpler terminals
 
-![Bitcoffee Test Hub](docs/test-hub.png)
+<p align="center">
+  <img src="./docs/test-hub.png" alt="Bitcoffee Test Hub" width="820">
+</p>
+
+[Open the Test Hub screenshot](docs/test-hub.png)
 
 ### Quick start
 
