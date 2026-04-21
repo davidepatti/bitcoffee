@@ -57,7 +57,7 @@ public class HDPublicKey {
         return new P2WPKHScriptPubKey(this.hash160());
     }
     public Script get_p2sh_wpkh_script() {
-        return new P2WSHScriptPubKey(this.hash160());
+        return new P2WPKHScriptPubKey(this.hash160());
     }
 
     public String getAddress() {

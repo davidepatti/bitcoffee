@@ -13,7 +13,7 @@ public class P2WPKHScriptPubKey extends SegwitPubKey {
     }
 
     public byte[] getHash160() {
-        return getCommands().get(1).value;
+        return getCommands().get(0).value;
     }
 
     /*
@@ -24,6 +24,6 @@ public class P2WPKHScriptPubKey extends SegwitPubKey {
     */
 
     public static String h160ToAddress(byte[] h160,boolean testnet) {
-        return P2SHScriptPubKey.h160ToAddress(h160,testnet);
+        return new P2WPKHScriptPubKey(h160).getAddress(testnet);
     }
 }

@@ -27,56 +27,53 @@ public class TxFetcher {
     }
 
     public static Tx fetch(String tx_id, boolean testnet, boolean fresh) {
-        Tx tx;
-        String computed_id;
-
-        try {
-            if (fresh || !(cache.containsKey(tx_id))) {
-                var url = new URL(getURL(testnet) + "/tx/" + tx_id + "/hex");
-                System.out.println("Fetching TX at:" + url + ")");
-                var con = (HttpURLConnection) url.openConnection();
-                con.setRequestMethod("GET");
-                var in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuilder content = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    content.append(inputLine);
-                }
-                in.close();
-
-                var content_string = content.toString();
-
-                byte[] raw = Kit.hexStringToByteArray(content_string);
-                tx = Tx.parse(raw, testnet);
-
-                ///if (tx.isSegwit())
-                computed_id = tx.getId();
-
-
-                var serial = tx.getSerialString();
-                //System.out.println("DEBUG: fetched raw tx: " + serial);
-
-                // TODO: should be a warning when computation is confirmed correct
-                if (!computed_id.equals(tx_id)) {
-                    System.out.println("FATAL");
-                    System.out.println("computed tx id:"+computed_id);
-                    System.out.println("requested tx id:"+tx_id);
-                    throw new RuntimeException("Mismatching serials");
-                }
-                else{
-                    //System.out.println("Ok, tx id matches requested id!");
-                    // TODO: re-enable when properly dealing with witness data
-                    cache.put(computed_id,tx);
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            System.out.println("Not corresponding tx_id");
-            e.printStackTrace();
+        if (!fresh && cache.containsKey(tx_id)) {
+            return cache.get(tx_id);
         }
 
-        return cache.get(tx_id);
+        var urlString = getURL(testnet) + "/tx/" + tx_id + "/hex";
+
+        try {
+            var url = new URL(urlString);
+            System.out.println("Fetching TX at:" + url);
+            var con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int status = con.getResponseCode();
+            if (status != HttpURLConnection.HTTP_OK) {
+                var errorBody = readResponseBody(con, true);
+                throw new IllegalStateException("Failed to fetch tx " + tx_id + " from " + urlString
+                        + " (HTTP " + status + ")" + (errorBody.isBlank() ? "" : ": " + errorBody));
+            }
+
+            var contentString = readResponseBody(con, false).trim();
+            byte[] raw = Kit.hexStringToByteArray(contentString);
+            var tx = Tx.parse(raw, testnet);
+            var computedId = tx.getId();
+
+            if (!computedId.equals(tx_id)) {
+                throw new IllegalStateException("Fetched tx id mismatch: requested " + tx_id + " but got " + computedId);
+            }
+
+            cache.put(computedId, tx);
+            return tx;
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to fetch tx " + tx_id + " from " + urlString, e);
+        }
+    }
+
+    private static String readResponseBody(HttpURLConnection connection, boolean errorStream) throws IOException {
+        var stream = errorStream ? connection.getErrorStream() : connection.getInputStream();
+        if (stream == null) {
+            return "";
+        }
+
+        try (var in = new BufferedReader(new InputStreamReader(stream))) {
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            return content.toString();
+        }
     }
 }

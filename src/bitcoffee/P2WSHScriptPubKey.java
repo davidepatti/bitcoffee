@@ -14,7 +14,7 @@ public class P2WSHScriptPubKey extends SegwitPubKey {
 
     }
     public byte[] getHash160() {
-        return getCommands().get(1).value;
+        return getCommands().get(0).value;
     }
 
 }

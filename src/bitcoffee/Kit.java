@@ -161,36 +161,54 @@ public class Kit {
         //return result;
     }
     /***************************************************************************/
-    // get the 20 bytes of the hashed160 public key from the encoded58 address
-    public static byte[] decodeBase58(String address) {
+    public static byte[] decodeBase58Checked(String address) {
         String BASE58_AlPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-        var num = BigInteger.valueOf(0);
+        var num = BigInteger.ZERO;
+        int leadingOnes = 0;
+
+        while (leadingOnes < address.length() && address.charAt(leadingOnes) == '1') {
+            leadingOnes++;
+        }
 
         for (int i=0;i<address.length();i++) {
             char c = address.charAt(i);
+            int digit = BASE58_AlPHABET.indexOf(c);
+            if (digit < 0) {
+                throw new IllegalArgumentException("Invalid Base58 character: " + c);
+            }
             num = num.multiply(BigInteger.valueOf(58));
-            num = num.add(BigInteger.valueOf(BASE58_AlPHABET.indexOf(c)));
+            num = num.add(BigInteger.valueOf(digit));
         }
 
-        var combined = num.toByteArray();
-        var cobined_hex = Kit.bytesToHexString(combined);
-        var len = combined.length;
-        byte[] checksum_start = Arrays.copyOfRange(combined,len-4,len);
-        var checksum_start_hex = Kit.bytesToHexString(checksum_start);
-        var original = Arrays.copyOfRange(combined,0,len-4);
-        var computed_checksum = hash256(original);
-        var computed_checksim_start = Arrays.copyOfRange(computed_checksum,0,4);
-
-        if (!Arrays.equals(computed_checksim_start,checksum_start)) {
-            System.out.println("ERROR: Bad address checksum!");
-            System.out.println("Address: "+address);
-            System.out.println("Computed checksum:"+ Arrays.toString(computed_checksim_start));
-            System.out.println("Original checksum:"+ Arrays.toString(checksum_start));
+        byte[] combined = num.equals(BigInteger.ZERO) ? new byte[]{} : num.toByteArray();
+        if (combined.length > 0 && combined[0] == 0) {
+            combined = Arrays.copyOfRange(combined, 1, combined.length);
         }
 
-        // the first byte is the network prefix, the last four are the checksum
+        var withLeadingZeros = new byte[leadingOnes + combined.length];
+        System.arraycopy(combined, 0, withLeadingZeros, leadingOnes, combined.length);
 
-        return Arrays.copyOfRange(combined,1,len-4);
+        if (withLeadingZeros.length < 5) {
+            throw new IllegalArgumentException("Invalid Base58 payload length for address: " + address);
+        }
+
+        int checksumStart = withLeadingZeros.length - 4;
+        var original = Arrays.copyOfRange(withLeadingZeros,0,checksumStart);
+        var checksum = Arrays.copyOfRange(withLeadingZeros,checksumStart,withLeadingZeros.length);
+        var computedChecksum = Arrays.copyOfRange(hash256(original),0,4);
+
+        if (!Arrays.equals(computedChecksum,checksum)) {
+            throw new IllegalArgumentException("Bad address checksum: " + address);
+        }
+
+        return withLeadingZeros;
+    }
+
+    /***************************************************************************/
+    // get the payload bytes from the encoded58 address
+    public static byte[] decodeBase58(String address) {
+        var combined = decodeBase58Checked(address);
+        return Arrays.copyOfRange(combined,1,combined.length-4);
     }
 
 
@@ -476,5 +494,4 @@ public class Kit {
    }
 
 }
-
 

@@ -108,13 +108,25 @@ public class TxIn {
         return TxFetcher.fetch(Kit.bytesToHexString(this.prev_tx_id),testnet,false);
     }
 
-    public long getValue(boolean testnet) {
+    private Tx getPreviousTxOutputOwner(boolean testnet) {
         var tx = fetchTx(testnet);
+        if (tx == null) {
+            throw new IllegalStateException("Missing previous transaction: " + Kit.bytesToHexString(this.prev_tx_id));
+        }
+        if (this.prev_index < 0 || this.prev_index >= tx.getTxOuts().size()) {
+            throw new IllegalStateException("Previous output index " + this.prev_index
+                    + " out of range for tx " + tx.getId());
+        }
+        return tx;
+    }
+
+    public long getValue(boolean testnet) {
+        var tx = getPreviousTxOutputOwner(testnet);
         return tx.getTxOuts().get((int) this.prev_index).getAmount();
     }
 
     public byte[] getPreviousTxScriptPubKey(boolean testnet) {
-        var tx = fetchTx(testnet);
+        var tx = getPreviousTxOutputOwner(testnet);
         return tx.getTxOuts().get((int)this.prev_index).getScriptPubkeyBytes();
     }
 

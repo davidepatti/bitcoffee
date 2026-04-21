@@ -1,7 +1,9 @@
 package bitcoffee;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,20 @@ public class Bech32 {
     public static final String PREFIX_REGTEST = "bcrt";
     public static final String PREFIX_SIGNET = "tb";
 
+    public static final class DecodedSegwit {
+        public final String hrp;
+        public final int version;
+        public final byte[] program;
+        public final boolean bech32m;
+
+        public DecodedSegwit(String hrp, int version, byte[] program, boolean bech32m) {
+            this.hrp = hrp;
+            this.version = version;
+            this.program = program;
+            this.bech32m = bech32m;
+        }
+    }
+
     public static boolean usesOnlyBech32Chars(String s) {
         Pattern pattern = Pattern.compile(BECH32_CHARS_RE);
         Matcher matcher = pattern.matcher(s.toLowerCase());
@@ -38,7 +54,7 @@ public class Bech32 {
         long c = 1;
         for (byte v:values ) {
             long c0 = c >> 25;
-            c = (c & 0x1ffffff << 5)^v;
+            c = ((c & 0x1ffffffL) << 5) ^ (v & 0xffL);
 
             for (int i = 0;i< GEN.length;i++) {
                 if ( ((c0>>i) & 1)!=0 ) c ^= GEN[i];
@@ -116,7 +132,7 @@ public class Bech32 {
         if (!str.toLowerCase().equals(str) && (!str.toUpperCase().equals(str))) return null;
 
         str = str.toLowerCase();
-        var pos = str.indexOf("1");
+        var pos = str.lastIndexOf("1");
 
         if (str.length()>90 || pos==-1 || pos ==0 || pos+7>str.length()) return null;
 
@@ -125,6 +141,7 @@ public class Bech32 {
         for (int i=0;i<str.length()-1-pos;++i) {
             char c = str.charAt(i+pos+1);
 
+            if (c >= CHARSET_REV.length) return null;
             byte rev = CHARSET_REV[c];
             if (rev==-1) return null;
             values[i] = rev;
@@ -139,33 +156,48 @@ public class Bech32 {
         return Arrays.copyOfRange(values,0,values.length-6);
     }
 
-    private static ArrayList<Integer> group32(byte[] s ) {
+    private static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) {
+        int acc = 0;
+        int bits = 0;
+        int maxv = (1 << toBits) - 1;
+        int maxAcc = (1 << (fromBits + toBits - 1)) - 1;
+        var bos = new ByteArrayOutputStream();
 
-        var result = new ArrayList<Integer>();
-        int unused_bits = 0;
-        int current = 0;
-
-        for (byte c: s) {
-            unused_bits+=8;
-            current = (current<<8) +c;
-
-            while (unused_bits>5) {
-                unused_bits-=5;
-                result.add(current>>unused_bits);
-                var mask = (1<< unused_bits)-1;
-                current &=mask;
+        for (byte valueByte : data) {
+            int value = valueByte & 0xff;
+            if ((value >> fromBits) != 0) {
+                throw new IllegalArgumentException("Invalid Bech32 data value: " + value);
+            }
+            acc = ((acc << fromBits) | value) & maxAcc;
+            bits += fromBits;
+            while (bits >= toBits) {
+                bits -= toBits;
+                bos.write((acc >> bits) & maxv);
             }
         }
-        result.add(current<<(5-unused_bits));
-        return result;
+
+        if (pad) {
+            if (bits > 0) {
+                bos.write((acc << (toBits - bits)) & maxv);
+            }
+        }
+        else if (bits >= fromBits || ((acc << (toBits - bits)) & maxv) != 0) {
+            throw new IllegalArgumentException("Invalid Bech32 padding");
+        }
+
+        return bos.toByteArray();
     }
 
      //   """Convert from 5-bit array of integers to bech32 format"""
     public static String encode_bech32(ArrayList<Integer> nums) {
         String result = "";
 
-        for (int n:nums)
+        for (int n:nums) {
+            if (n < 0 || n >= BECH32_ALPHABET.length()) {
+                throw new IllegalArgumentException("Invalid Bech32 character index: " + n);
+            }
             result = result+BECH32_ALPHABET.charAt(n);
+        }
 
         return result;
     }
@@ -180,14 +212,16 @@ public class Bech32 {
 
         if (version >0) version-=0x50;
 
-        var length = script[1];
+        var length = script[1] & 0xff;
 
 
         var data = new ArrayList<Integer>();
 
         data.add((int)version);
-        var v2 = group32(Arrays.copyOfRange(script,2,2+length));
-        data.addAll(v2);
+        var v2 = convertBits(Arrays.copyOfRange(script,2,2+length),8,5,true);
+        for (byte b : v2) {
+            data.add(b & 0xff);
+        }
 
         var data_bytes = new byte[data.size()];
         for (int i=0;i<data.size();i++)
@@ -201,5 +235,50 @@ public class Bech32 {
         return prefix+"1"+encode_bech32(data);
 
 
+    }
+
+    public static DecodedSegwit decodeSegwitAddress(String address) {
+        var normalized = address.toLowerCase(Locale.ROOT);
+        var separator = normalized.lastIndexOf('1');
+
+        if (separator <= 0) {
+            throw new IllegalArgumentException("Invalid Bech32 address: " + address);
+        }
+
+        var hrp = normalized.substring(0, separator);
+        if (!hrp.equals(PREFIX_MAINNET) && !hrp.equals(PREFIX_TESTNET) && !hrp.equals(PREFIX_REGTEST)) {
+            throw new IllegalArgumentException("Unsupported Bech32 human-readable part: " + hrp);
+        }
+
+        byte[] data = bc32_decode(normalized, false);
+        boolean bech32m = false;
+        if (data == null) {
+            data = bc32_decode(normalized, true);
+            bech32m = true;
+        }
+        if (data == null || data.length == 0) {
+            throw new IllegalArgumentException("Invalid Bech32 checksum: " + address);
+        }
+
+        int version = data[0] & 0xff;
+        if (version > 16) {
+            throw new IllegalArgumentException("Unsupported segwit version: " + version);
+        }
+        if (version == 0 && bech32m) {
+            throw new IllegalArgumentException("Segwit v0 addresses must use Bech32");
+        }
+        if (version != 0 && !bech32m) {
+            throw new IllegalArgumentException("Segwit v1+ addresses must use Bech32m");
+        }
+
+        var program = convertBits(Arrays.copyOfRange(data, 1, data.length), 5, 8, false);
+        if (program.length < 2 || program.length > 40) {
+            throw new IllegalArgumentException("Invalid witness program length: " + program.length);
+        }
+        if (version == 0 && program.length != 20 && program.length != 32) {
+            throw new IllegalArgumentException("Segwit v0 witness program must be 20 or 32 bytes");
+        }
+
+        return new DecodedSegwit(hrp, version, program, bech32m);
     }
 }

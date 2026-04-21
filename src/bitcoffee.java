@@ -244,10 +244,7 @@ public class bitcoffee {
         //var change_address = "mnwUykq9XxccVMuXgwrA97gSxYxFs4vNRW";
         System.out.print("Enter the change address:");
         var change_address = sc.nextLine();
-        var change_h160 = Kit.decodeBase58(change_address);
-
-        // not modify, creating script from the address above
-        var change_script = new P2PKHScriptPubKey(change_h160);
+        var change_script = ScriptPubKey.fromAddress(change_address);
         var change_script_bytes = change_script.rawSerialize();
         var change_output = new TxOut(change_amount, change_script_bytes);
 
@@ -260,8 +257,7 @@ public class bitcoffee {
         //var target_btc_amount = 0.0001;
         var target_amount = (int) (target_btc_amount * 100000000);
 
-        var target_h160 = Kit.decodeBase58(target_address);
-        var target_script = new P2PKHScriptPubKey(target_h160);
+        var target_script = ScriptPubKey.fromAddress(target_address);
         var target_output = new TxOut(target_amount, target_script.rawSerialize());
 
         var tx_ins = new ArrayList<TxIn>();
@@ -327,7 +323,7 @@ public class bitcoffee {
         //host = "mainnet.programmingbitcoin.com";
         //testnet = false;
 
-        var h160 = Kit.decodeBase58(address);
+        var h160 = ScriptPubKey.addressPayload(address);
 
         var node = new SimpleNode(host, testnet);
         var bf = new BloomFilter(30, 5, 90210);
@@ -397,5 +393,4 @@ public class bitcoffee {
 
     }
 }
-
 

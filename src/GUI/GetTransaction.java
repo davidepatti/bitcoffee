@@ -69,7 +69,7 @@ public class GetTransaction extends JDialog{
         textAreaResult.selectAll();
         textAreaResult.replaceSelection("");
         try {
-            var h160 = Kit.decodeBase58(address);
+            var h160 = ScriptPubKey.addressPayload(address);
 
             var node = new SimpleNode(host, testnet);
 
